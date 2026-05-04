@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Main extends Application {
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/auctionsystem/View/Dashboard.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/org/auctionsystem/View/Login_scene.fxml"));
         Scene scene = new Scene(root);
 
         stage.setTitle("Auction System Application");

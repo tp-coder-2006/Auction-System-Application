@@ -1,4 +1,4 @@
-package org.auctionsystem.Controller.Bidder;
+package org.auctionsystem.client.Controller.Bidder;
 
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
@@ -9,7 +9,7 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
-import org.auctionsystem.Controller.Scene_Utils;
+import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 

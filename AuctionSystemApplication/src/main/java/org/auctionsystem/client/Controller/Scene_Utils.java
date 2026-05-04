@@ -1,4 +1,4 @@
-package org.auctionsystem.Controller;
+package org.auctionsystem.client.Controller;
 
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;

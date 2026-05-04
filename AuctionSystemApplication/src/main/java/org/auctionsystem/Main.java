@@ -1,4 +1,4 @@
-package org.auctionsystem;
+package org.auctionsystem.client;
 import javafx.application.Application;
 import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Main extends Application {
     public void start(Stage stage) throws IOException {
-        Parent root = FXMLLoader.load(getClass().getResource("/org/auctionsystem/View/Login_scene.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/org/auctionsystem/client/View/Login_scene.fxml"));
         Scene scene = new Scene(root);
 
         stage.setTitle("Auction System Application");

@@ -13,9 +13,9 @@ import javafx.event.ActionEvent;
 import java.io.IOException;
 
 public class Controller_Bidder_Dashboard {
-    private static final String Login_View = "/org/auctionsystem/View/Login_scene.fxml";
-    private static final String Profile_View = "/org/auctionsystem/View/Profile.fxml";
-    private static final String Bidding_History_View = "/org/auctionsystem/View/Bidding_History.fxml";
+    private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
+    private static final String Profile_View = "/org/auctionsystem/client/View/Profile.fxml";
+    private static final String Bidding_History_View = "/org/auctionsystem/client/View/Bidding_History.fxml";
 
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {

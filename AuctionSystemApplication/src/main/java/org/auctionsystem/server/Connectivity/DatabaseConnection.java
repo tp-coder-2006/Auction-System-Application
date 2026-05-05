@@ -5,30 +5,29 @@ import java.sql.DriverManager;
 import java.sql.SQLException;
 
 public class DatabaseConnection {
-    // 1. Biến static giữ kết nối duy nhất (Tránh mở quá nhiều đường ống gây sập máy)
-    private static Connection connection = null;
 
-    // 2. Thông tin database
-    // (Đổi chữ 'mydb' thành tên database, đổi 'root' và password cho đúng với máy)
-    private static final String URL = "jdbc:mysql://localhost:3306/mydb";
-    private static final String USER = "root";
+    private static final String URL      = "jdbc:mysql://localhost:3306/mydb";
+    private static final String USER     = "root";
     private static final String PASSWORD = "12345678";
 
-    // 3. Khóa Constructor lại
+    // Khóa constructor - không ai được tạo đối tượng DatabaseConnection
     private DatabaseConnection() {}
 
-    // 4. Cung cấp một cổng duy nhất để lấy kết nối
-    public static Connection getConnection() {
+    /**
+     * Mỗi lần gọi hàm này sẽ mở 1 đường kết nối MỚI tới database.
+     * Người gọi CÓ TRÁCH NHIỆM đóng connection sau khi dùng xong,
+     * tốt nhất là dùng try-with-resources:
+     *
+     *   try (Connection conn = DatabaseConnection.getConnection()) {
+     *       // ... làm việc với DB ...
+     *   } // conn tự đóng ở đây
+     */
+    public static Connection getConnection() throws SQLException {
         try {
-            if (connection == null || connection.isClosed()) {
-                // Đăng ký Driver và mở đường ống
-                Class.forName("com.mysql.cj.jdbc.Driver");
-                connection = DriverManager.getConnection(URL, USER, PASSWORD);
-                System.out.println("Kết nối Database thành công!");
-            }
-        } catch (SQLException | ClassNotFoundException e) {
-            System.err.println("Lỗi kết nối Database: " + e.getMessage());
+            Class.forName("com.mysql.cj.jdbc.Driver");
+        } catch (ClassNotFoundException e) {
+            throw new SQLException("Không tìm thấy MySQL Driver: " + e.getMessage());
         }
-        return connection;
+        return DriverManager.getConnection(URL, USER, PASSWORD);
     }
 }

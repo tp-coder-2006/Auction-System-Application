@@ -30,7 +30,7 @@ public class Controller_Login {
             log_in_username_error.setText("");
             log_in_password_error.setText("");
             try {
-                Scene_Utils.Change_Scene(event, "/org/auctionsystem/View/Bidder_Dashboard.fxml");
+                Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Bidder_Dashboard.fxml");
             } catch (IOException e) {
                 throw new RuntimeException(e);
             }
@@ -38,6 +38,6 @@ public class Controller_Login {
     }
     @FXML
     private void Switching_to_register_scene(ActionEvent event) throws IOException {
-        Scene_Utils.Change_Scene(event,"/org/auctionsystem/View/Register_scene.fxml");
+        Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Register_scene.fxml");
     }
 }

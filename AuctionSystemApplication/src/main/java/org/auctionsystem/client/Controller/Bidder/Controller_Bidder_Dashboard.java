@@ -9,7 +9,6 @@ import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
-import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 
@@ -20,7 +19,7 @@ public class Controller_Bidder_Dashboard {
 
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
-            Scene_Utils.Change_Scene(event,fxml_path);
+            org.auctionsystem.client.Controller.Scene_Utils.Change_Scene(event,fxml_path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -58,6 +57,6 @@ public class Controller_Bidder_Dashboard {
     // Ghi tạm để chỉnh sửa sau
     @FXML
     public void initialize() {
-        Scene_Utils.set_up_search_logic(search_bar, item_list, data);
+        org.auctionsystem.client.Controller.Scene_Utils.set_up_search_logic(search_bar, item_list, data);
     }
 }

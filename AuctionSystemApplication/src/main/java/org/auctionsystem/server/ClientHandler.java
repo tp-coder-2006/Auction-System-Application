@@ -1,7 +1,10 @@
 package org.auctionsystem.server;
 
 import com.google.gson.Gson;
+import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
+import org.auctionsystem.server.Repository.BidRepository;
+import org.auctionsystem.server.Repository.ItemRepository;
 import org.auctionsystem.server.Repository.UserRepository;
 
 import java.io.BufferedReader;
@@ -21,38 +24,41 @@ public class ClientHandler implements Runnable {
     @Override
     public void run() {
         try (
-            BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
-            PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
+                BufferedReader reader = new BufferedReader(new InputStreamReader(socket.getInputStream()));
+                PrintWriter writer = new PrintWriter(socket.getOutputStream(), true)
         ) {
             String jsonMessage;
             while ((jsonMessage = reader.readLine()) != null) {
                 System.out.println("📩 Client [" + socket.getInetAddress() + "] gửi: " + jsonMessage);
 
-                // Phân tích chuỗi JSON nhận được thành đối tượng JsonObject
                 JsonObject request = gson.fromJson(jsonMessage, JsonObject.class);
                 String action = request.has("action") ? request.get("action").getAsString() : "UNKNOWN";
 
-                // Chuẩn bị khung JSON để phản hồi lại Client
                 JsonObject response = new JsonObject();
                 response.addProperty("action", action);
 
-                // BỘ ĐỊNH TUYẾN (ROUTER) - Chia nhánh xử lý logic theo từng loại lệnh
+                // BỘ ĐỊNH TUYẾN - mỗi action được xử lý bởi một hàm riêng
                 switch (action) {
                     case "LOGIN":
                         handleLogin(request, response);
                         break;
                     case "REGISTER":
-                        // handleRegister(request, response);
+                        handleRegister(request, response);
+                        break;
+                    case "GET_ITEMS":
+                        handleGetItems(response);
                         break;
                     case "BID":
-                        // handleBid(request, response);
+                        handleBid(request, response);
+                        break;
+                    case "GET_BID_HISTORY":
+                        handleGetBidHistory(request, response);
                         break;
                     default:
                         response.addProperty("status", "error");
                         response.addProperty("message", "Hành động không được hỗ trợ từ Server.");
                 }
 
-                // Gửi kết quả JSON trả lại cho Client
                 writer.println(response.toString());
             }
 
@@ -72,7 +78,6 @@ public class ClientHandler implements Runnable {
         String username = request.get("username").getAsString();
         String password = request.get("password").getAsString();
 
-        // Gọi xuống database thông qua UserRepository
         UserRepository userRepo = new UserRepository();
         boolean isSuccess = userRepo.checkLogin(username, password);
 
@@ -83,5 +88,60 @@ public class ClientHandler implements Runnable {
             response.addProperty("status", "error");
             response.addProperty("message", "Sai tài khoản hoặc mật khẩu!");
         }
+    }
+
+    private void handleRegister(JsonObject request, JsonObject response) {
+        String username = request.get("username").getAsString();
+        String password = request.get("password").getAsString();
+        String email    = request.get("email").getAsString();
+        String name     = request.get("name").getAsString();
+
+        UserRepository userRepo = new UserRepository();
+        boolean isSuccess = userRepo.registerUser(username, password, email, name);
+
+        if (isSuccess) {
+            response.addProperty("status", "success");
+            response.addProperty("message", "Đăng ký tài khoản thành công!");
+        } else {
+            response.addProperty("status", "error");
+            response.addProperty("message", "Tên người dùng đã tồn tại, hãy chọn tên khác!");
+        }
+    }
+
+    private void handleGetItems(JsonObject response) {
+        // Lấy danh sách sản phẩm đang mở đấu giá từ database
+        ItemRepository itemRepo = new ItemRepository();
+        JsonArray items = itemRepo.getActiveItems();
+
+        response.addProperty("status", "success");
+        // Nhét thẳng JsonArray vào response — client sẽ parse ra và hiển thị lên ListView
+        response.add("items", items);
+    }
+
+    private void handleBid(JsonObject request, JsonObject response) {
+        String bidderId = request.get("bidderId").getAsString();
+        String itemId   = request.get("itemId").getAsString();
+        double amount   = request.get("amount").getAsDouble();
+
+        BidRepository bidRepo = new BidRepository();
+        boolean isSuccess = bidRepo.saveBid(bidderId, itemId, amount);
+
+        if (isSuccess) {
+            response.addProperty("status", "success");
+            response.addProperty("message", "Đặt giá thành công! Giá của bạn hiện là cao nhất.");
+        } else {
+            response.addProperty("status", "error");
+            response.addProperty("message", "Đặt giá thất bại! Giá phải cao hơn giá hiện tại.");
+        }
+    }
+
+    private void handleGetBidHistory(JsonObject request, JsonObject response) {
+        String bidderId = request.get("bidderId").getAsString();
+
+        BidRepository bidRepo = new BidRepository();
+        JsonArray history = bidRepo.getBidHistoryByBidder(bidderId);
+
+        response.addProperty("status", "success");
+        response.add("history", history);
     }
 }

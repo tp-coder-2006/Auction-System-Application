@@ -66,7 +66,11 @@ public class Controller_Login {
     }
 
     @FXML
-    private void Switching_to_register_scene(ActionEvent event) throws IOException {
-        Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Register_scene.fxml");
+    private void Switching_to_register_scene(ActionEvent event) {
+        try {
+            Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Register_scene.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

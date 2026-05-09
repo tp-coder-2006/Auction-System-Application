@@ -31,6 +31,9 @@ public class Scene_Utils {
         }
 
         Scene scene = new Scene(root);
+
+        Apply_Default_CSS_Style(scene);
+
         stage.setScene(scene);
         stage.show();
     }
@@ -54,6 +57,21 @@ public class Scene_Utils {
             }
         });
         item_list.setItems(filtered_data);
+    }
+    public static void Apply_Default_CSS_Style(Scene scene) {
+        if (scene == null) {
+            return;
+        }
+        String default_css_path = "/org/auctionsystem/CSS/style.css";
+        java.net.URL css_resource = Scene_Utils.class.getResource(default_css_path);
+        if (css_resource != null) {
+            String css_url_string = css_resource.toExternalForm();
+            if (!scene.getStylesheets().contains(css_url_string)) {
+                scene.getStylesheets().add(css_url_string);
+            }
+        } else {
+            System.err.println("⚠️ Không tìm thấy file CSS tại: " + default_css_path);
+        }
     }
 }
 

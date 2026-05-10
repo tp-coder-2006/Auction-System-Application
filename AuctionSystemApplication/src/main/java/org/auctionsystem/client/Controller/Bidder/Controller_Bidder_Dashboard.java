@@ -3,12 +3,15 @@ package org.auctionsystem.client.Controller.Bidder;
 import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
+import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.control.ListView;
 import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
+import javafx.stage.Stage;
+import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 
@@ -19,7 +22,7 @@ public class Controller_Bidder_Dashboard {
 
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
-            org.auctionsystem.client.Controller.Scene_Utils.Change_Scene(event,fxml_path);
+            org.auctionsystem.client.Controller.Scene_Utils.Change_Scene(event, fxml_path);
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -46,9 +49,9 @@ public class Controller_Bidder_Dashboard {
 
     @FXML //Đến trang chứa lịch sử đấu giá
     public void Go_to_bidding_history(ActionEvent event) {
-        switch_scene(event,Bidding_History_View);
+        switch_scene(event, Bidding_History_View);
     }
-
+    /*
     @FXML //Thanh tìm kiếm trên trang chủ
     private TextField search_bar;
     @FXML
@@ -59,4 +62,5 @@ public class Controller_Bidder_Dashboard {
     public void initialize() {
         org.auctionsystem.client.Controller.Scene_Utils.set_up_search_logic(search_bar, item_list, data);
     }
+*/
 }

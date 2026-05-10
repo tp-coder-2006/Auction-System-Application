@@ -53,12 +53,21 @@ public class Controller_Register {
         String status = response.get("status").getAsString();
         if ("success".equals(status)) {
             // Đăng ký thành công → quay về trang Login
-            Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Login_scene.fxml");
+            Scene_Utils.Change_Scene(
+                    event,"/org/auctionsystem/client/View/Login_scene.fxml");
         } else {
             String message = response.has("message")
                     ? response.get("message").getAsString()
                     : "Đăng ký thất bại!";
             register_error_announcement.setText(message);
+        }
+    }
+    @FXML
+    public void Switching_to_login_scene(ActionEvent event) {
+        try {
+            Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Login_scene.fxml");
+        } catch (IOException e) {
+            e.printStackTrace();
         }
     }
 }

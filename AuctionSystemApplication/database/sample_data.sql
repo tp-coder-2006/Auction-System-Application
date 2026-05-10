@@ -6,6 +6,8 @@
 -- Chạy file này trong MySQL Workbench SAU KHI đã chạy init_database.sql
 -- Mật khẩu của tất cả tài khoản mẫu đều là: 12345678
 -- =======================================================
+SET SQL_SAFE_UPDATES = 0;
+SET FOREIGN_KEY_CHECKS = 0;
 
 USE mydb;
 
@@ -27,28 +29,28 @@ INSERT INTO users (id, name, username, password, balance, is_active, email, role
 ('user-seller-001',
  'Nguyễn Văn An',
  'seller01',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+ '$2a$10$tadwm20rWlf6zjDWBaxIV.koRJQPu1JPf38cCb.XsF0Q1zC/DSIHS',
  50000000, 1, 'seller01@gmail.com', 'seller', 4.8),
 
 -- Tài khoản Bidder 1
 ('user-bidder-001',
  'Trần Thị Bình',
  'bidder01',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+ '$2a$10$tadwm20rWlf6zjDWBaxIV.koRJQPu1JPf38cCb.XsF0Q1zC/DSIHS',
  100000000, 1, 'bidder01@gmail.com', 'bidder', NULL),
 
 -- Tài khoản Bidder 2
 ('user-bidder-002',
  'Lê Văn Cường',
  'bidder02',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+ '$2a$10$tadwm20rWlf6zjDWBaxIV.koRJQPu1JPf38cCb.XsF0Q1zC/DSIHS',
  200000000, 1, 'bidder02@gmail.com', 'bidder', NULL),
 
 -- Tài khoản Bidder 3
 ('user-bidder-003',
  'Phạm Minh Đức',
  'bidder03',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+ '$2a$10$tadwm20rWlf6zjDWBaxIV.koRJQPu1JPf38cCb.XsF0Q1zC/DSIHS',
  500000000, 1, 'bidder03@gmail.com', 'bidder', NULL);
 
 
@@ -151,3 +153,6 @@ FROM bids b
          JOIN users u ON b.bidder_id = u.id
          JOIN items i ON b.item_id = i.id
 ORDER BY b.bid_time DESC;
+
+SET FOREIGN_KEY_CHECKS = 1;
+SET SQL_SAFE_UPDATES = 1;

@@ -85,7 +85,7 @@ VALUES (
            UUID(),
            'Administrator',
            'admin',
-           '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
+           '$2a$10$zwIOTYTvOCAYJ9AvDrD1MeE6ig20H80WHOXq8/dt60x3IA8Tz8UOy',
            0,
            1,
            'admin@auctionsystem.com',

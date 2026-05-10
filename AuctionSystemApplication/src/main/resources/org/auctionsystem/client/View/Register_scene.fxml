@@ -1,11 +1,15 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.PasswordField?>
+<?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.ToggleGroup?>
 <?import javafx.scene.layout.AnchorPane?>
+<?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
 <!--
@@ -20,43 +24,69 @@
       </Label>
 
       <!-- Họ và tên -->
-      <Label layoutX="226.0" layoutY="78.0" prefWidth="151.0" text="Họ và tên">
+      <Label layoutX="226.0" layoutY="64.0" prefWidth="151.0" text="Họ và tên">
          <font><Font size="18.0" /></font>
       </Label>
-      <TextField fx:id="register_name" layoutX="226.0" layoutY="103.0" prefHeight="30.0" prefWidth="151.0">
+      <TextField fx:id="register_name" layoutX="226.0" layoutY="91.0" prefHeight="30.0" prefWidth="151.0">
          <font><Font size="16.0" /></font>
       </TextField>
 
       <!-- Tên người dùng -->
-      <Label layoutX="226.0" layoutY="148.0" prefWidth="151.0" text="Tên người dùng">
+      <Label layoutX="226.0" layoutY="135.0" prefWidth="151.0" text="Tên người dùng">
          <font><Font size="18.0" /></font>
       </Label>
-      <TextField fx:id="register_username" layoutX="226.0" layoutY="173.0" prefHeight="30.0" prefWidth="151.0">
+      <TextField fx:id="register_username" layoutX="226.0" layoutY="163.0" prefHeight="30.0" prefWidth="151.0">
          <font><Font size="16.0" /></font>
       </TextField>
 
       <!-- Email -->
-      <Label layoutX="226.0" layoutY="218.0" prefWidth="151.0" text="Email">
+      <Label layoutX="226.0" layoutY="204.0" prefWidth="151.0" text="Email">
          <font><Font size="18.0" /></font>
       </Label>
-      <TextField fx:id="register_email" layoutX="226.0" layoutY="243.0" prefHeight="30.0" prefWidth="151.0">
+      <TextField fx:id="register_email" layoutX="226.0" layoutY="232.0" prefHeight="30.0" prefWidth="151.0">
          <font><Font size="16.0" /></font>
       </TextField>
 
       <!-- Mật khẩu -->
-      <Label layoutX="226.0" layoutY="288.0" prefWidth="151.0" text="Mật khẩu">
+      <Label layoutX="226.0" layoutY="278.0" prefWidth="151.0" text="Mật khẩu">
          <font><Font size="18.0" /></font>
       </Label>
-      <PasswordField fx:id="register_password" layoutX="226.0" layoutY="313.0" prefHeight="30.0" prefWidth="151.0">
+      <PasswordField fx:id="register_password" layoutX="226.0" layoutY="305.0" prefHeight="30.0" prefWidth="151.0">
          <font><Font size="16.0" /></font>
       </PasswordField>
 
       <!-- Thông báo lỗi -->
-      <Label fx:id="register_error_announcement" layoutX="226.0" layoutY="353.0" prefHeight="38.0" prefWidth="202.0" textFill="RED" wrapText="true">
-         <font><Font size="14.0" /></font>
-      </Label>
+      <Label fx:id="register_error_announcement" layoutX="226.0" layoutY="400.0" prefHeight="27.0" prefWidth="336.0" textFill="RED" wrapText="true" />
 
-      <Button fx:id="register_button" layoutX="267.0" layoutY="400.0" mnemonicParsing="false" onAction="#Registering" text="Đăng ký" />
-      <Hyperlink fx:id="back_to_login_scene" layoutX="180.0" layoutY="426.0" onAction="#Switching_to_login_scene" text="Đã có tài khoản? Quay lại trang đăng nhập" />
+      <Button fx:id="register_button" layoutX="269.0" layoutY="436.0" mnemonicParsing="false" onAction="#Registering" text="Đăng ký" />
+      <Hyperlink fx:id="back_to_login_scene" layoutX="182.0" layoutY="462.0" onAction="#Switching_to_login_scene" text="Đã có tài khoản? Quay lại trang đăng nhập" />
+      <Label layoutX="226.0" layoutY="345.0" text="Vai trò:">
+         <font>
+            <Font size="18.0" />
+         </font>
+      </Label>
+      <VBox layoutX="283.0" layoutY="342.0" spacing="10.0">
+         <children>
+            <RadioButton fx:id="register_as_bidder" mnemonicParsing="false" text="Bidder">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="10.0" top="8.0" />
+               </VBox.margin>
+               <toggleGroup>
+                  <ToggleGroup fx:id="role_group" />
+               </toggleGroup>
+            </RadioButton>
+            <RadioButton fx:id="register_as_seller" mnemonicParsing="false" text="Seller" toggleGroup="$role_group">
+               <font>
+                  <Font size="14.0" />
+               </font>
+               <VBox.margin>
+                  <Insets left="10.0" />
+               </VBox.margin>
+            </RadioButton>
+         </children>
+      </VBox>
    </children>
 </AnchorPane>

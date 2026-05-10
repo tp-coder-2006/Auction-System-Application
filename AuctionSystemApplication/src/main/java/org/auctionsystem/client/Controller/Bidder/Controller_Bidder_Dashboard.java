@@ -1,17 +1,10 @@
 package org.auctionsystem.client.Controller.Bidder;
 
-import javafx.collections.FXCollections;
-import javafx.collections.ObservableList;
 import javafx.fxml.FXML;
-import javafx.scene.Node;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.scene.control.ListView;
-import javafx.scene.control.TextField;
 
 import javafx.event.ActionEvent;
-import javafx.stage.Stage;
-import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 
@@ -19,6 +12,7 @@ public class Controller_Bidder_Dashboard {
     private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
     private static final String Profile_View = "/org/auctionsystem/client/View/Profile.fxml";
     private static final String Bidding_History_View = "/org/auctionsystem/client/View/Bidding_History.fxml";
+    private static final String Searching_Room_View = "/org/auctionsystem/client/View/Searching_room.fxml";
 
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
@@ -51,6 +45,13 @@ public class Controller_Bidder_Dashboard {
     public void Go_to_bidding_history(ActionEvent event) {
         switch_scene(event, Bidding_History_View);
     }
+
+    @FXML
+    public void Go_to_searching_room(ActionEvent event) {
+        switch_scene(event, Searching_Room_View);
+    }
+    //bỏ thanh tìm kiếm trên trang chủ, thay vào đó thì để thanh tìm kiếm ở màn hình Searching_room
+
     /*
     @FXML //Thanh tìm kiếm trên trang chủ
     private TextField search_bar;

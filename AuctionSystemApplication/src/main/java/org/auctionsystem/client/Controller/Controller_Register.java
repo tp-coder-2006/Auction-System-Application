@@ -5,12 +5,15 @@ import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Label;
 import javafx.scene.control.PasswordField;
+import javafx.scene.control.RadioButton;
 import javafx.scene.control.TextField;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 
 import java.io.IOException;
 
 public class Controller_Register {
+    @FXML private RadioButton register_as_bidder;
+    @FXML private RadioButton register_as_seller;
     @FXML private TextField register_name;
     @FXML private TextField register_username;
     @FXML private TextField register_email;
@@ -23,10 +26,25 @@ public class Controller_Register {
         String username = register_username.getText().trim();
         String email    = register_email.getText().trim();
         String password = register_password.getText();
+        // Kiểm tra vai trò
+        if (!register_as_bidder.isSelected() && !register_as_seller.isSelected()) {
+            register_error_announcement.setText("Vui lòng chọn vai trò (Bidder hoặc Seller)");
+            return;
+        }
+        String role;
+        if (register_as_bidder.isSelected()) {
+            role = "bidder";
+        } else {
+            role = "seller";
+        }
 
         // Bước 1: Validate phía client
         if (name.isEmpty() || username.isEmpty() || email.isEmpty()) {
             register_error_announcement.setText("Vui lòng điền đầy đủ thông tin!");
+            return;
+        }
+        if (!email.matches("^[A-Za-z0-9+_.-]+@(.+)$")) {
+            register_error_announcement.setText("Email không hợp lệ!");
             return;
         }
         if (password.length() < 8) {
@@ -41,6 +59,7 @@ public class Controller_Register {
         request.addProperty("password", password);
         request.addProperty("email",    email);
         request.addProperty("name",     name);
+        request.addProperty("role",     role);
 
         JsonObject response = ServerConnection.sendRequest(request);
 

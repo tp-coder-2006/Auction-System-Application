@@ -10,44 +10,89 @@ import java.sql.ResultSet;
 import java.sql.SQLException;
 
 public class BidRepository {
-
-    private final ItemRepository itemRepository = new ItemRepository();
-
     public boolean saveBid(String bidderId, String itemId, double bidAmount) {
-        JsonObject item = itemRepository.getItemById(itemId);
-        if (item == null) {
-            System.err.println("❌ Không tìm thấy sản phẩm: " + itemId);
-            return false;
-        }
+        // Mở một connection duy nhất — tất cả 3 bước dùng chung connection này
+        // để đảm bảo chúng nằm trong cùng một transaction
+        try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
 
-        double currentPrice  = item.get("currentPrice").getAsDouble();
-        double startingPrice = item.get("startingPrice").getAsDouble();
-        double minimumRequired = Math.max(currentPrice, startingPrice);
+            // Tắt auto-commit để kiểm soát transaction thủ công
+            conn.setAutoCommit(false);
 
-        if (bidAmount <= minimumRequired) {
-            System.err.println("❌ Giá đặt " + bidAmount + " không cao hơn giá hiện tại " + minimumRequired);
-            return false;
-        }
+            try {
+                // ── BƯỚC 1: Đọc giá hiện tại và KHÓA dòng item lại ──────────
+                // FOR UPDATE = không cho thread khác đọc dòng này
+                // cho đến khi transaction này commit hoặc rollback.
+                String selectSql = "SELECT starting_price, current_highest_price, status "
+                        + "FROM items WHERE id = ? FOR UPDATE";
 
-        String sql = "INSERT INTO bids (id, bid_amount, bid_time, bidder_id, item_id) "
-                + "VALUES (UUID(), ?, NOW(), ?, ?)";
+                double minimumRequired;
+                try (PreparedStatement selectStmt = conn.prepareStatement(selectSql)) {
+                    selectStmt.setString(1, itemId);
+                    ResultSet rs = selectStmt.executeQuery();
 
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
+                    if (!rs.next()) {
+                        conn.rollback();
+                        System.err.println("❌ Không tìm thấy sản phẩm: " + itemId);
+                        return false;
+                    }
 
-            stmt.setDouble(1, bidAmount);
-            stmt.setString(2, bidderId);
-            stmt.setString(3, itemId);
+                    String status = rs.getString("status");
+                    if (!"active".equals(status)) {
+                        conn.rollback();
+                        System.err.println("❌ Phiên đấu giá không còn mở: " + status);
+                        return false;
+                    }
 
-            int rowsAffected = stmt.executeUpdate();
-            if (rowsAffected == 0) return false;
+                    double startingPrice = rs.getDouble("starting_price");
+                    double currentPrice  = rs.getDouble("current_highest_price");
+                    // Giá đặt phải cao hơn cả giá khởi điểm lẫn giá cao nhất hiện tại
+                    minimumRequired = Math.max(startingPrice, currentPrice);
+                }
+
+                if (bidAmount <= minimumRequired) {
+                    conn.rollback();
+                    System.err.println("❌ Giá đặt " + bidAmount
+                            + " không cao hơn mức tối thiểu " + minimumRequired);
+                    return false;
+                }
+
+                // ── BƯỚC 2: Ghi bid vào bảng bids ──────────────────────────
+                String insertSql = "INSERT INTO bids (id, bid_amount, bid_time, bidder_id, item_id) "
+                        + "VALUES (UUID(), ?, NOW(), ?, ?)";
+
+                try (PreparedStatement insertStmt = conn.prepareStatement(insertSql)) {
+                    insertStmt.setDouble(1, bidAmount);
+                    insertStmt.setString(2, bidderId);
+                    insertStmt.setString(3, itemId);
+                    insertStmt.executeUpdate();
+                }
+
+                // ── BƯỚC 3: Cập nhật giá cao nhất trong bảng items ─────────
+                String updateSql = "UPDATE items SET current_highest_price = ? WHERE id = ?";
+
+                try (PreparedStatement updateStmt = conn.prepareStatement(updateSql)) {
+                    updateStmt.setDouble(1, bidAmount);
+                    updateStmt.setString(2, itemId);
+                    updateStmt.executeUpdate();
+                }
+
+                // ── COMMIT: Xác nhận tất cả 3 bước, giải phóng lock ────────
+                conn.commit();
+                System.out.println("✅ Bid thành công: bidder=" + bidderId
+                        + " item=" + itemId + " amount=" + bidAmount);
+                return true;
+
+            } catch (SQLException e) {
+                // Nếu bất kỳ bước nào lỗi → rollback toàn bộ, không để DB ở trạng thái dở
+                conn.rollback();
+                System.err.println("❌ Lỗi trong transaction đặt giá, đã rollback: " + e.getMessage());
+                return false;
+            }
 
         } catch (SQLException e) {
-            System.err.println("❌ Lỗi khi lưu bid: " + e.getMessage());
+            System.err.println("❌ Không thể mở connection: " + e.getMessage());
             return false;
         }
-
-        return itemRepository.updateCurrentPrice(itemId, bidAmount);
     }
 
     public JsonArray getBidHistoryByBidder(String bidderId) {

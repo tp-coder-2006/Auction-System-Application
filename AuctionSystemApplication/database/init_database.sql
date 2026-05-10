@@ -12,8 +12,8 @@ CREATE SCHEMA IF NOT EXISTS `mydb` DEFAULT CHARACTER SET utf8;
 USE `mydb`;
 
 -- -----------------------------------------------------
--- Bảng users (gộp luôn role + rating vào đây)
--- role: 'bidder' | 'seller' | 'admin'
+-- Bảng users
+-- 3 roles: 'bidder' | 'seller' | 'admin'
 -- rating: chỉ có giá trị khi role = 'seller', còn lại NULL
 -- -----------------------------------------------------
 CREATE TABLE IF NOT EXISTS `mydb`.`users` (
@@ -79,7 +79,6 @@ CREATE TABLE IF NOT EXISTS `mydb`.`bids` (
 -- -----------------------------------------------------
 -- Tạo tài khoản Admin mặc định
 -- Password: "admin1234" đã hash bằng BCrypt
--- (Thay chuỗi hash bên dưới nếu muốn đổi password)
 -- -----------------------------------------------------
 INSERT INTO `mydb`.`users` (id, name, username, password, balance, is_active, email, role, rating)
 VALUES (

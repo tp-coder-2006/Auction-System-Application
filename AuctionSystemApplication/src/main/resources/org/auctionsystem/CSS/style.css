@@ -18,3 +18,9 @@
     -fx-border-color: #dcdde1;
     -fx-border-radius: 5px;
 }
+.menu-bar .menu {
+    -fx-padding: 0 30px 0 30px;
+}
+.menu-bar .container {
+    -fx-alignment: center;
+}

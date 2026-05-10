@@ -41,11 +41,11 @@
       </VBox>
    </center>
    <top>
-      <MenuBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="26.0" prefWidth="580.0" BorderPane.alignment="CENTER">
+      <MenuBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="26.0" prefWidth="580.0" stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#Go_to_profile" text="Hồ sơ của bạn" />
+              <MenuItem mnemonicParsing="false" onAction="#Go_to_profile" text="Tài khoản" />
                   <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_history" text="Lịch sử mua hàng" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="log_out_button" mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />
@@ -58,7 +58,7 @@
                   <MenuItem mnemonicParsing="false" text="Đồ trưng bày" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Unspecified Menu">
+            <Menu mnemonicParsing="false" text="Trợ giúp">
               <items>
                 <MenuItem mnemonicParsing="false" text="Action 1" />
               </items>

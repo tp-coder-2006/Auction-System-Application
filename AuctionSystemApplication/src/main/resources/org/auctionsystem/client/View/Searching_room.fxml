@@ -10,8 +10,7 @@
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
 
-
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Searching_room">
+<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Searching_room">
    <top>
       <VBox prefHeight="84.0" prefWidth="600.0" spacing="10.0" BorderPane.alignment="CENTER">
          <padding>
@@ -41,7 +40,7 @@
       </TableView>
    </center>
    <bottom>
-      <Button mnemonicParsing="false" text="Quay lại trang chủ" BorderPane.alignment="CENTER">
+      <Button mnemonicParsing="false" onAction="#Back_to_Dashboard" text="Quay lại trang chủ" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="10.0" />
          </BorderPane.margin>

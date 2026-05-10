@@ -14,7 +14,7 @@
 
 <BorderPane prefHeight="466.0" prefWidth="580.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
    <center>
-      <VBox alignment="TOP_CENTER" BorderPane.alignment="CENTER">
+      <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
             <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="580.0" text="Chào mừng đến với hệ thống đấu giá">
                <font>
@@ -29,7 +29,7 @@
                   <Font name="System Italic" size="24.0" />
                </font>
             </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Để bắt đầu đấu giá, hãy bấm vào nút bên trên" textAlignment="JUSTIFY">
+            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Để bắt đầu đấu giá sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrappingWidth="462.4117126464844">
                <font>
                   <Font name="System Bold Italic" size="24.0" />
                </font>

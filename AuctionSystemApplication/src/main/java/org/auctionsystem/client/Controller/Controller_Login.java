@@ -51,9 +51,26 @@ public class Controller_Login {
         if ("success".equals(status)) {
             log_in_username_error.setText("");
             log_in_password_error.setText("");
+            //Kiểm tra xem Server có gửi role về không
+            if (!response.has("role")) {
+                log_in_password_error.setText("Lỗi hệ thống: Server không trả về vai trò người dùng!");
+                return;
+            }
+            String role = response.get("role").getAsString();
+            String fxml_path;
+            if ("seller".equalsIgnoreCase(role)) {
+                fxml_path = "/org/auctionsystem/client/View/Seller_Dashboard.fxml";
+            } else if ("bidder".equalsIgnoreCase(role)) {
+                fxml_path = "/org/auctionsystem/client/View/Bidder_Dashboard.fxml";
+            } else {
+                //Trường hợp gửi role nhưng giá trị lại không phải bidder hoặc seller
+                log_in_password_error.setText("Lỗi: Vai trò '" + role + "' không hợp lệ!");
+                return;
+            }
             try {
-                Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Bidder_Dashboard.fxml");
+                Scene_Utils.Change_Scene(event, fxml_path);
             } catch (IOException e) {
+                log_in_password_error.setText("Lỗi: Không tìm thấy file giao diện!");
                 throw new RuntimeException(e);
             }
         } else {

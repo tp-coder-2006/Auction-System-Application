@@ -17,9 +17,9 @@
     để khớp với Controller_Register yêu cầu 4 tham số khi gọi UserRepository.registerUser()
 -->
 
-<VBox alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
    <children>
-      <Label alignment="CENTER" prefHeight="50.0" prefWidth="600.0" text="Đăng ký tài khoản" textAlignment="CENTER">
+      <Label alignment="CENTER" prefHeight="50.0" prefWidth="600.0" text="ĐĂNG KÝ TÀI KHOẢN" textAlignment="CENTER">
          <font>
             <Font size="30.0" />
          </font>

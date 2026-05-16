@@ -8,6 +8,7 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
@@ -18,7 +19,7 @@
          <children>
             <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="580.0" text="Chào mừng đến với hệ thống đấu giá">
                <font>
-                  <Font name="System Bold" size="24.0" />
+                  <Font name="Times New Roman Bold" size="30.0" />
                </font>
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
@@ -37,6 +38,15 @@
                   <Insets top="10.0" />
                </VBox.margin>
             </Text>
+            <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
+               <font>
+                  <Font size="24.0" />
+               </font>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" />
+               </padding>
+            </Label>
          </children>
       </VBox>
    </center>
@@ -51,11 +61,10 @@
                   <MenuItem fx:id="log_out_button" mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />
             </items>
           </Menu>
-          <Menu mnemonicParsing="false" text="Sản phẩm">
+          <Menu mnemonicParsing="false" text="Số dư tài khoản">
             <items>
-              <MenuItem mnemonicParsing="false" text="Đồ điện tử" />
-                  <MenuItem mnemonicParsing="false" text="Xe cộ" />
-                  <MenuItem mnemonicParsing="false" text="Đồ trưng bày" />
+              <MenuItem mnemonicParsing="false" text="Nạp tiền" />
+                  <MenuItem mnemonicParsing="false" text="Rút tiền" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Trợ giúp">

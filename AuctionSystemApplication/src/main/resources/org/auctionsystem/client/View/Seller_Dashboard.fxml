@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.Menu?>
@@ -10,17 +11,19 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0">
          <children>
             <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="580.0" text="Chào mừng đến với hệ thống đấu giá">
                <font>
-                  <Font name="System Bold" size="24.0" />
+                  <Font name="Times New Roman Bold" size="30.0" />
                </font>
+               <VBox.margin>
+                  <Insets bottom="5.0" top="5.0" />
+               </VBox.margin>
             </Label>
-            <Button mnemonicParsing="false" prefHeight="51.0" prefWidth="221.0" text="Bán hàng ngay!!!">
+            <Button mnemonicParsing="false" prefHeight="51.0" prefWidth="266.0" text="Đăng sản phẩm mới!">
                <font>
                   <Font name="System Italic" size="24.0" />
                </font>
@@ -44,6 +47,11 @@
                   <MenuItem mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />
             </items>
           </Menu>
+            <Menu mnemonicParsing="false" text="Sản phẩm">
+              <items>
+                <MenuItem mnemonicParsing="false" text="Quản lý sản phẩm của tôi" />
+              </items>
+            </Menu>
           <Menu mnemonicParsing="false" text="Trợ giúp">
             <items>
               <MenuItem mnemonicParsing="false" text="Delete" />

@@ -10,7 +10,7 @@ import java.io.IOException;
 
 public class Controller_Bidder_Dashboard {
     private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
-    private static final String Profile_View = "/org/auctionsystem/client/View/Profile.fxml";
+    private static final String Profile_View = "/org/auctionsystem/client/View/Bidder_Profile.fxml";
     private static final String Bidding_History_View = "/org/auctionsystem/client/View/Bidding_History.fxml";
     private static final String Searching_Room_View = "/org/auctionsystem/client/View/Searching_room.fxml";
 

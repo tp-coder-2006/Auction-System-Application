@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Login">
+<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Login">
    <children>
-      <Label alignment="CENTER" prefHeight="0.0" prefWidth="600.0" text="Đăng nhập hệ thống" textAlignment="CENTER">
+      <Label alignment="CENTER" prefHeight="0.0" prefWidth="600.0" text="ĐĂNG NHẬP HỆ THỐNG" textAlignment="CENTER">
          <font>
             <Font size="30.0" />
          </font>
@@ -19,7 +19,7 @@
             <Insets top="20.0" />
          </VBox.margin>
       </Label>
-      <Label prefHeight="30.0" prefWidth="166.0" text="Tên đăng nhập">
+      <Label prefHeight="30.0" prefWidth="190.0" text="Tên đăng nhập">
          <font>
             <Font size="20.0" />
          </font>
@@ -27,13 +27,13 @@
             <Insets top="10.0" />
          </VBox.margin>
       </Label>
-      <TextField fx:id="log_in_username" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#Log_in_condition" prefHeight="40.0" prefWidth="161.0">
+      <TextField fx:id="log_in_username" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#Log_in_condition" prefHeight="40.0" prefWidth="190.0">
          <font>
             <Font size="18.0" />
          </font>
       </TextField>
       <Label fx:id="log_in_username_error" prefHeight="31.0" prefWidth="162.0" textFill="#f40808" wrapText="true" />
-      <Label prefHeight="30.0" prefWidth="166.0" text="Mật khẩu">
+      <Label prefHeight="30.0" prefWidth="190.0" text="Mật khẩu">
          <font>
             <Font size="20.0" />
          </font>
@@ -41,7 +41,7 @@
             <Insets />
          </VBox.margin>
       </Label>
-      <PasswordField fx:id="log_in_password" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#Log_in_condition" prefHeight="40.0" prefWidth="162.0">
+      <PasswordField fx:id="log_in_password" maxHeight="-Infinity" maxWidth="-Infinity" onAction="#Log_in_condition" prefHeight="40.0" prefWidth="190.0">
          <font>
             <Font size="18.0" />
          </font>

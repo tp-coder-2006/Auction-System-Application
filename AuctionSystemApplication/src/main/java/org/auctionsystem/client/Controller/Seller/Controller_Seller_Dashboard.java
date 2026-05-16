@@ -9,7 +9,7 @@ import java.io.IOException;
 
 public class Controller_Seller_Dashboard {
     private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
-    private static final String Profile_View = "/org/auctionsystem/client/View/Profile.fxml";
+    private static final String Profile_View = "/org/auctionsystem/client/View/Seller_Profile.fxml";
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
             org.auctionsystem.client.Controller.Scene_Utils.Change_Scene(event, fxml_path);

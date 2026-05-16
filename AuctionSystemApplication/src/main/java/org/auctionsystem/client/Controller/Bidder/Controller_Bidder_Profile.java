@@ -6,9 +6,9 @@ import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 
-public class Controller_Bidding_History {
+public class Controller_Bidder_Profile {
     @FXML
-    public void back_to_bidding_dashboard(ActionEvent event) {
+    public void back_to_bidder_dashboard(ActionEvent event) {
         try {
             Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Bidder_Dashboard.fxml");
         } catch (IOException e) {

@@ -5,12 +5,13 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
+import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 
 public class Main extends Application {
     public void start(Stage stage) throws IOException {
-        // Đường dẫn đúng sau khi chuyển FXML vào thư mục client/View
+        Scene_Utils.setPrimaryStage(stage);
         Parent root = FXMLLoader.load(getClass().getResource("/org/auctionsystem/client/View/Login_scene.fxml"));
         Scene scene = new Scene(root);
 

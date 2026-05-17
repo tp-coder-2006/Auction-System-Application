@@ -1,7 +1,9 @@
 package org.auctionsystem.client.Connectivity;
 
+// [SỬA] Thêm import UserSession để sendAuthRequest() có thể lấy session_id
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import org.auctionsystem.client.session.UserSession;
 
 import java.io.BufferedReader;
 import java.io.InputStreamReader;
@@ -11,11 +13,24 @@ import java.net.Socket;
 /**
  * ServerConnection - Cầu nối giữa Client và Server qua Socket.
  *
- * Cách dùng trong bất kỳ Controller nào:
+ * ┌─────────────────────────────────────────────────────────────────┐
+ * │  Quy tắc sử dụng sau khi sửa:                                  │
+ * │                                                                 │
+ * │  Chưa đăng nhập (LOGIN, REGISTER):                             │
+ * │    → dùng sendRequest(request)                                  │
+ * │                                                                 │
+ * │  Đã đăng nhập (mọi action khác):                               │
+ * │    → dùng sendAuthRequest(request)                              │
+ * │       session_id sẽ được tự động đính kèm, không cần thêm tay  │
+ * └─────────────────────────────────────────────────────────────────┘
+ *
+ * Ví dụ dùng trong Controller sau khi login:
+ *
  *   JsonObject request = new JsonObject();
- *   request.addProperty("action", "LOGIN");
- *   request.addProperty("username", "abc");
- *   JsonObject response = ServerConnection.sendRequest(request);
+ *   request.addProperty("action", "GET_PROFILE");
+ *   request.addProperty("user_id", userId);
+ *   JsonObject response = ServerConnection.sendAuthRequest(request);
+ *   // request sẽ tự động có thêm "session_id" trước khi gửi lên server
  */
 public class ServerConnection {
 
@@ -24,8 +39,9 @@ public class ServerConnection {
     private static final Gson gson = new Gson();
 
     /**
-     * Gửi một JsonObject lên Server và nhận JsonObject phản hồi về.
-     * Mỗi lần gọi tự mở và tự đóng socket — không cần quản lý kết nối thủ công.
+     * [GIỮ NGUYÊN] Gửi request KHÔNG yêu cầu đăng nhập.
+     * Chỉ dùng cho LOGIN và REGISTER.
+     * Không đính kèm session_id.
      *
      * @param request  JsonObject chứa "action" và các tham số kèm theo
      * @return         JsonObject phản hồi từ Server, hoặc null nếu có lỗi mạng
@@ -47,4 +63,35 @@ public class ServerConnection {
             return null;
         }
     }
+
+    // ╔══════════════════════════════════════════════════════════════════════╗
+    // ║  [MỚI] sendAuthRequest — gửi request kèm session_id tự động        ║
+    // ╚══════════════════════════════════════════════════════════════════════╝
+    /**
+     * [MỚI] Gửi request YÊU CẦU đăng nhập.
+     *
+     * Tự động lấy session_id từ UserSession singleton (đã được lưu lúc login)
+     * và đính vào request trước khi gửi lên server.
+     *
+     * Server sẽ dùng session_id này để tra trong ConcurrentHashMap:
+     *   - Nếu không tồn tại hoặc hết hạn → trả về lỗi "chưa đăng nhập"
+     *   - Nếu hợp lệ → cho phép xử lý nghiệp vụ
+     *
+     * Lý do thêm method này:
+     *   Trước đây mỗi controller phải tự thêm session_id vào request thủ công,
+     *   dễ quên và không nhất quán. Method này tập trung logic đó vào 1 chỗ.
+     *
+     * @param request  JsonObject chứa "action" và các tham số nghiệp vụ
+     * @return         JsonObject phản hồi từ Server, hoặc null nếu có lỗi mạng
+     */
+    public static JsonObject sendAuthRequest(JsonObject request) {
+        // [MỚI] Lấy session_id từ UserSession singleton và đính vào request
+        String sessionId = UserSession.getInstance().getSessionId();
+        if (sessionId != null && !sessionId.isBlank()) {
+            request.addProperty("session_id", sessionId);
+        }
+        // Sau đó gửi bình thường qua sendRequest
+        return sendRequest(request);
+    }
+    // ══════════════════════════════════════════════════════════════════════
 }

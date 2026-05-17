@@ -1,158 +1,159 @@
--- =======================================================
--- DỮ LIỆU MẪU - HỆ THỐNG ĐẤU GIÁ
--- Chạy file này trong MySQL Workbench sau khi đã chạy init_database.sql
--- =======================================================
+-- =====================================================
+-- Auction System - Sample Data
+-- Phiên bản: 2.1
+-- =====================================================
 
-USE mydb;
+USE `mydb`;
 
--- =======================================================
--- BƯỚC 1: TẠO TÀI KHOẢN NGƯỜI DÙNG
--- Mật khẩu của tất cả tài khoản mẫu đều là: 12345678
--- (Đã được băm bằng BCrypt)
--- =======================================================
+-- =====================================================
+-- 1. USERS
+-- Password đều là "Test@1234" hash bằng BCrypt
+-- =====================================================
+INSERT INTO `mydb`.`users` (id, name, username, password, balance, is_active, email, role, rating) VALUES
 
-INSERT INTO users (id, name, username, password, balance, is_active, email) VALUES
-
--- Tài khoản Admin
-('user-admin-001',
- 'Quản trị viên',
- 'admin',
+-- Admin
+('u-admin-001', 'Administrator', 'admin',
  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
- 0, 1, 'admin@auction.com'),
+ 0, 1, 'admin@auctionsystem.com', 'admin', NULL),
 
--- Tài khoản Seller
-('user-seller-001',
- 'Nguyễn Văn An',
- 'seller01',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
- 50000000, 1, 'seller01@gmail.com'),
+-- Sellers
+('u-seller-001', 'Nguyễn Văn An',  'nguyenvanan',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 15000000, 1, 'an.nguyen@email.com',  'seller', 4.8),
+('u-seller-002', 'Trần Thị Bích',  'trантhibich',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',  8500000, 1, 'bich.tran@email.com',  'seller', 4.2),
+('u-seller-003', 'Lê Hoàng Cường', 'lehoangcuong', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',  3200000, 0, 'cuong.le@email.com',   'seller', 3.5),
 
--- Tài khoản Bidder 1
-('user-bidder-001',
- 'Trần Thị Bình',
- 'bidder01',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
- 100000000, 1, 'bidder01@gmail.com'),
+-- Bidders
+('u-bidder-001', 'Phạm Minh Dũng', 'phamminhdung', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 25000000, 1, 'dung.pham@email.com',  'bidder', NULL),
+('u-bidder-002', 'Hoàng Thị Em',   'hoangthiem',   '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy', 12000000, 1, 'em.hoang@email.com',   'bidder', NULL),
+('u-bidder-003', 'Vũ Quốc Phong',  'vuquocphong',  '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',  5000000, 1, 'phong.vu@email.com',   'bidder', NULL),
+('u-bidder-004', 'Đặng Thị Giang', 'dangthigiang', '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',  9800000, 1, 'giang.dang@email.com', 'bidder', NULL),
+('u-bidder-005', 'Bùi Văn Hải',    'buivanhai',    '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',  1500000, 0, 'hai.bui@email.com',    'bidder', NULL);
 
--- Tài khoản Bidder 2
-('user-bidder-002',
- 'Lê Văn Cường',
- 'bidder02',
- '$2a$10$N9qo8uLOickgx2ZMRZoMyeIjZAgcfl7p92ldGxad68LJZdL17lhWy',
- 200000000, 1, 'bidder02@gmail.com');
+-- =====================================================
+-- 2. ITEMS
+-- owner_id ban đầu = seller_id
+-- Sau khi closed thành công → owner_id = buyer
+-- =====================================================
+INSERT INTO `mydb`.`items`
+(id, name, description, starting_price, current_highest_price, start_time, end_time, status, seller_id, owner_id)
+VALUES
 
-
--- =======================================================
--- BƯỚC 2: PHÂN QUYỀN VAI TRÒ
--- =======================================================
-
--- Đánh dấu admin vào bảng admins
-INSERT INTO admins (user_id) VALUES ('user-admin-001');
-
--- Đánh dấu seller vào bảng sellers
-INSERT INTO sellers (user_id, rating) VALUES ('user-seller-001', 5.0);
-
--- Đánh dấu bidder vào bảng bidders
-INSERT INTO bidders (user_id) VALUES ('user-bidder-001');
-INSERT INTO bidders (user_id) VALUES ('user-bidder-002');
-
-
--- =======================================================
--- BƯỚC 3: THÊM SẢN PHẨM MẪU
--- Dùng seller-001 làm người bán cho tất cả sản phẩm
--- =======================================================
-
-INSERT INTO items (id, name, description, starting_price, current_highest_price, start_time, end_time, status, seller_id) VALUES
-
--- Sản phẩm đang mở (OPEN) - chưa có ai đặt giá
+-- ACTIVE — đang diễn ra
 ('item-001',
  'iPhone 15 Pro Max 256GB',
- 'Máy mới 100%, chưa active, màu Titan Tự Nhiên. Còn đầy đủ hộp và phụ kiện.',
- 25000000, 25000000,
- NOW(),
- DATE_ADD(NOW(), INTERVAL 7 DAY),
- 'OPEN', 'user-seller-001'),
+ 'Máy mới 100%, còn seal. Màu Titan Tự Nhiên. Bảo hành Apple 12 tháng.',
+ 25000000, 27500000,
+ '2026-05-10 08:00:00', '2026-05-17 20:00:00',
+ 'active', 'u-seller-001', 'u-seller-001'),
 
 ('item-002',
- 'Laptop Dell XPS 15 2024',
- 'RAM 32GB, SSD 1TB, RTX 4070. Dùng được 3 tháng, còn bảo hành 21 tháng.',
- 35000000, 35000000,
- NOW(),
- DATE_ADD(NOW(), INTERVAL 3 DAY),
- 'OPEN', 'user-seller-001'),
+ 'Đồng hồ Seiko Presage SPB167',
+ 'Đồng hồ cơ Nhật, mặt men xanh. Fullbox, bảo hành 18 tháng.',
+ 12000000, 13200000,
+ '2026-05-12 09:00:00', '2026-05-19 18:00:00',
+ 'active', 'u-seller-002', 'u-seller-002'),
 
 ('item-003',
- 'Đồng hồ Rolex Submariner',
- 'Rolex Submariner Date 116610LN, sản xuất 2021, full box & papers.',
- 350000000, 350000000,
- NOW(),
- DATE_ADD(NOW(), INTERVAL 14 DAY),
- 'OPEN', 'user-seller-001'),
+ 'Laptop Dell XPS 15 9530',
+ 'RAM 32GB, SSD 1TB, màn OLED 3.5K. Mới 99%, đủ phụ kiện.',
+ 38000000, 40000000,
+ '2026-05-14 10:00:00', '2026-05-21 22:00:00',
+ 'active', 'u-seller-001', 'u-seller-001'),
 
--- Sản phẩm đang chạy (RUNNING) - đã có người đặt giá
+-- PENDING — chưa bắt đầu
 ('item-004',
- 'Toyota Camry 2.5Q 2023',
- 'Xe lướt 8.000km, biển Hà Nội, 1 chủ từ mới, nội thất nguyên zin.',
- 950000000, 980000000,
- DATE_SUB(NOW(), INTERVAL 1 DAY),
- DATE_ADD(NOW(), INTERVAL 5 DAY),
- 'RUNNING', 'user-seller-001'),
+ 'Túi Hermès Birkin 30',
+ 'Auth 100%, fullbox 2022. Không vết xước. Kèm bill mua tại Pháp.',
+ 120000000, NULL,
+ '2026-05-20 10:00:00', '2026-05-27 20:00:00',
+ 'pending', 'u-seller-001', 'u-seller-001'),
 
 ('item-005',
- 'Tranh sơn dầu "Hà Nội mùa thu"',
- 'Họa sĩ Nguyễn Minh Phước, vẽ năm 2020, kích thước 80x120cm, có chứng nhận.',
- 15000000, 17500000,
- DATE_SUB(NOW(), INTERVAL 2 DAY),
- DATE_ADD(NOW(), INTERVAL 2 DAY),
- 'RUNNING', 'user-seller-001'),
+ 'Xe đạp Trek FX 3 Disc 2024',
+ 'Mới 100%, khung nhôm, phanh đĩa Shimano. Màu xanh navy.',
+ 18000000, NULL,
+ '2026-05-18 08:00:00', '2026-05-25 20:00:00',
+ 'pending', 'u-seller-002', 'u-seller-002'),
 
--- Sản phẩm đã kết thúc (FINISHED) - để test lịch sử đấu giá
+-- CLOSED — đã kết thúc, thanh toán thành công
+-- owner_id = người thắng
 ('item-006',
- 'PlayStation 5 Standard Edition',
- 'Máy mới seal, kèm 2 tay cầm và 3 game bản cứng.',
- 12000000, 14500000,
- DATE_SUB(NOW(), INTERVAL 10 DAY),
- DATE_SUB(NOW(), INTERVAL 3 DAY),
- 'FINISHED', 'user-seller-001');
+ 'Sony PlayStation 5 Slim',
+ 'Mới fullbox, 2 tay cầm DualSense, 3 game bản quyền. BH Sony 12T.',
+ 16000000, 17800000,
+ '2026-04-20 08:00:00', '2026-04-27 20:00:00',
+ 'closed', 'u-seller-002', 'u-bidder-002'),  -- u-bidder-002 thắng
 
+('item-007',
+ 'Máy ảnh Sony Alpha A7 IV',
+ 'Full-frame 33MP, 4K/60fps. 200 shutter count, như mới.',
+ 65000000, 68500000,
+ '2026-04-15 09:00:00', '2026-04-22 21:00:00',
+ 'closed', 'u-seller-001', 'u-bidder-001'),  -- u-bidder-001 thắng
 
--- =======================================================
--- BƯỚC 4: THÊM LỊCH SỬ ĐẶT GIÁ MẪU
--- Để màn hình Bidding History có dữ liệu mà test
--- =======================================================
+-- CANCELLED — bị hủy
+('item-008',
+ 'Bose SoundLink Flex (Lô lỗi - đã hủy)',
+ 'Lô hàng phát hiện lỗi kỹ thuật, seller hủy trước khi bắt đầu.',
+ 3500000, NULL,
+ '2026-05-05 08:00:00', '2026-05-12 20:00:00',
+ 'cancelled', 'u-seller-003', 'u-seller-003');
 
-INSERT INTO bids (id, bid_amount, bid_time, bidder_id, item_id) VALUES
+-- =====================================================
+-- 3. BIDS
+-- =====================================================
+INSERT INTO `mydb`.`bids` (id, bid_amount, bid_time, bidder_id, item_id) VALUES
 
--- bidder01 đặt giá cho item-004 (Toyota Camry)
-('bid-001', 960000000, DATE_SUB(NOW(), INTERVAL 20 HOUR), 'user-bidder-001', 'item-004'),
-('bid-002', 975000000, DATE_SUB(NOW(), INTERVAL 10 HOUR), 'user-bidder-001', 'item-004'),
+-- item-001 (iPhone — active)
+('bid-001-01', 25500000, '2026-05-10 09:15:00', 'u-bidder-001', 'item-001'),
+('bid-001-02', 26000000, '2026-05-11 14:30:00', 'u-bidder-002', 'item-001'),
+('bid-001-03', 26500000, '2026-05-12 10:00:00', 'u-bidder-003', 'item-001'),
+('bid-001-04', 27000000, '2026-05-13 16:45:00', 'u-bidder-001', 'item-001'),
+('bid-001-05', 27500000, '2026-05-14 08:20:00', 'u-bidder-004', 'item-001'),
 
--- bidder02 đặt giá cao hơn cho item-004
-('bid-003', 980000000, DATE_SUB(NOW(), INTERVAL 5 HOUR),  'user-bidder-002', 'item-004'),
+-- item-002 (Seiko — active)
+('bid-002-01', 12200000, '2026-05-12 11:00:00', 'u-bidder-002', 'item-002'),
+('bid-002-02', 12800000, '2026-05-13 09:30:00', 'u-bidder-004', 'item-002'),
+('bid-002-03', 13200000, '2026-05-14 17:00:00', 'u-bidder-001', 'item-002'),
 
--- bidder01 đặt giá cho item-005 (Tranh)
-('bid-004', 16000000, DATE_SUB(NOW(), INTERVAL 30 HOUR), 'user-bidder-001', 'item-005'),
-('bid-005', 17500000, DATE_SUB(NOW(), INTERVAL 15 HOUR), 'user-bidder-001', 'item-005'),
+-- item-003 (Dell XPS — active)
+('bid-003-01', 38500000, '2026-05-14 11:00:00', 'u-bidder-003', 'item-003'),
+('bid-003-02', 39000000, '2026-05-14 13:15:00', 'u-bidder-002', 'item-003'),
+('bid-003-03', 39500000, '2026-05-14 15:30:00', 'u-bidder-001', 'item-003'),
+('bid-003-04', 40000000, '2026-05-15 08:00:00', 'u-bidder-004', 'item-003'),
 
--- bidder01 tham gia item-006 (PS5 - đã kết thúc)
-('bid-006', 13000000, DATE_SUB(NOW(), INTERVAL 8 DAY),  'user-bidder-001', 'item-006'),
-('bid-007', 14500000, DATE_SUB(NOW(), INTERVAL 6 DAY),  'user-bidder-001', 'item-006');
+-- item-006 (PS5 — closed, u-bidder-002 thắng)
+('bid-006-01', 16200000, '2026-04-20 10:00:00', 'u-bidder-001', 'item-006'),
+('bid-006-02', 16700000, '2026-04-22 14:20:00', 'u-bidder-003', 'item-006'),
+('bid-006-03', 17000000, '2026-04-24 09:45:00', 'u-bidder-001', 'item-006'),
+('bid-006-04', 17500000, '2026-04-25 11:10:00', 'u-bidder-005', 'item-006'),
+('bid-006-05', 17800000, '2026-04-26 18:30:00', 'u-bidder-002', 'item-006'),
 
+-- item-007 (Sony A7 IV — closed, u-bidder-001 thắng)
+('bid-007-01', 65500000, '2026-04-15 10:30:00', 'u-bidder-004', 'item-007'),
+('bid-007-02', 66000000, '2026-04-16 09:00:00', 'u-bidder-001', 'item-007'),
+('bid-007-03', 67000000, '2026-04-18 14:00:00', 'u-bidder-003', 'item-007'),
+('bid-007-04', 68000000, '2026-04-20 11:30:00', 'u-bidder-004', 'item-007'),
+('bid-007-05', 68500000, '2026-04-21 16:45:00', 'u-bidder-001', 'item-007');
 
--- =======================================================
--- KIỂM TRA KẾT QUẢ
--- Chạy các lệnh này để xác nhận dữ liệu đã được thêm đúng
--- =======================================================
+-- =====================================================
+-- 4. ITEM OWNERSHIP HISTORY
+-- Chỉ ghi các phiên đấu giá closed thành công
+-- =====================================================
+INSERT INTO `mydb`.`item_ownership_history` (id, item_id, seller_id, buyer_id, sold_price, sold_time) VALUES
 
-SELECT '=== USERS ===' AS '';
-SELECT id, name, username, balance, email FROM users;
+-- PS5: u-seller-002 bán cho u-bidder-002
+('hist-001', 'item-006', 'u-seller-002', 'u-bidder-002', 17800000, '2026-04-27 20:00:00'),
 
-SELECT '=== ITEMS ===' AS '';
-SELECT id, name, starting_price, current_highest_price, status, end_time FROM items;
+-- Sony A7 IV: u-seller-001 bán cho u-bidder-001
+('hist-002', 'item-007', 'u-seller-001', 'u-bidder-001', 68500000, '2026-04-22 21:00:00');
 
-SELECT '=== BIDS ===' AS '';
-SELECT b.id, b.bid_amount, b.bid_time, u.username, i.name AS item_name
-FROM bids b
-         JOIN users u ON b.bidder_id = u.id
-         JOIN items i ON b.item_id = i.id
-ORDER BY b.bid_time DESC;
+-- =====================================================
+-- KIỂM TRA DỮ LIỆU
+-- =====================================================
+SELECT 'USERS'             AS `Table`, COUNT(*) AS `Count` FROM `mydb`.`users`
+UNION ALL
+SELECT 'ITEMS',                        COUNT(*)            FROM `mydb`.`items`
+UNION ALL
+SELECT 'BIDS',                         COUNT(*)            FROM `mydb`.`bids`
+UNION ALL
+SELECT 'OWNERSHIP HISTORY',            COUNT(*)            FROM `mydb`.`item_ownership_history`;

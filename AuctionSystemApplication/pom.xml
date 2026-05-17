@@ -61,6 +61,17 @@
 
     <build>
         <plugins>
+            <plugin>
+                <groupId>org.openjfx</groupId>
+                <artifactId>javafx-maven-plugin</artifactId>
+                <configuration>
+                    <mainClass>org.auctionsystem.client.Main</mainClass>
+                    <options>
+                        <option>-Dfile.encoding=UTF-8</option>
+                        <option>-Djavafx.encoding=UTF-8</option>
+                    </options>
+                </configuration>
+            </plugin>
             <!-- Plugin để chạy "mvn javafx:run" như README hướng dẫn -->
             <plugin>
                 <groupId>org.openjfx</groupId>

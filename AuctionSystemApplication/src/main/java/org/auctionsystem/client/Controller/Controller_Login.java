@@ -12,29 +12,28 @@ import org.auctionsystem.client.session.UserSession;
 import java.io.IOException;
 
 public class Controller_Login {
-    @FXML private TextField     log_in_username;
     @FXML private PasswordField log_in_password;
-    @FXML private Label         log_in_username_error;
+    @FXML private TextField     log_in_username;
     @FXML private Label         log_in_password_error;
+    @FXML private Label         log_in_username_error;
 
     @FXML
     private void Log_in_condition(ActionEvent event) {
-        clearErrors();
-
         String username = log_in_username.getText().trim();
         String password = log_in_password.getText();
 
-        // Validate phía client
+        // Bước 1: Validate phía client trước — nhanh, không cần hỏi server
         if (username.isEmpty()) {
             log_in_username_error.setText("Hãy nhập tên người dùng!");
             return;
         }
         if (password.length() < 8) {
+            log_in_username_error.setText("");
             log_in_password_error.setText("Mật khẩu phải có ít nhất 8 ký tự!");
             return;
         }
 
-        // Gửi request lên server
+        // Bước 2: Gửi yêu cầu lên Server để kiểm tra với database thật
         JsonObject request = new JsonObject();
         request.addProperty("action",   "LOGIN");
         request.addProperty("username", username);
@@ -42,57 +41,71 @@ public class Controller_Login {
 
         JsonObject response = ServerConnection.sendRequest(request);
 
+        // Bước 3: Xử lý phản hồi từ Server
         if (response == null) {
+            log_in_username_error.setText("");
             log_in_password_error.setText("Không thể kết nối tới Server!");
             return;
         }
 
         String status = response.get("status").getAsString();
-        if (!"success".equals(status)) {
-            log_in_password_error.setText(response.has("message")
+        if ("success".equals(status)) {
+            log_in_username_error.setText("");
+            log_in_password_error.setText("");
+
+            if (!response.has("role") || !response.has("user_id")) {
+                log_in_password_error.setText("Lỗi hệ thống: Server thiếu thông tin!");
+                return;
+            }
+
+            // [SỬA] Lưu đầy đủ thông tin vào UserSession
+            UserSession.getInstance().setSessionId(response.get("session_id").getAsString());
+            UserSession.getInstance().setUserId(response.get("user_id").getAsString());
+            UserSession.getInstance().setUsername(response.get("username").getAsString());
+            UserSession.getInstance().setRole(response.get("role").getAsString());
+            UserSession.getInstance().setBalance(response.get("balance").getAsDouble());
+            // name và email không thể null — bắt buộc khi đăng ký và đã validate cả 2 phía
+            UserSession.getInstance().setName(response.get("name").getAsString());
+            UserSession.getInstance().setEmail(response.get("email").getAsString());
+            // [MỚI] Lưu phone — nullable
+            UserSession.getInstance().setPhone(
+                    response.has("phone") && !response.get("phone").isJsonNull()
+                            ? response.get("phone").getAsString() : null
+            );
+            // [MỚI] Lưu rating — nullable, chỉ có giá trị khi role = SELLER
+            UserSession.getInstance().setRating(
+                    response.has("rating") && !response.get("rating").isJsonNull()
+                            ? response.get("rating").getAsDouble() : null
+            );
+
+            // [MỚI] Reset ping timer và bắt đầu kiểm tra session định kỳ
+            Scene_Utils.resetLastPingTime();
+            Scene_Utils.startSessionChecker();
+
+            String role = response.get("role").getAsString();
+            String fxml_path;
+            if ("SELLER".equalsIgnoreCase(role)) {
+                fxml_path = "/org/auctionsystem/client/View/Seller_Dashboard.fxml";
+            } else if ("BIDDER".equalsIgnoreCase(role)) {
+                fxml_path = "/org/auctionsystem/client/View/Bidder_Dashboard.fxml";
+            } else {
+                log_in_password_error.setText("Lỗi: Vai trò '" + role + "' không hợp lệ!");
+                return;
+            }
+
+            try {
+                Scene_Utils.Change_Scene(event, fxml_path);
+            } catch (IOException e) {
+                log_in_password_error.setText("Lỗi: Không tìm thấy file giao diện!");
+                throw new RuntimeException(e);
+            }
+
+        } else {
+            String message = response.has("message")
                     ? response.get("message").getAsString()
-                    : "Đăng nhập thất bại!");
-            return;
-        }
-
-        if (!response.has("role") || !response.has("user_id")) {
-            log_in_password_error.setText("Lỗi hệ thống: Server thiếu thông tin!");
-            return;
-        }
-
-        // Lưu session
-        String sessionId = response.get("session_id").getAsString();
-        String sessionUsername  = response.get("username").getAsString();
-        String role      = response.get("role").getAsString();
-        String userId    = response.get("user_id").getAsString();
-        double balance   = response.get("balance").getAsDouble();
-
-        UserSession.getInstance().setSessionId(sessionId);
-        UserSession.getInstance().setUsername(sessionUsername);
-        UserSession.getInstance().setUserId(userId);
-        UserSession.getInstance().setRole(role);
-        UserSession.getInstance().setBalance(balance);
-
-        Scene_Utils.resetLastPingTime();
-        Scene_Utils.startSessionChecker();
-
-        // Điều hướng theo role
-        String fxmlPath = switch (role.toLowerCase()) {
-            case "seller" -> "/org/auctionsystem/client/View/Seller_Dashboard.fxml";
-            case "bidder" -> "/org/auctionsystem/client/View/Bidder_Dashboard.fxml";
-            case "admin"  -> "/org/auctionsystem/client/View/Admin_Dashboard.fxml";
-            default -> null;
-        };
-
-        if (fxmlPath == null) {
-            log_in_password_error.setText("Lỗi: Vai trò '" + role + "' không hợp lệ!");
-            return;
-        }
-
-        try {
-            Scene_Utils.Change_Scene(event, fxmlPath);
-        } catch (IOException e) {
-            log_in_password_error.setText("Lỗi: Không tìm thấy file giao diện!");
+                    : "Đăng nhập thất bại!";
+            log_in_password_error.setText(message);
+            log_in_username_error.setText("");
         }
     }
 
@@ -103,10 +116,5 @@ public class Controller_Login {
         } catch (IOException e) {
             e.printStackTrace();
         }
-    }
-
-    private void clearErrors() {
-        log_in_username_error.setText("");
-        log_in_password_error.setText("");
     }
 }

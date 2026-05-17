@@ -27,10 +27,15 @@ import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
 public class Scene_Utils {
-    private static long lastPingTime=0;
-    private static ScheduledExecutorService checkPingScheduler;
+
+    // [SỬA] Thêm primaryStage để dùng trong startSessionChecker mà không cần truyền tham số
     private static Stage primaryStage;
 
+    // [SỬA] Thêm lastPingTime và checkPingScheduler cho cơ chế ping + session checker
+    private static long lastPingTime = 0;
+    private static ScheduledExecutorService checkPingScheduler;
+
+    // [MỚI] Gọi 1 lần duy nhất trong Main.java khi khởi động app
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
     }
@@ -50,8 +55,8 @@ public class Scene_Utils {
 
         Scene scene = new Scene(root);
 
+        // [SỬA] Gắn event listener cho mọi scene mới để track hoạt động
         attachActivityListener(scene);
-
         Apply_Default_CSS_Style(scene);
 
         stage.setScene(scene);
@@ -61,7 +66,7 @@ public class Scene_Utils {
     @FXML
     public static void set_up_search_logic(TextField search_bar, ListView<String> item_list, ObservableList<String> data) {
         FilteredList<String> filtered_data = new FilteredList<>(data, p -> true);
-        search_bar.textProperty().addListener((observable,old_value,new_value) -> {
+        search_bar.textProperty().addListener((observable, old_value, new_value) -> {
             filtered_data.setPredicate(item -> {
                 if (new_value == null || new_value.isBlank()) {
                     return true;
@@ -78,10 +83,9 @@ public class Scene_Utils {
         });
         item_list.setItems(filtered_data);
     }
+
     public static void Apply_Default_CSS_Style(Scene scene) {
-        if (scene == null) {
-            return;
-        }
+        if (scene == null) return;
         String default_css_path = "/org/auctionsystem/CSS/style.css";
         java.net.URL css_resource = Scene_Utils.class.getResource(default_css_path);
         if (css_resource != null) {
@@ -94,29 +98,34 @@ public class Scene_Utils {
         }
     }
 
+    // [MỚI] Gắn event listener vào scene để track mọi hoạt động chuột/bàn phím
     private static void attachActivityListener(Scene scene) {
-        scene.addEventFilter(MouseEvent.MOUSE_MOVED, e -> ping());
+        scene.addEventFilter(MouseEvent.MOUSE_MOVED,   e -> ping());
         scene.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> ping());
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> ping());
+        scene.addEventFilter(KeyEvent.KEY_PRESSED,     e -> ping());
     }
 
+    // [MỚI] Gửi PING lên server mỗi 1 phút khi có hoạt động — giữ session sống
     private static void ping() {
+        if (UserSession.getInstance().getSessionId() == null) return;
         long now = System.currentTimeMillis();
         if (now - lastPingTime > 60 * 1000) {
             lastPingTime = now;
             JsonObject request = new JsonObject();
-            request.addProperty("action",     "PING");
-            request.addProperty("session_id", UserSession.getInstance().getSessionId());
-            ServerConnection.sendRequest(request);
+            request.addProperty("action", "PING");
+            ServerConnection.sendAuthRequest(request);
         }
     }
 
+    // [MỚI] Reset lastPingTime — gọi ngay sau khi login thành công
     public static void resetLastPingTime() {
         lastPingTime = System.currentTimeMillis();
     }
 
+    // [MỚI] Bắt đầu kiểm tra session định kỳ — gọi 1 lần sau khi login thành công
+    // Không cần truyền Stage vì dùng primaryStage đã được lưu sẵn
     public static void startSessionChecker() {
-        stopSessionChecker();
+        stopSessionChecker(); // dừng scheduler cũ nếu có
 
         checkPingScheduler = Executors.newSingleThreadScheduledExecutor();
         checkPingScheduler.scheduleAtFixedRate(() -> {
@@ -126,27 +135,26 @@ public class Scene_Utils {
 
             JsonObject request = new JsonObject();
             request.addProperty("action", "CHECK_PING");
-            request.addProperty("session_id", UserSession.getInstance().getSessionId());
-
-            JsonObject response = ServerConnection.sendRequest(request);
+            JsonObject response = ServerConnection.sendAuthRequest(request);
 
             if (response != null) {
                 String status = response.get("status").getAsString();
 
+                // "expired" = session hết hạn, "error" = không có session_id
                 if ("expired".equals(status) || "error".equals(status)) {
                     Platform.runLater(() -> {
-                        // Hiện popup thông báo
+                        // Hiện popup thông báo trước khi chuyển màn hình
                         Alert alert = new Alert(Alert.AlertType.WARNING);
                         alert.setTitle("Phiên đăng nhập hết hạn");
                         alert.setHeaderText(null);
                         alert.setContentText("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
                         alert.showAndWait();
 
-                        // Clear session
+                        // Clear session và dừng checker
                         UserSession.getInstance().clear();
                         stopSessionChecker();
 
-                        // Chuyển về login
+                        // Chuyển về màn hình login
                         try {
                             Parent root = FXMLLoader.load(
                                     Scene_Utils.class.getResource(
@@ -165,9 +173,10 @@ public class Scene_Utils {
                 }
             }
 
-        }, 2, 2, TimeUnit.MINUTES);
+        }, 2, 2, TimeUnit.MINUTES); // kiểm tra mỗi 2 phút
     }
 
+    // [MỚI] Dừng session checker — gọi khi logout chủ động
     public static void stopSessionChecker() {
         if (checkPingScheduler != null && !checkPingScheduler.isShutdown()) {
             checkPingScheduler.shutdown();

@@ -15,7 +15,7 @@ public class UserDAO {
 
     // ─── ĐĂNG KÝ ──────────────────────────────────────────────────────────────
 
-    public boolean registerUser(String name, String username, String hashedPassword, String email, String role) {
+    public boolean registerUser(String name, String username, String hashedPassword, String email, String phone, String role) {
         if (isUsernameExist(username)) {
             System.err.println("Lỗi: Tên đăng nhập đã tồn tại.");
             return false;
@@ -26,7 +26,13 @@ public class UserDAO {
             return false;
         }
 
-        String sql = "INSERT INTO users (id, name, username, password, email, role, balance, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?)";
+        // [MỚI] Kiểm tra số điện thoại — chỉ kiểm tra khi người dùng có nhập
+        if (isPhoneExist(phone)) {
+            System.err.println("Lỗi: Số điện thoại đã tồn tại.");
+            return false;
+        }
+
+        String sql = "INSERT INTO users (id, name, username, password, email, phone, role, balance, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
@@ -36,9 +42,10 @@ public class UserDAO {
             ps.setString(3, username);
             ps.setString(4, hashedPassword);
             ps.setString(5, email);
-            ps.setString(6, role.toLowerCase()); // Khớp với ENUM trong MySQL
-            ps.setDouble(7, 0.0);                 // Balance mặc định
-            ps.setBoolean(8, true);               // is_active mặc định
+            ps.setString(6, phone);              // phone — nullable
+            ps.setString(7, role.toLowerCase()); // Khớp với ENUM trong MySQL
+            ps.setDouble(8, 0.0);                // Balance mặc định
+            ps.setBoolean(9, true);              // is_active mặc định
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu chèn thành công ít nhất 1 dòng
@@ -52,7 +59,7 @@ public class UserDAO {
     // ─── ĐĂNG NHẬP ────────────────────────────────────────────────────────────
 
     public User loginUser(String username, String password) {
-        String sql = "SELECT id, name, username, password, balance, email, role, rating "
+        String sql = "SELECT id, name, username, password, balance, email, phone, role, rating "
                 + "FROM users WHERE username = ? AND is_active = 1";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
@@ -74,6 +81,7 @@ public class UserDAO {
                                 rs.getString("password"),
                                 rs.getDouble("balance"),
                                 rs.getString("email"),
+                                rs.getString("phone"),
                                 UserRole.SELLER,
                                 (Double) rs.getObject("rating")
                         );
@@ -85,6 +93,7 @@ public class UserDAO {
                                 rs.getString("password"),
                                 rs.getDouble("balance"),
                                 rs.getString("email"),
+                                rs.getString("phone"),
                                 UserRole.ADMIN
                         );
                     } else if (roleDb.equalsIgnoreCase("bidder")) {
@@ -95,6 +104,7 @@ public class UserDAO {
                                 rs.getString("password"),
                                 rs.getDouble("balance"),
                                 rs.getString("email"),
+                                rs.getString("phone"),
                                 UserRole.BIDDER
                         );
                     }
@@ -140,8 +150,24 @@ public class UserDAO {
         return false;
     }
 
+    // [MỚI] Kiểm tra số điện thoại đã tồn tại chưa — private vì chỉ dùng nội bộ trong registerUser
+    // Chỉ kiểm tra khi phone != null, tránh trường hợp nhiều user không nhập phone đều bị từ chối
+    public boolean isPhoneExist(String phone) {
+        if (phone == null || phone.isBlank()) return false;
+        String sql = "SELECT COUNT(*) FROM users WHERE phone = ?";
+        try (Connection conn = DatabaseConnection.getInstance().getConnection();
+             PreparedStatement stmt = conn.prepareStatement(sql)) {
+            stmt.setString(1, phone);
+            ResultSet rs = stmt.executeQuery();
+            if (rs.next()) return rs.getInt(1) > 0;
+        } catch (SQLException e) {
+            System.err.println("Lỗi kiểm tra phone: " + e.getMessage());
+        }
+        return false;
+    }
+
     public User getUserById(String id) {
-        String sql = "SELECT id, name, username, password, balance, email, role, rating FROM users WHERE id = ?";
+        String sql = "SELECT id, name, username, password, balance, email, phone, role, rating FROM users WHERE id = ?";
         try(Connection conn = DatabaseConnection.getInstance().getConnection();
             PreparedStatement stmt = conn.prepareStatement(sql)){
 
@@ -157,8 +183,9 @@ public class UserDAO {
                             rs.getString("password"),
                             rs.getDouble("balance"),
                             rs.getString("email"),
+                            rs.getString("phone"),
                             UserRole.SELLER,
-                            (Double) rs.getObject("rating")  // ← giữ nguyên NULL nếu chưa có rating
+                            (Double) rs.getObject("rating")
                     );
 
                 } else if (roleDb.equalsIgnoreCase("admin")) {
@@ -169,6 +196,7 @@ public class UserDAO {
                             rs.getString("password"),
                             rs.getDouble("balance"),
                             rs.getString("email"),
+                            rs.getString("phone"),
                             UserRole.ADMIN
                     );
 
@@ -180,6 +208,7 @@ public class UserDAO {
                             rs.getString("password"),
                             rs.getDouble("balance"),
                             rs.getString("email"),
+                            rs.getString("phone"),
                             UserRole.BIDDER
                     );
                 }

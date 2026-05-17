@@ -10,8 +10,8 @@ public class Seller extends User {
         super();
     }
 
-    public Seller(String id, String name, String username, String password, double balance, String email, UserRole role, double rating) {
-        super(id, name, username, password, balance, email, role);
+    public Seller(String id, String name, String username, String password, double balance, String email, String phone, UserRole role, double rating) {
+        super(id, name, username, password, balance, email, phone, role);
         this.rating = rating;
     }
 

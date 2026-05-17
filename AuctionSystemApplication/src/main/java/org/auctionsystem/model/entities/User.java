@@ -11,16 +11,18 @@ public class User {
     private double balance;
     private boolean isActive;
     private String email;
+    private String phone;
     private UserRole role;
 
     public User() {}
 
-    public User(String id, String name, String username, String password, double balance, String email, UserRole role) {
+    public User(String id, String name, String username, String password, double balance, String email, String phone, UserRole role) {
         this.id       = id;
         this.name     = name;
         this.username = username;
         this.password = password;
         this.email    = email;
+        this.phone    = phone;
         this.role     = role;
         this.balance  = balance;
         this.isActive = true;
@@ -36,6 +38,7 @@ public class User {
     public double getBalance()  { return balance; }
     public boolean isActive()   { return isActive; }
     public String getEmail()    { return email; }
+    public String getPhone()    { return phone; }
     public UserRole getRole()   { return role; }
 
     // =========================================
@@ -48,5 +51,6 @@ public class User {
     public void setBalance(double balance)       { this.balance = balance; }
     public void setActive(boolean isActive)      { this.isActive = isActive; }
     public void setEmail(String email)           { this.email = email; }
+    public void setPhone(String phone)           { this.phone = phone; }
     public void setRole(UserRole role)           { this.role = role; }
 }

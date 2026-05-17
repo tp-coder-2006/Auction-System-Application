@@ -1,0 +1,39 @@
+/* Trang trí thanh Menu chính */
+.menu-bar {
+    -fx-background-color: rgba(255, 255, 255, 0.8); /* Màu trắng trong suốt để hợp với hình nền */
+    -fx-background-radius: 5;
+    -fx-padding: 5 10 5 10;
+    -fx-border-color: #dcdcdc;
+    -fx-border-width: 0 0 1 0; /* Chỉ kẻ dòng dưới cùng */
+}
+
+/* Trang trí các nhãn Menu (Trang chủ, Sản phẩm...) */
+.menu-bar .label {
+    -fx-text-fill: #5a5a5a;
+    -fx-font-family: "Segoe UI";
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+
+/* Hiệu ứng khi di chuột vào Menu */
+.menu:hover, .menu:showing {
+    -fx-background-color: #e2d1c3; /* Màu kem đậm hơn một chút */
+    -fx-background-radius: 5;
+}
+
+/* Trang trí các mục con bên trong (MenuItem) */
+.context-menu {
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.1), 10, 0, 0, 5);
+}
+
+.menu-item:focused {
+    -fx-background-color: #f4ece6; /* Màu highlight khi chọn item */
+}
+
+.menu-item .label {
+    -fx-text-fill: #333333;
+    -fx-font-weight: normal;
+}

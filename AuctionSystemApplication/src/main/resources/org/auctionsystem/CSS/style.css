@@ -1,8 +1,27 @@
+.root {
+    -fx-background-image: url("/org/auctionsystem/Icon/background.jpg");
+    -fx-background-size: cover;
+    -fx-background-position: center;
+    -fx-font-family: "Segoe UI";
+}
 .button {
     -fx-background-color: #029ef2;
     -fx-text-fill: white;
     -fx-border-color: transparent;
+    -fx-cursor: hand;
+    -fx-background-radius: 5px;
 }
 .button:hover {
     -fx-background-color: #2ea7e8;
+}
+.text-field {
+    -fx-background-radius: 5px;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 5px;
+}
+.menu-bar .menu {
+    -fx-padding: 0 30px 0 30px;
+}
+.menu-bar .container {
+    -fx-alignment: center;
 }

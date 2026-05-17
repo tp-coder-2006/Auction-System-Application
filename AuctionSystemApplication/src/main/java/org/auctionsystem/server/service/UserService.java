@@ -78,6 +78,11 @@ public class UserService {
             String password = request.get("password").getAsString();
             String name = request.get("name").getAsString();
             String email = request.has("email") ? request.get("email").getAsString() : "";
+            // [SỬA] Phải kiểm tra cả isJsonNull vì client có thể gửi "phone": null
+            // request.has("phone") chỉ kiểm tra field có tồn tại không — không kiểm tra giá trị
+            // Nếu chỉ dùng has() mà không kiểm tra null → getAsString() trên JsonNull → exception
+            String phone = request.has("phone") && !request.get("phone").isJsonNull()
+                    ? request.get("phone").getAsString() : null;
             String roleString = request.get("role").getAsString().toUpperCase();
 
             if (!this.isEmailValid(email)) {
@@ -96,14 +101,32 @@ public class UserService {
 
             String hashedPassword = UserService.hashPassword(password);
 
-            boolean isSaved = userDAO.registerUser(name,username,hashedPassword,email,roleString);
+            // Kiểm tra trùng lặp trước khi gửi vào DAO — để trả message cụ thể cho client
+            if (userDAO.isUsernameExist(username)) {
+                response.addProperty("status", "error");
+                response.addProperty("message", "Tên đăng nhập đã tồn tại!");
+                return response;
+            }
+            if (userDAO.isEmailExist(email)) {
+                response.addProperty("status", "error");
+                response.addProperty("message", "Email đã được đăng ký!");
+                return response;
+            }
+            // [MỚI] Kiểm tra số điện thoại trùng — chỉ khi có nhập
+            if (phone != null && !phone.isBlank() && userDAO.isPhoneExist(phone)) {
+                response.addProperty("status", "error");
+                response.addProperty("message", "Số điện thoại đã được đăng ký!");
+                return response;
+            }
+
+            boolean isSaved = userDAO.registerUser(name, username, hashedPassword, email, phone, roleString);
 
             if (isSaved) {
                 response.addProperty("status", "success");
                 response.addProperty("message", "Đăng ký tài khoản thành công!");
             } else {
                 response.addProperty("status", "error");
-                response.addProperty("message", "Username hoặc Email đã tồn tại trong hệ thống!");
+                response.addProperty("message", "Đăng ký thất bại! Vui lòng thử lại.");
             }
 
         } catch (IllegalArgumentException e) {
@@ -140,16 +163,39 @@ public class UserService {
 
                 String sessionId= UUID.randomUUID().toString();
 
+                // Lấy phone và rating — casting sang Seller nếu role là SELLER
+                String phone = loggedInUser.getPhone();
+                Double rating = null;
+                if (loggedInUser instanceof org.auctionsystem.model.entities.Seller) {
+                    rating = ((org.auctionsystem.model.entities.Seller) loggedInUser).getRating();
+                }
+
                 response.addProperty("status", "success");
                 response.addProperty("message", "Đăng nhập thành công!");
                 response.addProperty("session_id", sessionId);
                 response.addProperty("user_id", loggedInUser.getId());
+                response.addProperty("name", loggedInUser.getName());
                 response.addProperty("username", loggedInUser.getUsername());
+                response.addProperty("email", loggedInUser.getEmail());
                 response.addProperty("role", loggedInUser.getRole().name());
                 response.addProperty("balance", loggedInUser.getBalance());
+                // [MỚI] Thêm phone và rating vào response để client lưu vào UserSession
+                if (phone != null) response.addProperty("phone", phone);
+                else response.addProperty("phone", (String) null);
+                if (rating != null) response.addProperty("rating", rating);
+                else response.addProperty("rating", (String) null);
 
-                UserSession userSession=new UserSession(sessionId, loggedInUser.getId(), loggedInUser.getUsername(),
-                        loggedInUser.getRole().name(), loggedInUser.getBalance());
+                UserSession userSession = new UserSession(
+                        sessionId,
+                        loggedInUser.getId(),
+                        loggedInUser.getName(),    // [MỚI]
+                        loggedInUser.getUsername(),
+                        loggedInUser.getEmail(),   // [MỚI]
+                        loggedInUser.getRole().name(),
+                        loggedInUser.getBalance(),
+                        phone,
+                        rating
+                );
 
                 SessionManager.addSession(userSession);
 
@@ -174,20 +220,32 @@ public class UserService {
 
         try {
             String id = request.get("user_id").getAsString();
-            User user= userDAO.getUserById(id);
-            if(user==null) {
+            User user = userDAO.getUserById(id);
+            if (user == null) {
                 response.addProperty("status", "error");
-                response.addProperty("message","Không tìm thấy thông tin người dùng!");
-            }else{
+                response.addProperty("message", "Không tìm thấy thông tin người dùng!");
+            } else {
+                if (request.has("session_id") && !request.get("session_id").isJsonNull()) {
+                    UserSession session = SessionManager.getSession(
+                            request.get("session_id").getAsString());
+                    if (session != null) {
+                        session.setBalance(user.getBalance());
+                        session.setPhone(user.getPhone());
+                        if (user instanceof org.auctionsystem.model.entities.Seller) {
+                            session.setRating(((org.auctionsystem.model.entities.Seller) user).getRating());
+                        }
+                    }
+                }
+
                 JsonObject userJson = gson.toJsonTree(user).getAsJsonObject();
                 userJson.remove("password");
                 response.addProperty("status", "success");
-                response.addProperty("message","Lấy thông tin thành công!");
+                response.addProperty("message", "Lấy thông tin thành công!");
                 response.add("information", userJson);
             }
-        }catch (Exception e) {
+        } catch (Exception e) {
             response.addProperty("status", "error");
-            response.addProperty("message","Lỗi hệ thống: "+e.getMessage());
+            response.addProperty("message", "Lỗi hệ thống: " + e.getMessage());
         }
         return response;
     }
@@ -253,7 +311,6 @@ public class UserService {
         return response;
     }
 
-    //TODO
     public JsonObject updatePassword(JsonObject request) {
         JsonObject response = new JsonObject();
         UserDAO userDAO = new UserDAO();
@@ -296,4 +353,6 @@ public class UserService {
         }
         return response;
     }
+
+    //Thiếu logic cập nhật profile và đánh giá seller
 }

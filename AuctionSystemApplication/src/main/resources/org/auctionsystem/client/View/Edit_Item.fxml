@@ -1,0 +1,156 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.ComboBox?>
+<?import javafx.scene.control.DatePicker?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+
+<HBox xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Edit_Item">
+   <children>
+      <Region prefHeight="386.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+      <VBox prefHeight="385.0" prefWidth="600.0">
+         <children>
+            <HBox prefHeight="386.0" prefWidth="554.0">
+               <children>
+                  <Region maxWidth="1.7976931348623157E308" prefWidth="5.0" HBox.hgrow="ALWAYS" />
+                  <VBox maxHeight="1.7976931348623157E308" prefHeight="378.0" prefWidth="290.0">
+                     <children>
+                        <Label text="Tên sản phẩm">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="5.0" top="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextField maxWidth="-Infinity">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <Label layoutX="10.0" layoutY="10.0" text="Mô tả">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextField layoutX="10.0" layoutY="28.0" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="69.0" prefWidth="227.0">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <Label layoutX="10.0" layoutY="28.0" text="Giá khởi điểm">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <TextField layoutX="10.0" layoutY="71.0" maxWidth="-Infinity" promptText="đơn vị tiền: đồng">
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </TextField>
+                        <Label layoutX="10.0" layoutY="28.0" text="Thời gian bắt đầu">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <HBox prefHeight="27.0" prefWidth="234.0">
+                           <children>
+                              <DatePicker prefHeight="26.0" prefWidth="220.0" />
+                              <ComboBox prefWidth="150.0" promptText="Giờ" />
+                              <ComboBox prefWidth="150.0" promptText="Phút" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <Label layoutX="10.0" layoutY="28.0" text="Thời gian kết thúc">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets left="5.0" top="5.0" />
+                           </VBox.margin>
+                        </Label>
+                        <HBox prefHeight="0.0" prefWidth="266.0">
+                           <children>
+                              <DatePicker prefWidth="220.0" />
+                              <ComboBox prefWidth="150.0" promptText="Giờ" />
+                              <ComboBox prefWidth="150.0" promptText="Phút" />
+                           </children>
+                           <VBox.margin>
+                              <Insets left="5.0" />
+                           </VBox.margin>
+                        </HBox>
+                     </children>
+                     <HBox.margin>
+                        <Insets bottom="10.0" top="10.0" />
+                     </HBox.margin>
+                  </VBox>
+                  <VBox alignment="CENTER" maxHeight="1.7976931348623157E308" prefHeight="378.0" prefWidth="290.0" HBox.hgrow="ALWAYS">
+                     <children>
+                        <Label text="Ảnh sản phẩm">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Label>
+                        <ImageView fitHeight="161.0" fitWidth="210.0" pickOnBounds="true" preserveRatio="true" />
+                        <Region prefHeight="116.0" prefWidth="228.0" />
+                        <HBox alignment="CENTER" maxWidth="1.7976931348623157E308" prefHeight="30.0" prefWidth="384.0">
+                           <children>
+                              <Region prefHeight="30.0" prefWidth="46.0" />
+                              <Button mnemonicParsing="false" text="Lưu thay đổi" wrapText="true">
+                                 <HBox.margin>
+                                    <Insets right="5.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                              <Button layoutX="10.0" layoutY="10.0" mnemonicParsing="false" text="Hủy">
+                                 <HBox.margin>
+                                    <Insets left="5.0" />
+                                 </HBox.margin>
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                              </Button>
+                           </children>
+                           <VBox.margin>
+                              <Insets bottom="10.0" top="10.0" />
+                           </VBox.margin>
+                        </HBox>
+                        <Label maxWidth="1.7976931348623157E308" prefHeight="18.0" textAlignment="JUSTIFY" wrapText="true" VBox.vgrow="ALWAYS">
+                           <VBox.margin>
+                              <Insets bottom="5.0" />
+                           </VBox.margin>
+                        </Label>
+                     </children>
+                  </VBox>
+                  <Region maxWidth="1.7976931348623157E308" prefWidth="5.0" HBox.hgrow="ALWAYS" />
+               </children>
+            </HBox>
+         </children>
+      </VBox>
+      <Region prefHeight="386.0" prefWidth="0.0" HBox.hgrow="ALWAYS" />
+   </children>
+</HBox>

@@ -62,6 +62,8 @@ public class Controller_Login {
                 fxml_path = "/org/auctionsystem/client/View/Seller_Dashboard.fxml";
             } else if ("bidder".equalsIgnoreCase(role)) {
                 fxml_path = "/org/auctionsystem/client/View/Bidder_Dashboard.fxml";
+            } else if ("admin".equalsIgnoreCase(role)) {
+                fxml_path = "/org/auctionsystem/client/View/Admin_Dashboard.fxml";
             } else {
                 //Trường hợp gửi role nhưng giá trị lại không phải bidder hoặc seller
                 log_in_password_error.setText("Lỗi: Vai trò '" + role + "' không hợp lệ!");

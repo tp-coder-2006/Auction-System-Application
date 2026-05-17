@@ -18,7 +18,7 @@
          <children>
             <HBox alignment="CENTER" prefHeight="74.0" prefWidth="600.0">
                <children>
-                  <TextField prefHeight="26.0" prefWidth="351.0" />
+                  <TextField prefHeight="26.0" prefWidth="351.0" promptText="Tìm kiếm sản phẩm" />
                   <Button mnemonicParsing="false" text="🔍" />
                </children>
             </HBox>

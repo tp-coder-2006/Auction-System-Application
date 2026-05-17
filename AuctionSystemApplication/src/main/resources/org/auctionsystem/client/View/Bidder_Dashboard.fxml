@@ -55,7 +55,7 @@
         <menus>
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
-              <MenuItem mnemonicParsing="false" onAction="#Go_to_profile" text="Tài khoản" />
+              <MenuItem mnemonicParsing="false" onAction="#Go_to_bidder_profile" text="Tài khoản" />
                   <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_history" text="Lịch sử mua hàng" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="log_out_button" mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />

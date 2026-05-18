@@ -148,18 +148,10 @@ public class UserService {
         try {
             String username = request.get("username").getAsString();
             String password = request.get("password").getAsString();
-            String expectedRole = request.has("role") ? request.get("role").getAsString() : "";
 
             User loggedInUser = userDAO.loginUser(username, password);
 
             if (loggedInUser != null) {
-                String actualRole = loggedInUser.getRole().toString();
-
-                if (!expectedRole.isEmpty() && !actualRole.equalsIgnoreCase(expectedRole)) {
-                    response.addProperty("status", "error");
-                    response.addProperty("message", "Tài khoản của bạn không có quyền đăng nhập với vai trò này!");
-                    return response;
-                }
 
                 String sessionId= UUID.randomUUID().toString();
 

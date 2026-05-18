@@ -13,7 +13,7 @@ import java.io.IOException;
 
 public class Controller_Bidder_Dashboard {
     private static final String Login_View          = "/org/auctionsystem/client/View/Login_scene.fxml";
-    private static final String Profile_View        = "/org/auctionsystem/client/View/Bidder_Profile.fxml";
+    private static final String Bidder_Profile_View = "/org/auctionsystem/client/View/Bidder_Profile.fxml";
     private static final String Bidding_History_View = "/org/auctionsystem/client/View/Bidding_History.fxml";
     private static final String Searching_Room_View  = "/org/auctionsystem/client/View/Searching_room.fxml";
 
@@ -34,17 +34,16 @@ public class Controller_Bidder_Dashboard {
 
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // [SỬA] Gửi LOGOUT lên server để xóa session khỏi SessionManager ngay lập tức
+                // [MỚI] Gửi LOGOUT lên server — xóa session khỏi SessionManager ngay lập tức
                 // Trước đây chỉ chuyển màn hình, session vẫn còn trên server đến khi tự hết hạn
                 JsonObject request = new JsonObject();
                 request.addProperty("action", "LOGOUT");
                 ServerConnection.sendAuthRequest(request);
 
-                // [SỬA] Dừng session checker — trước đây không có, checker vẫn chạy sau logout
+                // [MỚI] Dừng session checker — trước đây checker vẫn chạy sau logout
                 Scene_Utils.stopSessionChecker();
 
-                // [SỬA] Clear toàn bộ UserSession phía client
-                // Trước đây không clear, dữ liệu cũ còn tồn tại trong singleton
+                // [MỚI] Clear toàn bộ UserSession phía client
                 UserSession.getInstance().clear();
 
                 switch_scene(event, Login_View);
@@ -53,31 +52,25 @@ public class Controller_Bidder_Dashboard {
     }
 
     @FXML
-    public void Go_to_profile(ActionEvent event) {
-        // [SỬA] Gửi GET_PROFILE trước khi chuyển màn hình để cập nhật balance mới nhất
-        // Trước đây chuyển thẳng sang Profile mà không đồng bộ dữ liệu từ server
+    public void Go_to_bidder_profile(ActionEvent event) {
+        // Gửi GET_PROFILE để cập nhật dữ liệu mới nhất vào UserSession trước khi vào Profile
+        // Profile sẽ đọc trực tiếp từ UserSession mà không cần gọi thêm request
         JsonObject request = new JsonObject();
         request.addProperty("action", "GET_PROFILE");
         request.addProperty("user_id", UserSession.getInstance().getUserId());
         JsonObject response = ServerConnection.sendAuthRequest(request);
 
         if (response != null && "success".equals(response.get("status").getAsString())) {
-            // Cập nhật toàn bộ thông tin mới nhất từ server vào client UserSession
-            // để màn hình Profile đọc trực tiếp mà không cần gọi thêm request
             com.google.gson.JsonObject info = response.get("information").getAsJsonObject();
-
             UserSession s = UserSession.getInstance();
-            // name, email, balance không thể null — bắt buộc khi đăng ký
             s.setBalance(info.get("balance").getAsDouble());
-            // phone nullable — không bắt buộc khi đăng ký
             s.setPhone(info.has("phone") && !info.get("phone").isJsonNull()
                     ? info.get("phone").getAsString() : null);
-            // rating nullable — chỉ có ở Seller
             s.setRating(info.has("rating") && !info.get("rating").isJsonNull()
                     ? info.get("rating").getAsDouble() : null);
         }
 
-        switch_scene(event, Profile_View);
+        switch_scene(event, Bidder_Profile_View);
     }
 
     @FXML

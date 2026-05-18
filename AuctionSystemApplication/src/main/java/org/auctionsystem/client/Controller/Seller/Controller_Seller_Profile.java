@@ -1,7 +1,7 @@
 package org.auctionsystem.client.Controller.Seller;
 
-import javafx.fxml.FXML;
 import javafx.event.ActionEvent;
+import javafx.fxml.FXML;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.image.Image;
@@ -36,14 +36,15 @@ public class Controller_Seller_Profile {
         empty_star = new Image(Objects.requireNonNull(
                 getClass().getResourceAsStream("/org/auctionsystem/Icon/empty_star.png")));
 
+        // Đọc trực tiếp từ UserSession — dữ liệu đã được cập nhật
+        // trong Go_to_profile() trước khi chuyển sang màn hình này
+        // Thứ tự khớp FXML: name → username → password → email → phone
         UserSession s = UserSession.getInstance();
-
-        // Thứ tự khớp với FXML: name → username → password → email → phone
-        field_name    .setText(s.getName());                                          // không null
-        field_username.setText(s.getUsername());                                      // không null
-        field_password.setText("");                                                    // không hiển thị mật khẩu
-        field_email   .setText(s.getEmail());                                         // không null
-        field_phone   .setText(s.getPhone() != null ? s.getPhone() : "");            // nullable
+        field_name    .setText(s.getName());
+        field_username.setText(s.getUsername());
+        field_password.setText("");                                         // không hiển thị mật khẩu
+        field_email   .setText(s.getEmail());
+        field_phone   .setText(s.getPhone() != null ? s.getPhone() : ""); // nullable
 
         // rating nullable — 0 sao nếu chưa có đánh giá nào
         setRatingStars(s.getRating() != null ? s.getRating() : 0);

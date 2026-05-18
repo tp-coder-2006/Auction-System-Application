@@ -229,6 +229,8 @@ public class UserService {
                     UserSession session = SessionManager.getSession(
                             request.get("session_id").getAsString());
                     if (session != null) {
+                        // Chỉ đồng bộ những field có thể thay đổi trong phiên
+                        // name và email không thay đổi cho đến khi có updateProfile()
                         session.setBalance(user.getBalance());
                         session.setPhone(user.getPhone());
                         if (user instanceof org.auctionsystem.model.entities.Seller) {

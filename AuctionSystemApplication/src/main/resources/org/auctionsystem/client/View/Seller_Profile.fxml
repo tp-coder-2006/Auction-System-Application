@@ -65,7 +65,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="field_phone" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false">
+                  <TextField fx:id="field_phone" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false" promptText="Không bắt buộc">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>

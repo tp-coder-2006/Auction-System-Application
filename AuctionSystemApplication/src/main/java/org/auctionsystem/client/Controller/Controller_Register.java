@@ -13,35 +13,30 @@ import org.auctionsystem.client.Connectivity.ServerConnection;
 import java.io.IOException;
 
 public class Controller_Register {
-    @FXML private RadioButton register_as_bidder;
-    @FXML private RadioButton register_as_seller;
-    @FXML private TextField register_name;
-    @FXML private TextField register_username;
-    @FXML private TextField register_email;
-    @FXML private TextField register_phone;      // [MỚI] nullable
+    @FXML private RadioButton   register_as_bidder;
+    @FXML private RadioButton   register_as_seller;
+    @FXML private TextField     register_name;
+    @FXML private TextField     register_username;
+    @FXML private TextField     register_email;
+    @FXML private TextField     register_phone;       // [MỚI] nullable
     @FXML private PasswordField register_password;
-    @FXML private Label register_error_announcement;
+    @FXML private Label         register_error_announcement;
 
     @FXML
     public void Registering(ActionEvent event) throws IOException {
         String name     = register_name.getText().trim();
         String username = register_username.getText().trim();
         String email    = register_email.getText().trim();
-        String phone    = register_phone.getText().trim();  // [MỚI] để trống = null khi gửi
+        String phone    = register_phone.getText().trim(); // [MỚI]
         String password = register_password.getText();
-        // Kiểm tra vai trò
+
         if (!register_as_bidder.isSelected() && !register_as_seller.isSelected()) {
             register_error_announcement.setText("Vui lòng chọn vai trò (Bidder hoặc Seller)");
             return;
         }
-        String role;
-        if (register_as_bidder.isSelected()) {
-            role = "bidder";
-        } else {
-            role = "seller";
-        }
+        String role = register_as_bidder.isSelected() ? "bidder" : "seller";
 
-        // Bước 1: Validate phía client
+        // Validate phía client
         if (name.isEmpty() || username.isEmpty() || email.isEmpty()) {
             register_error_announcement.setText("Vui lòng điền đầy đủ thông tin!");
             return;
@@ -55,7 +50,6 @@ public class Controller_Register {
             return;
         }
 
-        // Bước 2: Gửi yêu cầu đăng ký lên Server
         JsonObject request = new JsonObject();
         request.addProperty("action",   "REGISTER");
         request.addProperty("username", username);
@@ -65,11 +59,10 @@ public class Controller_Register {
         request.addProperty("role",     role);
         // [MỚI] phone không bắt buộc — gửi null nếu để trống
         if (!phone.isEmpty()) request.addProperty("phone", phone);
-        else request.addProperty("phone", (String) null);
+        else                  request.addProperty("phone", (String) null);
 
         JsonObject response = ServerConnection.sendRequest(request);
 
-        // Bước 3: Xử lý phản hồi
         if (response == null) {
             register_error_announcement.setText("Không thể kết nối tới Server!");
             return;
@@ -77,15 +70,14 @@ public class Controller_Register {
 
         String status = response.get("status").getAsString();
         if ("success".equals(status)) {
-            // [MỚI] Hiện pop-up thông báo thành công trước khi chuyển về Login
+            // [MỚI] Hiện pop-up thành công trước khi về Login
             Alert alert = new Alert(Alert.AlertType.INFORMATION);
             alert.setTitle("Đăng ký thành công");
             alert.setHeaderText(null);
             alert.setContentText("Tài khoản đã được tạo thành công! Vui lòng đăng nhập.");
             alert.showAndWait();
 
-            Scene_Utils.Change_Scene(
-                    event, "/org/auctionsystem/client/View/Login_scene.fxml");
+            Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Login_scene.fxml");
         } else {
             String message = response.has("message")
                     ? response.get("message").getAsString()
@@ -93,6 +85,7 @@ public class Controller_Register {
             register_error_announcement.setText(message);
         }
     }
+
     @FXML
     public void Switching_to_login_scene(ActionEvent event) {
         try {

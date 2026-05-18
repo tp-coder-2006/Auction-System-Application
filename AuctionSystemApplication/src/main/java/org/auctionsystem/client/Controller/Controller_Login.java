@@ -22,7 +22,7 @@ public class Controller_Login {
         String username = log_in_username.getText().trim();
         String password = log_in_password.getText();
 
-        // Bước 1: Validate phía client trước — nhanh, không cần hỏi server
+        // Bước 1: Validate phía client trước
         if (username.isEmpty()) {
             log_in_username_error.setText("Hãy nhập tên người dùng!");
             return;
@@ -33,7 +33,7 @@ public class Controller_Login {
             return;
         }
 
-        // Bước 2: Gửi yêu cầu lên Server để kiểm tra với database thật
+        // Bước 2: Gửi yêu cầu lên Server
         JsonObject request = new JsonObject();
         request.addProperty("action",   "LOGIN");
         request.addProperty("username", username);
@@ -53,26 +53,25 @@ public class Controller_Login {
             log_in_username_error.setText("");
             log_in_password_error.setText("");
 
-            if (!response.has("role") || !response.has("user_id")) {
-                log_in_password_error.setText("Lỗi hệ thống: Server thiếu thông tin!");
+            if (!response.has("role")) {
+                log_in_password_error.setText("Lỗi hệ thống: Server không trả về vai trò người dùng!");
                 return;
             }
 
-            // [SỬA] Lưu đầy đủ thông tin vào UserSession
+            // [MỚI] Lưu đầy đủ thông tin vào UserSession — trước đây thiếu nhiều field
             UserSession.getInstance().setSessionId(response.get("session_id").getAsString());
             UserSession.getInstance().setUserId(response.get("user_id").getAsString());
+            UserSession.getInstance().setName(response.get("name").getAsString());
             UserSession.getInstance().setUsername(response.get("username").getAsString());
+            UserSession.getInstance().setEmail(response.get("email").getAsString());
             UserSession.getInstance().setRole(response.get("role").getAsString());
             UserSession.getInstance().setBalance(response.get("balance").getAsDouble());
-            // name và email không thể null — bắt buộc khi đăng ký và đã validate cả 2 phía
-            UserSession.getInstance().setName(response.get("name").getAsString());
-            UserSession.getInstance().setEmail(response.get("email").getAsString());
-            // [MỚI] Lưu phone — nullable
+            // phone — nullable
             UserSession.getInstance().setPhone(
                     response.has("phone") && !response.get("phone").isJsonNull()
                             ? response.get("phone").getAsString() : null
             );
-            // [MỚI] Lưu rating — nullable, chỉ có giá trị khi role = SELLER
+            // rating — nullable, chỉ có giá trị khi role = SELLER
             UserSession.getInstance().setRating(
                     response.has("rating") && !response.get("rating").isJsonNull()
                             ? response.get("rating").getAsDouble() : null
@@ -84,10 +83,12 @@ public class Controller_Login {
 
             String role = response.get("role").getAsString();
             String fxml_path;
-            if ("SELLER".equalsIgnoreCase(role)) {
+            if ("seller".equalsIgnoreCase(role)) {
                 fxml_path = "/org/auctionsystem/client/View/Seller_Dashboard.fxml";
-            } else if ("BIDDER".equalsIgnoreCase(role)) {
+            } else if ("bidder".equalsIgnoreCase(role)) {
                 fxml_path = "/org/auctionsystem/client/View/Bidder_Dashboard.fxml";
+            } else if ("admin".equalsIgnoreCase(role)) {
+                fxml_path = "/org/auctionsystem/client/View/Admin_Dashboard.fxml";
             } else {
                 log_in_password_error.setText("Lỗi: Vai trò '" + role + "' không hợp lệ!");
                 return;

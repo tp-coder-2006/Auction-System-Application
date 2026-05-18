@@ -10,7 +10,6 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-
 <VBox spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_My_Items">
    <children>
       <Label text="SẢN PHẨM CỦA TÔI">
@@ -18,7 +17,7 @@
             <Font name="Times New Roman Bold" size="24.0" />
          </font>
       </Label>
-      <TableView maxHeight="1.7976931348623157E308" prefHeight="409.0" prefWidth="602.0">
+      <TableView maxHeight="1.7976931348623157E308" prefHeight="409.0" prefWidth="602.0" VBox.vgrow="ALWAYS">
          <columns>
             <TableColumn prefWidth="75.0" text="Tên sản phẩm" />
             <TableColumn prefWidth="75.0" text="Giá khởi điểm" />

@@ -24,7 +24,9 @@ public class AuctionServer {
                 System.out.println("🤝 Client mới kết nối: " + socket.getInetAddress());
 
                 // Mỗi client → 1 thread riêng, không chặn nhau
-                new Thread(new ClientHandler(socket)).start();
+                Thread clientThread = new Thread(new ClientHandler(socket));
+                clientThread.setDaemon(true); // tự tắt khi server dừng
+                clientThread.start();
             }
         } catch (Exception e) {
             e.printStackTrace();

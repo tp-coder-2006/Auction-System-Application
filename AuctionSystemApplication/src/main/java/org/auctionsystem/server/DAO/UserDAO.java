@@ -16,42 +16,27 @@ public class UserDAO {
     // ─── ĐĂNG KÝ ──────────────────────────────────────────────────────────────
 
     public boolean registerUser(String name, String username, String hashedPassword, String email, String phone, String role) {
-        if (isUsernameExist(username)) {
-            System.err.println("Lỗi: Tên đăng nhập đã tồn tại.");
-            return false;
-        }
-
-        if (isEmailExist(email)) {
-            System.err.println("Lỗi: Email đã tồn tại.");
-            return false;
-        }
-
-        // [MỚI] Kiểm tra số điện thoại — chỉ kiểm tra khi người dùng có nhập
-        if (isPhoneExist(phone)) {
-            System.err.println("Lỗi: Số điện thoại đã tồn tại.");
-            return false;
-        }
-
-        String sql = "INSERT INTO users (id, name, username, password, email, phone, role, balance, is_active) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
+        String sql = "INSERT INTO users (id, name, username, password, email, phone, role, balance, is_active) "
+                + "VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)";
 
         try (Connection conn = DatabaseConnection.getInstance().getConnection();
              PreparedStatement ps = conn.prepareStatement(sql)) {
 
-            ps.setString(1, java.util.UUID.randomUUID().toString()); // Tạo ID ngẫu nhiên
+            ps.setString(1, UUID.randomUUID().toString());
             ps.setString(2, name);
             ps.setString(3, username);
             ps.setString(4, hashedPassword);
             ps.setString(5, email);
-            ps.setString(6, phone);              // phone — nullable
-            ps.setString(7, role.toLowerCase()); // Khớp với ENUM trong MySQL
-            ps.setDouble(8, 0.0);                // Balance mặc định
-            ps.setBoolean(9, true);              // is_active mặc định
+            ps.setString(6, phone);           // ← thêm phone
+            ps.setString(7, role.toLowerCase());
+            ps.setDouble(8, 0.0);
+            ps.setBoolean(9, true);
 
             int rowsAffected = ps.executeUpdate();
             return rowsAffected > 0; // Trả về true nếu chèn thành công ít nhất 1 dòng
 
         } catch (SQLException e) {
-            e.printStackTrace();
+            System.err.println("Lỗi đăng ký người dùng: " + e.getMessage());
             return false;
         }
     }
@@ -83,7 +68,7 @@ public class UserDAO {
                                 rs.getString("email"),
                                 rs.getString("phone"),
                                 UserRole.SELLER,
-                                (Double) rs.getObject("rating")
+                                rs.getObject("rating") != null ? rs.getDouble("rating") : null
                         );
                     } else if (roleDb.equalsIgnoreCase("admin")) {
                         return new Admin(
@@ -185,7 +170,7 @@ public class UserDAO {
                             rs.getString("email"),
                             rs.getString("phone"),
                             UserRole.SELLER,
-                            (Double) rs.getObject("rating")
+                            rs.getObject("rating") != null ? rs.getDouble("rating") : null
                     );
 
                 } else if (roleDb.equalsIgnoreCase("admin")) {

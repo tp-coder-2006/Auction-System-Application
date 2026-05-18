@@ -127,7 +127,12 @@ public class Scene_Utils {
     public static void startSessionChecker() {
         stopSessionChecker(); // dừng scheduler cũ nếu có
 
-        checkPingScheduler = Executors.newSingleThreadScheduledExecutor();
+        checkPingScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
+            Thread t = new Thread(runnable, "session-checker-thread");
+            t.setDaemon(true); // tự tắt khi JavaFX app đóng
+            return t;
+        });
+
         checkPingScheduler.scheduleAtFixedRate(() -> {
 
             // Chưa login → bỏ qua

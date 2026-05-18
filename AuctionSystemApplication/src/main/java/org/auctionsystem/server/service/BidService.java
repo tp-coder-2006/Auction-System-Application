@@ -24,8 +24,8 @@ public class BidService {
         UserDAO userDAO = new UserDAO();
         ItemDAO itemDAO = new ItemDAO();
 
-        String itemId   = request.get("item_id").getAsString();
-        String bidderId = request.get("bidder_id").getAsString();
+        String itemId    = request.get("item_id").getAsString();
+        String bidderId  = request.get("bidder_id").getAsString();
         double bidAmount = request.get("bid_amount").getAsDouble();
         LocalDateTime bidTime = LocalDateTime.now();
 
@@ -62,13 +62,20 @@ public class BidService {
                 return response;
             }
 
-            if (bidDAO.insertBid(itemId, bidderId, bidTime, bidAmount)) {
-                bidDAO.updateItemPrice(itemId, bidAmount);
-                response.addProperty("status", "success");
-                response.addProperty("message", "Đặt giá thành công!");
-            } else {
-                response.addProperty("status", "error");
-                response.addProperty("message", "Đặt giá thất bại!");
+            try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+                conn.setAutoCommit(false);
+                try {
+                    bidDAO.insertBid(conn, itemId, bidderId, bidTime, bidAmount);
+                    bidDAO.updateItemPrice(conn, itemId, bidAmount);
+                    conn.commit();
+                    response.addProperty("status", "success");
+                    response.addProperty("message", "Đặt giá thành công!");
+                } catch (Exception ex) {
+                    conn.rollback();
+                    System.err.println("Lỗi đặt giá, rollback: " + ex.getMessage());
+                    response.addProperty("status", "error");
+                    response.addProperty("message", "Đặt giá thất bại!");
+                }
             }
 
         } catch (Exception e) {

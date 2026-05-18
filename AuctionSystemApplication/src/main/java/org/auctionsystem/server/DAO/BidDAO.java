@@ -11,29 +11,23 @@ import java.time.LocalDateTime;
 import java.util.ArrayList;
 
 public class BidDAO {
-    public boolean insertBid(String itemId, String bidderId, LocalDateTime bidTime, double bidAmount) throws SQLException {
+    public boolean insertBid(Connection conn, String itemId, String bidderId, LocalDateTime bidTime, double bidAmount) throws SQLException {
         String sql = "INSERT INTO bids (id, bid_amount, bid_time, bidder_id, item_id) VALUES (?, ?, ?, ?, ?)";
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setString(1, java.util.UUID.randomUUID().toString());
             ps.setDouble(2, bidAmount);
             ps.setTimestamp(3, java.sql.Timestamp.valueOf(bidTime));
             ps.setString(4, bidderId);
             ps.setString(5, itemId);
-
             return ps.executeUpdate() > 0;
         }
     }
 
-    public boolean updateItemPrice(String itemId, double newPrice) throws SQLException {
+    public boolean updateItemPrice(Connection conn, String itemId, double newPrice) throws SQLException {
         String sql = "UPDATE items SET current_highest_price = ? WHERE id = ?";
-
-        try (Connection conn = DatabaseConnection.getInstance().getConnection();
-             PreparedStatement ps = conn.prepareStatement(sql)) {
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
             ps.setDouble(1, newPrice);
             ps.setString(2, itemId);
-
             return ps.executeUpdate() > 0;
         }
     }

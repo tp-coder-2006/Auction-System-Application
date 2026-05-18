@@ -133,7 +133,7 @@ public class UserService {
             response.addProperty("status", "error");
             response.addProperty("message", "Vai trò (Role) không hợp lệ!");
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Lỗi đăng ký: " + e.getMessage());
             response.addProperty("status", "error");
             response.addProperty("message", "Lỗi server: " + e.getMessage());
         }
@@ -205,7 +205,7 @@ public class UserService {
             }
 
         } catch (Exception e) {
-            e.printStackTrace();
+            System.err.println("Lỗi đăng nhập: " + e.getMessage());
             response.addProperty("status", "error");
             response.addProperty("message", "Lỗi máy chủ: " + e.getMessage());
         }

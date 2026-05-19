@@ -110,10 +110,12 @@ public class Scene_Utils {
         if (UserSession.getInstance().getSessionId() == null) return;
         long now = System.currentTimeMillis();
         if (now - lastPingTime > 60 * 1000) {
-            lastPingTime = now;
-            JsonObject request = new JsonObject();
-            request.addProperty("action", "PING");
-            ServerConnection.sendAuthRequest(request);
+            Scene_Utils.resetLastPingTime();
+            new Thread(() -> {  // ← chạy riêng, không block UI
+                JsonObject request = new JsonObject();
+                request.addProperty("action", "PING");
+                ServerConnection.sendAuthRequest(request);
+            }, "ping-thread").start();
         }
     }
 

@@ -8,40 +8,49 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="466.0" prefWidth="580.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
+<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="580.0" text="Chào mừng đến với hệ thống đấu giá">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="161.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
-                  <Font name="Times New Roman Bold" size="30.0" />
+                  <Font name="Times New Roman Bold" size="48.0" />
                </font>
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Label>
-            <Button mnemonicParsing="false" onAction="#Go_to_searching_room" prefHeight="51.0" prefWidth="221.0" text="Đấu giá ngay!!!">
-               <font>
-                  <Font name="System Italic" size="24.0" />
-               </font>
-            </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Để bắt đầu đấu giá sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrappingWidth="462.4117126464844">
-               <font>
-                  <Font name="System Bold Italic" size="24.0" />
-               </font>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </Text>
-            <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
+            <HBox alignment="CENTER" prefHeight="282.0" prefWidth="658.0">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="245.0" prefWidth="594.0" spacing="10.0" styleClass="floating-card" stylesheets="@../../CSS/style.css">
+                     <children>
+                        <Button mnemonicParsing="false" onAction="#Go_to_searching_room" prefHeight="51.0" prefWidth="221.0" text="Đấu giá ngay!!!">
+                           <font>
+                              <Font name="System Italic" size="24.0" />
+                           </font>
+                        </Button>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Để bắt đầu đấu giá sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrappingWidth="462.4117126464844">
+                           <font>
+                              <Font name="System Bold Italic" size="32.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Text>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <Region prefHeight="74.0" prefWidth="658.0" VBox.vgrow="ALWAYS" />
             <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
                <font>
-                  <Font size="24.0" />
+                  <Font size="30.0" />
                </font>
                <padding>
                   <Insets bottom="10.0" left="10.0" />
@@ -51,7 +60,7 @@
       </VBox>
    </center>
    <top>
-      <MenuBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="26.0" prefWidth="580.0" stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
+      <MenuBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="50.0" prefWidth="658.0" stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
@@ -67,11 +76,6 @@
                   <MenuItem mnemonicParsing="false" text="Rút tiền" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Trợ giúp">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-              </items>
-            </Menu>
         </menus>
       </MenuBar>
    </top>

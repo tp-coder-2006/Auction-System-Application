@@ -8,36 +8,55 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
+<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
    <center>
-      <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0">
+      <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="640.0">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="580.0" text="Chào mừng đến với hệ thống đấu giá">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="169.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
-                  <Font name="Times New Roman Bold" size="30.0" />
+                  <Font name="Times New Roman Bold" size="48.0" />
                </font>
                <VBox.margin>
-                  <Insets bottom="5.0" top="5.0" />
+                  <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Label>
-            <Button mnemonicParsing="false" prefHeight="51.0" prefWidth="266.0" text="Đăng sản phẩm mới!">
+            <HBox alignment="CENTER" prefHeight="344.0" prefWidth="658.0">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="274.0" prefWidth="616.0" spacing="10.0" styleClass="floating-card" stylesheets="@../../CSS/style.css">
+                     <children>
+                        <Button mnemonicParsing="false" prefHeight="51.0" prefWidth="266.0" text="Đăng sản phẩm mới!">
+                           <font>
+                              <Font name="System Italic" size="24.0" />
+                           </font>
+                        </Button>
+                        <Label prefHeight="98.0" prefWidth="499.0" text="Để bắt đầu đăng bán sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrapText="true">
+                           <font>
+                              <Font name="System Bold Italic" size="30.0" />
+                           </font>
+                        </Label>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <Region prefHeight="62.0" prefWidth="658.0" />
+            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
                <font>
-                  <Font name="System Italic" size="24.0" />
+                  <Font size="30.0" />
                </font>
-            </Button>
-            <Label prefHeight="115.0" prefWidth="484.0" text="Để bắt đầu đăng bán sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrapText="true">
-               <font>
-                  <Font name="System Bold Italic" size="24.0" />
-               </font>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" />
+               </padding>
             </Label>
          </children>
       </VBox>
    </center>
    <top>
-      <MenuBar stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
+      <MenuBar prefHeight="50.0" stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
@@ -52,11 +71,6 @@
                 <MenuItem mnemonicParsing="false" text="Quản lý sản phẩm của tôi" />
               </items>
             </Menu>
-          <Menu mnemonicParsing="false" text="Trợ giúp">
-            <items>
-              <MenuItem mnemonicParsing="false" text="Delete" />
-            </items>
-          </Menu>
         </menus>
       </MenuBar>
    </top>

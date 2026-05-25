@@ -9,9 +9,9 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Dashboard">
+<BorderPane prefHeight="555.0" prefWidth="848.0" stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Dashboard">
    <center>
-      <VBox alignment="TOP_CENTER" prefHeight="400.0" prefWidth="600.0" spacing="20.0" styleClass="stat-card">
+      <VBox alignment="TOP_CENTER" prefHeight="542.0" prefWidth="591.0" spacing="20.0" styleClass="stat-card">
          <children>
             <Label text="TỔNG QUAN HỆ THỐNG">
                <font>
@@ -74,9 +74,9 @@
       </VBox>
    </center>
    <left>
-      <VBox fx:id="sidebar" prefHeight="400.0" prefWidth="190.0" spacing="30.0" BorderPane.alignment="CENTER">
+      <VBox fx:id="sidebar" prefHeight="542.0" prefWidth="250.0" spacing="30.0" styleClass="admin-card" stylesheets="@../../CSS/style.css" BorderPane.alignment="CENTER">
          <children>
-            <Label prefHeight="185.0" prefWidth="160.0" text="HỆ THỐNG ADMIN" wrapText="true">
+            <Label prefHeight="32.0" prefWidth="269.0" text="HỆ THỐNG ADMIN" wrapText="true" VBox.vgrow="ALWAYS">
                <font>
                   <Font name="Times New Roman Bold" size="24.0" />
                </font>
@@ -84,7 +84,7 @@
                   <Insets left="10.0" top="5.0" />
                </VBox.margin>
             </Label>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" text="Quản lý người dùng" wrapText="true">
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" prefWidth="350.0" styleClass="admin-button" text="Quản lý người dùng" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -92,7 +92,7 @@
                   <Insets />
                </VBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_item_approval" text="Duyệt sản phẩm" wrapText="true">
+            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_item_approval" styleClass="admin-button" stylesheets="@../../CSS/AdminMenu.css" text="Duyệt sản phẩm" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -100,8 +100,8 @@
                   <Insets />
                </VBox.margin>
             </Button>
-            <Region minWidth="0.0" prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-            <Button layoutX="10.0" layoutY="36.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" wrapText="true">
+            <Region minWidth="0.0" prefHeight="151.0" prefWidth="241.0" VBox.vgrow="ALWAYS" />
+            <Button layoutX="10.0" layoutY="36.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" styleClass="admin-button" text="Đăng xuất" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -116,7 +116,7 @@
       </VBox>
    </left>
    <top>
-      <HBox maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="774.0" BorderPane.alignment="CENTER">
+      <HBox maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="876.0" styleClass="admin-card" BorderPane.alignment="CENTER">
          <children>
             <Button fx:id="toggleMenu" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleMenu" prefHeight="40.0" prefWidth="43.0" text="☰" wrapText="true">
                <font>

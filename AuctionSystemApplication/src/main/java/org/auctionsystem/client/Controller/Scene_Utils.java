@@ -2,6 +2,8 @@ package org.auctionsystem.client.Controller;
 
 import com.google.gson.JsonObject;
 import javafx.application.Platform;
+import javafx.animation.FadeTransition;
+import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
 import javafx.event.ActionEvent;
@@ -19,6 +21,7 @@ import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.session.UserSession;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Objects;
@@ -42,6 +45,15 @@ public class Scene_Utils {
         primaryStage = stage;
     }
 
+    // Lưu kích thước stage gốc 1 lần duy nhất khi app khởi động
+    private static double initialWidth = -1;
+    private static double initialHeight = -1;
+
+    // Gọi hàm này 1 lần trong Main.java sau stage.show()
+    public static void Init_Stage_Size(Stage stage) {
+        initialWidth = stage.getWidth();
+        initialHeight = stage.getHeight();
+    }
     @FXML
     public static void Change_Scene(ActionEvent event, String fxml_path) throws IOException {
         Parent root = FXMLLoader.load(Objects.requireNonNull(Scene_Utils.class.getResource(fxml_path)));
@@ -54,23 +66,51 @@ public class Scene_Utils {
         } else {
             throw new IllegalArgumentException();
         }
+        //Lưu trạng thái trước khi đổi scene
+        boolean wasMaximized = stage.isMaximized();
+        // Nếu không maximized thì lấy kích thước stage hiện tại
+        // Nếu chưa từng resize thủ công thì dùng initialWidth/Height
+        double targetWidth = stage.getWidth();
+        double targetHeight = stage.getHeight();
 
+        // Truyền kích thước vào Scene constructor — JavaFX tự tính stage size đúng
         Scene scene = new Scene(root);
 
         // [MỚI] Gắn activity listener cho mỗi scene mới
         attachActivityListener(scene);
         Apply_Default_CSS_Style(scene);
 
+        // Làm trong suốt để transition diễn ra âm thầm, không flicker, không ẩn cửa sổ
+        stage.setMaximized(false);
+        stage.setOpacity(0);
         stage.setScene(scene);
+
+        // Fade in sau khi scene đã sẵn sàng
+        Platform.runLater(() -> {
+            if (wasMaximized) {
+                stage.setMaximized(true);
+            } else {
+                stage.setWidth(targetWidth);
+                stage.setHeight(targetHeight);
+            }
+
+            stage.setOpacity(1);
+            FadeTransition fade = new FadeTransition(Duration.millis(250), root);
+            fade.setFromValue(0);
+            fade.setToValue(1);
+            fade.play();
+        });
         stage.show();
     }
 
     @FXML
     public static void set_up_search_logic(TextField search_bar, ListView<String> item_list, ObservableList<String> data) {
         FilteredList<String> filtered_data = new FilteredList<>(data, p -> true);
-        search_bar.textProperty().addListener((observable, old_value, new_value) -> {
+        search_bar.textProperty().addListener((observable,old_value,new_value) -> {
             filtered_data.setPredicate(item -> {
-                if (new_value == null || new_value.isBlank()) return true;
+                if (new_value == null || new_value.isBlank()) {
+                    return true;
+                }
                 return item.toLowerCase().contains(new_value.toLowerCase());
             });
             if (new_value == null || new_value.isBlank()) {
@@ -85,7 +125,9 @@ public class Scene_Utils {
     }
 
     public static void Apply_Default_CSS_Style(Scene scene) {
-        if (scene == null) return;
+        if (scene == null) {
+            return;
+        }
         String default_css_path = "/org/auctionsystem/CSS/style.css";
         java.net.URL css_resource = Scene_Utils.class.getResource(default_css_path);
         if (css_resource != null) {

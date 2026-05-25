@@ -12,9 +12,9 @@ import org.auctionsystem.client.session.UserSession;
 import java.io.IOException;
 
 public class Controller_Seller_Dashboard {
-    private static final String Login_View   = "/org/auctionsystem/client/View/Login_scene.fxml";
+    private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
     private static final String Profile_View = "/org/auctionsystem/client/View/Seller_Profile.fxml";
-
+    private static final String Selling_History_View = "/org/auctionsystem/client/View/Selling_History.fxml";
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
             Scene_Utils.Change_Scene(event, fxml_path);
@@ -48,6 +48,10 @@ public class Controller_Seller_Dashboard {
         }
 
         switch_scene(event, Profile_View);
+    }
+    @FXML
+    public void Go_to_selling_history(ActionEvent event) {
+        switch_scene(event, Selling_History_View);
     }
 
     @FXML

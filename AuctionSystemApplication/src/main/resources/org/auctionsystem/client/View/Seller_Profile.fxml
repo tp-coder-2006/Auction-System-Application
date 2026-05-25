@@ -13,14 +13,14 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="TOP_CENTER" prefWidth="591.0" spacing="20.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Profile">
+<VBox alignment="TOP_CENTER" prefHeight="570.0" prefWidth="680.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Profile">
    <children>
       <Label alignment="CENTER" prefHeight="32.0" prefWidth="526.0" text="HỒ SƠ NGƯỜI DÙNG">
          <font>
             <Font name="System Bold" size="30.0" />
          </font>
       </Label>
-      <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="301.0" prefWidth="591.0" VBox.vgrow="ALWAYS">
+      <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="411.0" prefWidth="591.0" styleClass="floating-card" VBox.vgrow="ALWAYS">
          <children>
             <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
                <children>
@@ -29,7 +29,7 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="field_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false" />
+                  <TextField fx:id="TextField_HoVaTen" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Tên người dùng">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -38,7 +38,7 @@
                         <Insets top="15.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="field_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false" />
+                  <TextField fx:id="TextField_TenNguoiDung" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Mật khẩu">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -47,7 +47,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <PasswordField fx:id="field_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false" />
+                  <PasswordField fx:id="PasswordField_MatKhau" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Email">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -56,7 +56,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="field_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false" />
+                  <TextField fx:id="TextField_Email" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Số điện thoại">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -65,7 +65,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="field_phone" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" editable="false" promptText="Không bắt buộc">
+                  <TextField fx:id="TextField_SoDienThoai" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -88,7 +88,7 @@
                   </Label>
                   <StackPane alignment="TOP_RIGHT" prefHeight="159.0" prefWidth="152.0" VBox.vgrow="ALWAYS">
                      <children>
-                        <Circle fill="#d9e0e7" radius="93.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Circle fill="#d9e0e7" radius="95.0" stroke="BLACK" strokeType="INSIDE" />
                      </children>
                   </StackPane>
                   <Label text="Đánh giá về bạn">
@@ -112,16 +112,16 @@
             <Insets right="10.0" top="15.0" />
          </padding>
       </HBox>
-      <Region prefHeight="5.0" prefWidth="591.0" VBox.vgrow="ALWAYS" />
+      <Region prefHeight="0.0" prefWidth="659.0" VBox.vgrow="ALWAYS" />
       <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="35.0" prefWidth="591.0" VBox.vgrow="ALWAYS">
          <children>
-            <Button mnemonicParsing="false" prefHeight="30.0" prefWidth="168.0" text="Chỉnh sửa thông tin">
+            <Button fx:id="Button_ChinhSua" mnemonicParsing="false" onAction="#onChinhSua" prefHeight="84.0" prefWidth="168.0" text="Chỉnh sửa thông tin">
                <font>
                   <Font size="14.0" />
                </font>
             </Button>
             <Region HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#back_to_seller_dashboard" prefHeight="30.0" prefWidth="184.0" text="Quay lại trang chủ">
+            <Button mnemonicParsing="false" onAction="#back_to_seller_dashboard" prefHeight="56.0" prefWidth="184.0" text="Quay lại trang chủ">
                <font>
                   <Font size="14.0" />
                </font>

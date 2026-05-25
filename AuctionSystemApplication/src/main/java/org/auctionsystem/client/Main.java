@@ -26,6 +26,7 @@ public class Main extends Application {
         stage.setTitle("Auction System Application");
         stage.setScene(scene);
         stage.show();
+        Scene_Utils.Init_Stage_Size(stage);
     }
 
     public static void main(String[] args) {

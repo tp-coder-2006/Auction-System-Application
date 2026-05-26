@@ -18,9 +18,9 @@
                   <Font name="Times New Roman Bold" size="30.0" />
                </font>
             </Label>
-            <HBox prefHeight="285.0" prefWidth="474.0" spacing="20.0" VBox.vgrow="ALWAYS">
+            <HBox alignment="TOP_CENTER" prefHeight="285.0" prefWidth="474.0" spacing="20.0" VBox.vgrow="ALWAYS">
                <children>
-                  <VBox prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="66.0" prefWidth="166.0" text="Tổng số người dùng:" wrapText="true">
                            <font>
@@ -34,7 +34,7 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số sản phẩm đang chờ duyệt:" wrapText="true">
                            <font>
@@ -48,7 +48,7 @@
                         </Label>
                      </children>
                   </VBox>
-                  <VBox prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
+                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
                         <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số phiên đang active:" wrapText="true">
                            <font>
@@ -84,7 +84,7 @@
                   <Insets left="10.0" top="5.0" />
                </VBox.margin>
             </Label>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" prefWidth="350.0" styleClass="admin-button" text="Quản lý người dùng" wrapText="true">
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" prefWidth="261.0" styleClass="admin-button" text="Quản lý người dùng" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -118,7 +118,7 @@
    <top>
       <HBox maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="876.0" styleClass="admin-card" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="toggleMenu" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleMenu" prefHeight="40.0" prefWidth="43.0" text="☰" wrapText="true">
+            <Button fx:id="toggleMenu" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleMenu" prefHeight="40.0" prefWidth="43.0" stylesheets="@../../CSS/style.css" text="☰" wrapText="true">
                <font>
                   <Font name="Times New Roman" size="18.0" />
                </font>

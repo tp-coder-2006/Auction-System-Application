@@ -1,0 +1,4 @@
+.my-background-pane {
+    -fx-background-image: url("../Icon/background.jpg");
+    -fx-background-size: cover;
+}

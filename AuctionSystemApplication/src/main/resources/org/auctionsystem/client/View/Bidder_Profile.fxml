@@ -31,7 +31,7 @@
                         <Font name="System Bold" size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="TextField_HoVaTen" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <TextField fx:id="field_name" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Tên người dùng">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -40,7 +40,7 @@
                         <Insets top="15.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="TextField_TenNguoiDung" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <TextField fx:id="field_username" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Mật khẩu">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -49,7 +49,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <PasswordField fx:id="PasswordField_MatKhau" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <PasswordField fx:id="field_password" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Email">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -58,7 +58,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="TextField_Email" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <TextField fx:id="field_email" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
                   <Label text="Số điện thoại">
                      <font>
                         <Font name="System Bold" size="18.0" />
@@ -67,7 +67,7 @@
                         <Insets top="10.0" />
                      </VBox.margin>
                   </Label>
-                  <TextField fx:id="TextField_SoDienThoai" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0">
+                  <TextField fx:id="field_phone" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
@@ -90,7 +90,7 @@
                   </Label>
                   <StackPane alignment="TOP_RIGHT" prefHeight="159.0" prefWidth="152.0">
                      <children>
-                        <Circle fill="#d9e0e7" radius="95.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Circle fx:id="avatarCircle" fill="#d9e0e7" radius="95.0" stroke="BLACK" strokeType="INSIDE" />
                      </children>
                   </StackPane>
                </children>

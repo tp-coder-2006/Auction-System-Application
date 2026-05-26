@@ -61,14 +61,14 @@
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#Go_to_profile" text="Tài khoản" />
-                  <MenuItem mnemonicParsing="false" text="Lịch sử bán hàng" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_selling_history" text="Lịch sử bán hàng" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />
             </items>
           </Menu>
             <Menu mnemonicParsing="false" text="Sản phẩm">
               <items>
-                <MenuItem mnemonicParsing="false" text="Quản lý sản phẩm của tôi" />
+                <MenuItem mnemonicParsing="false" onAction="#Go_to_my_items_scene" text="Quản lý sản phẩm của tôi" />
               </items>
             </Menu>
         </menus>

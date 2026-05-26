@@ -5,9 +5,13 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
+import javafx.scene.image.Image;
+import javafx.scene.paint.ImagePattern;
+import javafx.scene.shape.Circle;
 import org.auctionsystem.client.Controller.Scene_Utils;
 import org.auctionsystem.client.session.UserSession;
 
+import java.io.File;
 import java.io.IOException;
 
 public class Controller_Bidder_Profile {
@@ -17,6 +21,8 @@ public class Controller_Bidder_Profile {
     @FXML private PasswordField field_password;
     @FXML private TextField     field_email;
     @FXML private TextField     field_phone;
+    @FXML private Circle        avatarCircle;
+    @FXML private Button        Button_ChinhSua;
 
     @FXML
     public void initialize() {
@@ -39,9 +45,6 @@ public class Controller_Bidder_Profile {
             throw new RuntimeException(e);
         }
     }
-    @FXML private TextField TextField_HoVaTen, TextField_TenNguoiDung, TextField_Email, TextField_SoDienThoai;
-    @FXML private PasswordField PasswordField_MatKhau;
-    @FXML private Button Button_ChinhSua;
 
     private boolean isEditing = false;
 
@@ -50,30 +53,36 @@ public class Controller_Bidder_Profile {
         isEditing = !isEditing;
 
         // Bật/tắt chỉnh sửa
-        TextField_HoVaTen.setEditable(isEditing);
-        TextField_TenNguoiDung.setEditable(isEditing);
-        TextField_Email.setEditable(isEditing);
-        TextField_SoDienThoai.setEditable(isEditing);
-        PasswordField_MatKhau.setEditable(isEditing);
+        field_name.    setEditable(isEditing);
+        field_username.setEditable(isEditing);
+        field_email.   setEditable(isEditing);
+        field_phone.   setEditable(isEditing);
+        field_password.setEditable(isEditing);
+
+        // Chuỗi CSS giúp đổi màu viền xanh cyan bắt mắt khi đang ở chế độ sửa
+        String activeStyle = "-fx-background-color: white; -fx-border-color: #029ef2; -fx-border-radius: 5px; -fx-background-radius: 5px;";
+
+        // Chuỗi CSS mặc định (Màu xám nhạt như file CSS gốc để giữ nguyên bo góc)
+        String defaultStyle = "-fx-background-color: white; -fx-border-color: #dcdde1; -fx-border-radius: 5px; -fx-background-radius: 5px;";
 
         if (isEditing) {
             Button_ChinhSua.setText("Lưu thông tin");
             // Highlight các field đang được chỉnh
-            TextField_HoVaTen.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
-            TextField_TenNguoiDung.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
-            TextField_Email.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
-            TextField_SoDienThoai.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
-            PasswordField_MatKhau.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
+            field_name.    setStyle(activeStyle);
+            field_username.setStyle(activeStyle);
+            field_email.   setStyle(activeStyle);
+            field_phone.   setStyle(activeStyle);
+            field_password.setStyle(activeStyle);
         } else {
             Button_ChinhSua.setText("Chỉnh sửa thông tin");
             // Gửi dữ liệu lên server ở đây
             luuThongTin();
             // Reset style
-            TextField_HoVaTen.setStyle("");
-            TextField_TenNguoiDung.setStyle("");
-            TextField_Email.setStyle("");
-            TextField_SoDienThoai.setStyle("");
-            PasswordField_MatKhau.setStyle("");
+            field_name.    setStyle(defaultStyle);
+            field_username.setStyle(defaultStyle);
+            field_email.   setStyle(defaultStyle);
+            field_phone.   setStyle(defaultStyle);
+            field_password.setStyle(defaultStyle);
         }
     }
 

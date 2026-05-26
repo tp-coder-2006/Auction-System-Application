@@ -26,7 +26,7 @@
     -fx-alignment: center;
 }
 .floating-card {
-    -fx-background-color: rgba(245, 211, 125, 0.5);
+    -fx-background-color: rgba(245, 211, 125, 0.8);
     -fx-background-radius: 12;
     -fx-padding: 40;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 20, 0, 0, 8);
@@ -36,4 +36,16 @@
     -fx-border-color: #c8a96e;
     -fx-border-radius: 8;
     -fx-background-radius: 8;
+}
+/* Class đặc biệt dành riêng cho nút Hủy */
+.button-cancel {
+    -fx-background-color: #95a5a6; /* Màu xám bê tông */
+    -fx-text-fill: white;
+    -fx-cursor: hand;
+    -fx-background-radius: 5px;
+}
+
+/* Hiệu ứng khi di chuột vào nút hủy */
+.button-cancel:hover {
+    -fx-background-color: #7f8c8d; /* Xám đậm hơn khi hover */
 }

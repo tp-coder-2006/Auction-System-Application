@@ -15,6 +15,7 @@ public class Controller_Seller_Dashboard {
     private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
     private static final String Profile_View = "/org/auctionsystem/client/View/Seller_Profile.fxml";
     private static final String Selling_History_View = "/org/auctionsystem/client/View/Selling_History.fxml";
+    private static final String My_Items_View = "/org/auctionsystem/client/View/My_Items.fxml";
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
             Scene_Utils.Change_Scene(event, fxml_path);
@@ -52,6 +53,10 @@ public class Controller_Seller_Dashboard {
     @FXML
     public void Go_to_selling_history(ActionEvent event) {
         switch_scene(event, Selling_History_View);
+    }
+    @FXML
+    public void Go_to_my_items_scene(ActionEvent event) {
+        switch_scene(event, My_Items_View);
     }
 
     @FXML

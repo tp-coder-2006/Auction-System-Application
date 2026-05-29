@@ -9,7 +9,6 @@ import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
 import javafx.scene.layout.VBox;
 import javafx.util.Duration;
-import org.auctionsystem.client.Controller.Scene_Utils;
 
 import java.io.IOException;
 
@@ -45,7 +44,6 @@ public class Controller_Admin_Dashboard {
     }
 
     private static final String Admin_User_Management_View = "/org/auctionsystem/client/View/Admin_User_Management.fxml";
-    private static final String Admin_Item_Approval_View = "/org/auctionsystem/client/View/Admin_Item_Approval.fxml";
     private static final String Login_View = "/org/auctionsystem/client/View/Login_scene.fxml";
 
     private void switch_scene(ActionEvent event, String fxml_path) {
@@ -58,10 +56,6 @@ public class Controller_Admin_Dashboard {
     @FXML
     public void Go_to_admin_user_management(ActionEvent event) {
         switch_scene(event, Admin_User_Management_View);
-    }
-    @FXML
-    public void Go_to_admin_item_approval(ActionEvent event) {
-        switch_scene(event, Admin_Item_Approval_View);
     }
     @FXML //Nếu đăng xuất ra khỏi tài khoản
     public void Logging_out(ActionEvent event) {

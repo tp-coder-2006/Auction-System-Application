@@ -2,7 +2,6 @@ package org.auctionsystem.client.Controller.Seller;
 
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import javafx.scene.control.Button;
 import javafx.scene.image.Image;
@@ -23,7 +22,6 @@ public class Controller_Seller_Profile {
         }
     }
     @FXML private TextField TextField_HoVaTen, TextField_TenNguoiDung, TextField_Email, TextField_SoDienThoai;
-    @FXML private PasswordField PasswordField_MatKhau;
     @FXML private Button Button_ChinhSua;
 
     @FXML private ImageView imageStar1;
@@ -48,7 +46,6 @@ public class Controller_Seller_Profile {
         UserSession s = UserSession.getInstance();
         TextField_HoVaTen.setText(s.getName());
         TextField_TenNguoiDung.setText(s.getUsername());
-        PasswordField_MatKhau.setText("");                                         // không hiển thị mật khẩu
         TextField_Email.setText(s.getEmail());
         TextField_SoDienThoai.setText(s.getPhone() != null ? s.getPhone() : ""); // nullable
 
@@ -81,7 +78,6 @@ public class Controller_Seller_Profile {
         TextField_TenNguoiDung.setEditable(isEditing);
         TextField_Email.setEditable(isEditing);
         TextField_SoDienThoai.setEditable(isEditing);
-        PasswordField_MatKhau.setEditable(isEditing);
 
         if (isEditing) {
             Button_ChinhSua.setText("Lưu thông tin");
@@ -90,7 +86,6 @@ public class Controller_Seller_Profile {
             TextField_TenNguoiDung.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
             TextField_Email.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
             TextField_SoDienThoai.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
-            PasswordField_MatKhau.setStyle("-fx-background-color: white; -fx-border-color: #029ef2;");
         } else {
             Button_ChinhSua.setText("Chỉnh sửa thông tin");
             // Gửi dữ liệu lên server ở đây
@@ -100,7 +95,6 @@ public class Controller_Seller_Profile {
             TextField_TenNguoiDung.setStyle("");
             TextField_Email.setStyle("");
             TextField_SoDienThoai.setStyle("");
-            PasswordField_MatKhau.setStyle("");
         }
     }
 

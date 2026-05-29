@@ -31,7 +31,7 @@
                         <Insets />
                      </HBox.margin>
                   </Label>
-                  <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="NEVER" />
+                  <Region prefHeight="35.0" prefWidth="75.0" HBox.hgrow="NEVER" />
                   <Label alignment="TOP_LEFT" prefHeight="50.0" prefWidth="241.0" styleClass="heading" text="Thời gian còn lại:">
                      <font>
                         <Font size="16.0" />
@@ -54,7 +54,7 @@
                               <ImageView fitHeight="250.0" fitWidth="300.0" pickOnBounds="true" preserveRatio="true" />
                            </children>
                         </StackPane>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="108.0" prefWidth="300.0" text="Mô tả sản phẩm:" textAlignment="JUSTIFY" wrapText="true" VBox.vgrow="ALWAYS">
+                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="108.0" prefWidth="300.0" styleClass="heading" stylesheets="@../../CSS/Label.css" text="Mô tả sản phẩm:" textAlignment="JUSTIFY" wrapText="true" VBox.vgrow="ALWAYS">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
@@ -62,18 +62,18 @@
                               <Insets bottom="10.0" />
                            </VBox.margin>
                         </Label>
-                        <Label maxWidth="1.7976931348623157E308" text="Giá khởi điểm:" textAlignment="JUSTIFY" VBox.vgrow="ALWAYS">
+                        <Label maxWidth="1.7976931348623157E308" styleClass="heading" stylesheets="@../../CSS/Label.css" text="Giá khởi điểm:" textAlignment="JUSTIFY" VBox.vgrow="ALWAYS">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
                         </Label>
-                        <Label maxWidth="1.7976931348623157E308" text="Giá cao nhất hiện tại:" textAlignment="JUSTIFY" wrapText="true" VBox.vgrow="ALWAYS">
+                        <Label maxWidth="1.7976931348623157E308" styleClass="heading" stylesheets="@../../CSS/Label.css" text="Giá cao nhất hiện tại:" textAlignment="JUSTIFY" wrapText="true" VBox.vgrow="ALWAYS">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>
                         </Label>
                         <Region prefHeight="28.0" prefWidth="300.0" />
-                        <Label maxWidth="1.7976931348623157E308" text="Số dư tài khoản:" wrapText="true" VBox.vgrow="ALWAYS">
+                        <Label maxWidth="1.7976931348623157E308" styleClass="heading" stylesheets="@../../CSS/Label.css" text="Số dư tài khoản:" wrapText="true" VBox.vgrow="ALWAYS">
                            <font>
                               <Font name="System Bold" size="18.0" />
                            </font>

@@ -223,4 +223,15 @@ public class Scene_Utils {
             checkPingScheduler.shutdown();
         }
     }
+    /*
+    @FXML
+private void openHelp(ActionEvent event) throws IOException {
+    Parent root = FXMLLoader.load(getClass().getResource("/org/auctionsystem/client/View/Help_scene.fxml"));
+    Stage helpStage = new Stage();
+    helpStage.setTitle("Hướng dẫn sử dụng");
+    helpStage.setScene(new Scene(root));
+    helpStage.initModality(Modality.APPLICATION_MODAL); // khóa cửa sổ chính lại
+    helpStage.show();
+}
+     */
 }

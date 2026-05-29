@@ -3,22 +3,17 @@ package org.auctionsystem.client.Controller.Bidder;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
-import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
-import javafx.scene.image.Image;
-import javafx.scene.paint.ImagePattern;
 import javafx.scene.shape.Circle;
 import org.auctionsystem.client.Controller.Scene_Utils;
 import org.auctionsystem.client.session.UserSession;
 
-import java.io.File;
 import java.io.IOException;
 
 public class Controller_Bidder_Profile {
 
     @FXML private TextField     field_name;
     @FXML private TextField     field_username;
-    @FXML private PasswordField field_password;
     @FXML private TextField     field_email;
     @FXML private TextField     field_phone;
     @FXML private Circle        avatarCircle;
@@ -32,7 +27,6 @@ public class Controller_Bidder_Profile {
         UserSession s = UserSession.getInstance();
         field_name    .setText(s.getName());
         field_username.setText(s.getUsername());
-        field_password.setText("");                                         // không hiển thị mật khẩu
         field_email   .setText(s.getEmail());
         field_phone   .setText(s.getPhone() != null ? s.getPhone() : ""); // nullable
     }
@@ -57,7 +51,6 @@ public class Controller_Bidder_Profile {
         field_username.setEditable(isEditing);
         field_email.   setEditable(isEditing);
         field_phone.   setEditable(isEditing);
-        field_password.setEditable(isEditing);
 
         // Chuỗi CSS giúp đổi màu viền xanh cyan bắt mắt khi đang ở chế độ sửa
         String activeStyle = "-fx-background-color: white; -fx-border-color: #029ef2; -fx-border-radius: 5px; -fx-background-radius: 5px;";
@@ -72,7 +65,6 @@ public class Controller_Bidder_Profile {
             field_username.setStyle(activeStyle);
             field_email.   setStyle(activeStyle);
             field_phone.   setStyle(activeStyle);
-            field_password.setStyle(activeStyle);
         } else {
             Button_ChinhSua.setText("Chỉnh sửa thông tin");
             // Gửi dữ liệu lên server ở đây
@@ -82,7 +74,6 @@ public class Controller_Bidder_Profile {
             field_username.setStyle(defaultStyle);
             field_email.   setStyle(defaultStyle);
             field_phone.   setStyle(defaultStyle);
-            field_password.setStyle(defaultStyle);
         }
     }
 

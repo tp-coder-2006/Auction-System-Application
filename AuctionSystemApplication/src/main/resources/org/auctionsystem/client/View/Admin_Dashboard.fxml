@@ -92,13 +92,18 @@
                   <Insets />
                </VBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_item_approval" styleClass="admin-button" stylesheets="@../../CSS/AdminMenu.css" text="Duyệt sản phẩm" wrapText="true">
+            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="admin-button" stylesheets="@../../CSS/AdminMenu.css" text="Quản lý phiên đấu giá" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
                <VBox.margin>
                   <Insets />
                </VBox.margin>
+            </Button>
+            <Button layoutX="15.0" layoutY="154.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="admin-button" stylesheets="@../../CSS/AdminMenu.css" text="Quản lý tài chính" wrapText="true">
+               <font>
+                  <Font size="18.0" />
+               </font>
             </Button>
             <Region minWidth="0.0" prefHeight="151.0" prefWidth="241.0" VBox.vgrow="ALWAYS" />
             <Button layoutX="10.0" layoutY="36.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" styleClass="admin-button" text="Đăng xuất" wrapText="true">

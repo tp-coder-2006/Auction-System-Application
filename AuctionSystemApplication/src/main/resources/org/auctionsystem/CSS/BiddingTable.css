@@ -1,0 +1,54 @@
+/* Trang trí tổng thể TableView phòng đấu giá */
+.bidding-table {
+    -fx-background-color: rgba(255, 255, 255, 0.1); /* Nền siêu trong suốt */
+    -fx-border-color: rgba(44, 26, 4, 0.3);        /* Viền nâu nhạt mảnh */
+    -fx-border-radius: 5px;
+    -fx-background-radius: 5px;
+}
+
+/* Trang trí thanh tiêu đề của bảng (Header) */
+.bidding-table .column-header-background {
+    -fx-background-color: #2C1A04; /* Màu nâu đen Espresso quý phái */
+    -fx-padding: 5px 0px;
+    -fx-background-radius: 5px 5px 0px 0px;
+}
+
+.bidding-table .column-header {
+    -fx-background-color: transparent;
+}
+
+/* Chữ trên tiêu đề bảng chuyển sang màu vàng Gold nhạt */
+.bidding-table .column-header .label {
+    -fx-text-fill: #F5D37D;
+    -fx-font-weight: bold;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 13px;
+}
+
+/* Trang trí các dòng chứa tên người tham gia (Cells) */
+.bidding-table .table-row-cell {
+    /* Tạo hiệu ứng kính mờ: xen kẽ giữa trắng trong suốt và hơi đục */
+    -fx-background-color: rgba(255, 255, 255, 0.15);
+    -fx-border-color: rgba(255, 255, 255, 0.05) transparent transparent transparent;
+}
+
+.bidding-table .table-row-cell:odd {
+    -fx-background-color: rgba(255, 255, 255, 0.25); /* Dòng lẻ đục hơn một chút */
+}
+
+/* Màu chữ của tên người tham gia hiển thị trong bảng */
+.bidding-table .table-cell {
+    -fx-text-fill: #FFFFFF; /* Chữ trắng hoàn toàn để nổi bật trên nền tối */
+    -fx-font-size: 13px;
+    -fx-padding: 8px;
+}
+
+/* Hiệu ứng khi rê chuột qua một dòng trong bảng */
+.bidding-table .table-row-cell:hover {
+    -fx-background-color: rgba(139, 0, 0, 0.3); /* Nền đỏ đô mờ khi hover */
+}
+
+/* Khi dòng đó chính là người đang dẫn đầu cuộc đấu giá (Selected Row) */
+.bidding-table .table-row-cell:filled:selected {
+    -fx-background-color: #8B0000; /* Đỏ đô sẫm hẳn lên trùng màu cụm nút +10k, +20k */
+}

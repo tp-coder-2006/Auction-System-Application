@@ -1,4 +1,3 @@
-.my-background-pane {
-    -fx-background-image: url("../Icon/background.jpg");
-    -fx-background-size: cover;
+.login-pane {
+    -fx-background-image: url("../Icon/LoginBackground.jpg");
 }

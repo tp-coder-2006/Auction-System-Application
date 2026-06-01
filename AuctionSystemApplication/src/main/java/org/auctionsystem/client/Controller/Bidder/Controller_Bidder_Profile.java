@@ -12,10 +12,10 @@ import java.io.IOException;
 
 public class Controller_Bidder_Profile {
 
-    @FXML private TextField     field_name;
-    @FXML private TextField     field_username;
-    @FXML private TextField     field_email;
-    @FXML private TextField     field_phone;
+    @FXML private TextField field_name;
+    @FXML private TextField field_username;
+    @FXML private TextField field_email;
+    @FXML private TextField field_phone;
     @FXML private Circle        avatarCircle;
     @FXML private Button        Button_ChinhSua;
 
@@ -25,10 +25,10 @@ public class Controller_Bidder_Profile {
         // trong Go_to_profile() trước khi chuyển sang màn hình này
         // Thứ tự khớp FXML: name → username → password → email → phone
         UserSession s = UserSession.getInstance();
-        field_name    .setText(s.getName());
+        field_name.setText(s.getName());
         field_username.setText(s.getUsername());
-        field_email   .setText(s.getEmail());
-        field_phone   .setText(s.getPhone() != null ? s.getPhone() : ""); // nullable
+        field_email.setText(s.getEmail());
+        field_phone.setText(s.getPhone() != null ? s.getPhone() : ""); // nullable
     }
 
     @FXML
@@ -79,5 +79,13 @@ public class Controller_Bidder_Profile {
 
     private void luuThongTin() {
         // Gọi ServerConnection để cập nhật
+    }
+    @FXML
+    public void changing_password(ActionEvent event) {
+        try {
+            Scene_Utils.Open_Dialog(event,"/org/auctionsystem/client/View/Change_Password.fxml","Đổi mật khẩu");
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
     }
 }

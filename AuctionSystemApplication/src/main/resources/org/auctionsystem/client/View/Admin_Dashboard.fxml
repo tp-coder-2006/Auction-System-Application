@@ -13,7 +13,7 @@
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="542.0" prefWidth="591.0" spacing="20.0" styleClass="stat-card">
          <children>
-            <Label text="TỔNG QUAN HỆ THỐNG">
+            <Label style="-fx-text-fill: #523902;" text="TỔNG QUAN HỆ THỐNG">
                <font>
                   <Font name="Times New Roman Bold" size="30.0" />
                </font>
@@ -22,7 +22,7 @@
                <children>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="66.0" prefWidth="166.0" text="Tổng số người dùng:" wrapText="true">
+                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="66.0" prefWidth="166.0" text="Tổng số người dùng:" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font name="Times New Roman" size="26.0" />
                            </font>
@@ -36,7 +36,7 @@
                   </VBox>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số sản phẩm đang chờ duyệt:" wrapText="true">
+                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số sản phẩm đang chờ duyệt:" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font name="Times New Roman" size="26.0" />
                            </font>
@@ -50,7 +50,7 @@
                   </VBox>
                   <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
                      <children>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số phiên đang active:" wrapText="true">
+                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số phiên đang active:" textAlignment="CENTER" wrapText="true">
                            <font>
                               <Font name="Times New Roman" size="26.0" />
                            </font>
@@ -76,7 +76,7 @@
    <left>
       <VBox fx:id="sidebar" prefHeight="542.0" prefWidth="250.0" spacing="30.0" styleClass="admin-card" stylesheets="@../../CSS/style.css" BorderPane.alignment="CENTER">
          <children>
-            <Label prefHeight="32.0" prefWidth="269.0" text="HỆ THỐNG ADMIN" wrapText="true" VBox.vgrow="ALWAYS">
+            <Label prefHeight="32.0" prefWidth="269.0" style="-fx-text-fill: #523902;" text="HỆ THỐNG ADMIN" wrapText="true" VBox.vgrow="ALWAYS">
                <font>
                   <Font name="Times New Roman Bold" size="24.0" />
                </font>
@@ -84,7 +84,7 @@
                   <Insets left="10.0" top="5.0" />
                </VBox.margin>
             </Label>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" prefWidth="261.0" styleClass="admin-button" text="Quản lý người dùng" wrapText="true">
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" prefWidth="261.0" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Quản lý người dùng" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -92,7 +92,7 @@
                   <Insets />
                </VBox.margin>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="admin-button" stylesheets="@../../CSS/AdminMenu.css" text="Quản lý phiên đấu giá" wrapText="true">
+            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Quản lý phiên đấu giá" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -100,13 +100,13 @@
                   <Insets />
                </VBox.margin>
             </Button>
-            <Button layoutX="15.0" layoutY="154.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="admin-button" stylesheets="@../../CSS/AdminMenu.css" text="Quản lý tài chính" wrapText="true">
+            <Button layoutX="15.0" layoutY="154.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Quản lý tài chính" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
             </Button>
             <Region minWidth="0.0" prefHeight="151.0" prefWidth="241.0" VBox.vgrow="ALWAYS" />
-            <Button layoutX="10.0" layoutY="36.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" styleClass="admin-button" text="Đăng xuất" wrapText="true">
+            <Button layoutX="10.0" layoutY="36.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Đăng xuất" wrapText="true">
                <font>
                   <Font size="18.0" />
                </font>
@@ -121,9 +121,9 @@
       </VBox>
    </left>
    <top>
-      <HBox maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="876.0" styleClass="admin-card" BorderPane.alignment="CENTER">
+      <HBox maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="876.0" styleClass="admin-card" stylesheets="@../../CSS/style.css" BorderPane.alignment="CENTER">
          <children>
-            <Button fx:id="toggleMenu" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleMenu" prefHeight="40.0" prefWidth="43.0" stylesheets="@../../CSS/style.css" text="☰" wrapText="true">
+            <Button fx:id="toggleMenu" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleMenu" prefHeight="40.0" prefWidth="43.0" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="☰" wrapText="true">
                <font>
                   <Font name="Times New Roman" size="18.0" />
                </font>

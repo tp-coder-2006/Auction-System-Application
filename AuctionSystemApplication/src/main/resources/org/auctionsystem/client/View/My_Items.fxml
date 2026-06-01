@@ -33,7 +33,7 @@
       <HBox alignment="BOTTOM_CENTER" prefHeight="34.0" prefWidth="602.0">
          <children>
             <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" text="Quay lại trang chủ">
+            <Button mnemonicParsing="false" text="← Quay lại trang chủ">
                <font>
                   <Font size="14.0" />
                </font>

@@ -8,18 +8,25 @@
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="580.0" prefWidth="905.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Searching_room">
+<BorderPane prefHeight="616.0" prefWidth="905.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Searching_room">
    <top>
       <VBox prefHeight="84.0" prefWidth="600.0" spacing="10.0" BorderPane.alignment="CENTER">
          <padding>
             <Insets top="10.0" />
          </padding>
          <children>
-            <HBox alignment="CENTER" prefHeight="74.0" prefWidth="600.0">
+            <HBox alignment="CENTER" prefHeight="74.0" prefWidth="600.0" styleClass="search-box" stylesheets="@../../CSS/searching_bar.css">
                <children>
-                  <TextField prefHeight="26.0" prefWidth="351.0" promptText="Tìm kiếm sản phẩm" />
-                  <Button mnemonicParsing="false" text="🔍" />
+                  <TextField prefWidth="351.0" promptText="Tìm kiếm sản phẩm" styleClass="search-input">
+                     <font>
+                        <Font size="14.0" />
+                     </font></TextField>
+                  <Button mnemonicParsing="false" prefHeight="31.0" styleClass="search-button" text="🔍">
+                     <font>
+                        <Font size="14.0" />
+                     </font></Button>
                </children>
             </HBox>
          </children>
@@ -39,10 +46,13 @@
       </TableView>
    </center>
    <bottom>
-      <Button mnemonicParsing="false" onAction="#Back_to_Dashboard" text="Quay lại trang chủ" BorderPane.alignment="CENTER">
+      <Button mnemonicParsing="false" onAction="#Back_to_Dashboard" text="← Quay lại trang chủ" BorderPane.alignment="CENTER">
          <BorderPane.margin>
             <Insets top="10.0" />
          </BorderPane.margin>
+         <font>
+            <Font size="18.0" />
+         </font>
       </Button>
    </bottom>
    <padding>

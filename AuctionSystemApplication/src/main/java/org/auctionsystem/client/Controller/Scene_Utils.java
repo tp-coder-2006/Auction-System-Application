@@ -18,6 +18,7 @@ import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
 import javafx.scene.input.KeyEvent;
 import javafx.scene.input.MouseEvent;
+import javafx.stage.Modality;
 import javafx.stage.Stage;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.session.UserSession;
@@ -51,8 +52,8 @@ public class Scene_Utils {
 
     // Gọi hàm này 1 lần trong Main.java sau stage.show()
     public static void Init_Stage_Size(Stage stage) {
-        initialWidth = stage.getWidth();
-        initialHeight = stage.getHeight();
+        initialWidth = stage.getScene().getWidth();
+        initialHeight = stage.getScene().getHeight();
     }
     @FXML
     public static void Change_Scene(ActionEvent event, String fxml_path) throws IOException {
@@ -68,20 +69,15 @@ public class Scene_Utils {
         }
         //Lưu trạng thái trước khi đổi scene
         boolean wasMaximized = stage.isMaximized();
-        // Nếu không maximized thì lấy kích thước stage hiện tại
-        // Nếu chưa từng resize thủ công thì dùng initialWidth/Height
-        double targetWidth = stage.getWidth();
-        double targetHeight = stage.getHeight();
 
         // Truyền kích thước vào Scene constructor — JavaFX tự tính stage size đúng
-        Scene scene = new Scene(root);
+        Scene scene = new Scene(root, initialWidth, initialHeight);
 
         // [MỚI] Gắn activity listener cho mỗi scene mới
         attachActivityListener(scene);
         Apply_Default_CSS_Style(scene);
 
         // Làm trong suốt để transition diễn ra âm thầm, không flicker, không ẩn cửa sổ
-        stage.setMaximized(false);
         stage.setOpacity(0);
         stage.setScene(scene);
 
@@ -89,18 +85,39 @@ public class Scene_Utils {
         Platform.runLater(() -> {
             if (wasMaximized) {
                 stage.setMaximized(true);
-            } else {
-                stage.setWidth(targetWidth);
-                stage.setHeight(targetHeight);
             }
 
+            stage.show();
             stage.setOpacity(1);
-            FadeTransition fade = new FadeTransition(Duration.millis(250), root);
+
+            FadeTransition fade = new FadeTransition(Duration.millis(150), root);
             fade.setFromValue(0);
             fade.setToValue(1);
             fade.play();
         });
-        stage.show();
+    }
+    @FXML
+    public static void Open_Dialog(ActionEvent event, String fxml_path, String title) throws IOException {
+        Parent root = FXMLLoader.load(Objects.requireNonNull(Scene_Utils.class.getResource(fxml_path)));
+        Stage dialog = new Stage();
+
+        dialog.setTitle(title);
+        dialog.setScene(new Scene(root));
+        dialog.setResizable(false);
+        dialog.initModality(Modality.APPLICATION_MODAL);
+        Stage owner;
+
+        if (event.getSource() instanceof Node) {
+            owner = (Stage) ((Node) event.getSource()).getScene().getWindow();
+        } else if (event.getSource() instanceof MenuItem) {
+            owner = (Stage) ((MenuItem) event.getSource()).getParentPopup().getOwnerWindow();
+        } else {
+            throw new IllegalArgumentException();
+        }
+
+        dialog.initOwner(owner);
+        Apply_Default_CSS_Style(dialog.getScene());
+        dialog.showAndWait();
     }
 
     @FXML

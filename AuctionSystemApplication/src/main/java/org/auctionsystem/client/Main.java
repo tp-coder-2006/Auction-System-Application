@@ -24,6 +24,8 @@ public class Main extends Application {
         Scene scene = new Scene(root);
 
         stage.setTitle("Auction System Application");
+        stage.setMaximized(true);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
         Scene_Utils.Init_Stage_Size(stage);

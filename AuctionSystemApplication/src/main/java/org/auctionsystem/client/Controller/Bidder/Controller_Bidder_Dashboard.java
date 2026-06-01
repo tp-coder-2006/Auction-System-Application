@@ -16,6 +16,8 @@ public class Controller_Bidder_Dashboard {
     private static final String Bidder_Profile_View = "/org/auctionsystem/client/View/Bidder_Profile.fxml";
     private static final String Bidding_History_View = "/org/auctionsystem/client/View/Bidding_History.fxml";
     private static final String Searching_Room_View = "/org/auctionsystem/client/View/Searching_room.fxml";
+    private static final String Wallet_Transaction_View = "/org/auctionsystem/client/View/Wallet_Transaction.fxml";
+    private static final String Transaction_History_View = "/org/auctionsystem/client/View/Transaction_History.fxml";
 
     private void switch_scene(ActionEvent event, String fxml_path) {
         try {
@@ -81,5 +83,15 @@ public class Controller_Bidder_Dashboard {
     @FXML
     public void Go_to_searching_room(ActionEvent event) {
         switch_scene(event, Searching_Room_View);
+    }
+
+    @FXML
+    public void Go_to_wallet(ActionEvent event) {
+        switch_scene(event, Wallet_Transaction_View);
+    }
+
+    @FXML
+    public void Go_to_transaction_history(ActionEvent event) {
+        switch_scene(event, Transaction_History_View);
     }
 }

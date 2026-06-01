@@ -9,15 +9,14 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
+<BorderPane prefHeight="724.0" prefWidth="961.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="640.0">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="169.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="6.0" prefWidth="962.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="Times New Roman Bold" size="48.0" />
                </font>
@@ -25,7 +24,15 @@
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Label>
-            <HBox alignment="CENTER" prefHeight="344.0" prefWidth="658.0">
+            <Label text="Hãy tận hưởng thời gian bán hàng tại đây!!">
+               <font>
+                  <Font name="Times New Roman Bold" size="48.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="50.0" />
+               </VBox.margin>
+            </Label>
+            <HBox alignment="CENTER" prefHeight="316.0" prefWidth="962.0">
                <children>
                   <VBox alignment="CENTER" prefHeight="274.0" prefWidth="616.0" spacing="10.0" styleClass="floating-card" stylesheets="@../../CSS/style.css">
                      <children>
@@ -42,16 +49,10 @@
                      </children>
                   </VBox>
                </children>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
             </HBox>
-            <Region prefHeight="62.0" prefWidth="658.0" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
-               <font>
-                  <Font size="30.0" />
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" />
-               </padding>
-            </Label>
          </children>
       </VBox>
    </center>
@@ -74,4 +75,14 @@
         </menus>
       </MenuBar>
    </top>
+   <bottom>
+      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="30.0" />
+         </font>
+         <padding>
+            <Insets bottom="10.0" left="10.0" />
+         </padding>
+      </Label>
+   </bottom>
 </BorderPane>

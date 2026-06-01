@@ -21,6 +21,15 @@ public class Controller_Seller_Profile {
             throw new RuntimeException(e);
         }
     }
+    @FXML
+    public void changing_password(ActionEvent event) {
+        try {
+            Scene_Utils.Open_Dialog(event,"/org/auctionsystem/client/View/Change_Password.fxml","Đổi mật khẩu");
+        } catch (IOException e) {
+            throw new RuntimeException();
+        }
+    }
+
     @FXML private TextField TextField_HoVaTen, TextField_TenNguoiDung, TextField_Email, TextField_SoDienThoai;
     @FXML private Button Button_ChinhSua;
 

@@ -1,23 +1,40 @@
 .root {
-    -fx-background-color: #FDFBF7;
+    -fx-background-color: linear-gradient(to bottom, #fcfcfc, #fcfaf2);
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-font-family: "Segoe UI";
 }
+.label {
+    -fx-text-fill: #333333;
+}
 .button {
-    -fx-background-color:#c68642;
+    -fx-background-color:#171511;
     -fx-text-fill: white;
     -fx-border-color: transparent;
     -fx-cursor: hand;
     -fx-background-radius: 5px;
 }
 .button:hover {
-    -fx-background-color: #2ea7e8;
+    -fx-background-color: #121212;
 }
 .text-field {
-    -fx-background-radius: 5px;
-    -fx-border-color: #dcdde1;
-    -fx-border-radius: 5px;
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #453d31;
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #333333;
+    -fx-padding: 0 10 0 10;
+}
+.text-field:focused {
+    -fx-border-color: #61605f;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(198,134,66,0.3), 6, 0, 0, 0);
+}
+.text-field:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #f5f0e8;
+    -fx-border-color: #e0cba8;
 }
 .menu-bar .menu {
     -fx-padding: 0 30px 0 30px;
@@ -26,26 +43,14 @@
     -fx-alignment: center;
 }
 .floating-card {
-    -fx-background-color: rgba(245, 211, 125, 0.8);
+    -fx-background-color: rgba(255, 255, 255, 0.8);
     -fx-background-radius: 12;
     -fx-padding: 40;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 20, 0, 0, 8);
 }
 .table-view {
     -fx-background-color: transparent;
-    -fx-border-color: #c8a96e;
+    -fx-border-color: #4d3902;
     -fx-border-radius: 8;
-    -fx-background-radius: 8;
-}
-/* Class đặc biệt dành riêng cho nút Hủy */
-.button-cancel {
-    -fx-background-color: #95a5a6; /* Màu xám bê tông */
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-    -fx-background-radius: 5px;
-}
-
-/* Hiệu ứng khi di chuột vào nút hủy */
-.button-cancel:hover {
-    -fx-background-color: #7f8c8d; /* Xám đậm hơn khi hover */
+    -fx-background-radius: 5px 5px 0px 0px;
 }

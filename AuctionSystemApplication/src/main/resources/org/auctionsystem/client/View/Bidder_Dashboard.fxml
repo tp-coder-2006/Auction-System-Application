@@ -9,21 +9,28 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
 
-<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
+<BorderPane prefHeight="744.0" prefWidth="967.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="161.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="32.0" prefWidth="967.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="Times New Roman Bold" size="48.0" />
                </font>
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
+               </VBox.margin>
+            </Label>
+            <Label text="Hãy tận hưởng thời gian mua sắm tại đây!!">
+               <font>
+                  <Font name="Times New Roman Bold" size="48.0" />
+               </font>
+               <VBox.margin>
+                  <Insets bottom="50.0" />
                </VBox.margin>
             </Label>
             <HBox alignment="CENTER" prefHeight="282.0" prefWidth="658.0">
@@ -46,16 +53,10 @@
                      </children>
                   </VBox>
                </children>
+               <VBox.margin>
+                  <Insets top="20.0" />
+               </VBox.margin>
             </HBox>
-            <Region prefHeight="74.0" prefWidth="658.0" VBox.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
-               <font>
-                  <Font size="30.0" />
-               </font>
-               <padding>
-                  <Insets bottom="10.0" left="10.0" />
-               </padding>
-            </Label>
          </children>
       </VBox>
    </center>
@@ -72,11 +73,21 @@
           </Menu>
           <Menu mnemonicParsing="false" text="Số dư tài khoản">
             <items>
-              <MenuItem mnemonicParsing="false" text="Nạp tiền" />
-                  <MenuItem mnemonicParsing="false" text="Rút tiền" />
+              <MenuItem mnemonicParsing="false" onAction="#Go_to_wallet" text="Nạp / Rút tiền" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_transaction_history" text="Lịch sử giao dịch" />
             </items>
           </Menu>
         </menus>
       </MenuBar>
    </top>
+   <bottom>
+      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="30.0" />
+         </font>
+         <padding>
+            <Insets bottom="10.0" left="10.0" />
+         </padding>
+      </Label>
+   </bottom>
 </BorderPane>

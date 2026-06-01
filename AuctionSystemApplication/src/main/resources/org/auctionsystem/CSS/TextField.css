@@ -1,0 +1,10 @@
+.profile-field:focused {
+    -fx-border-color: #c68642;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(198,134,66,0.3), 6, 0, 0, 0);
+}
+.profile-field:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #f5f0e8;
+    -fx-border-color: #e0cba8;
+}

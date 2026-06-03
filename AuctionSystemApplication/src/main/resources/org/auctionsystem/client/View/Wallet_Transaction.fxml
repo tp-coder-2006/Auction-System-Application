@@ -1,0 +1,160 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.TextArea?>
+<?import javafx.scene.control.Separator?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="570.0" prefWidth="680.0" spacing="16.0"
+      stylesheets="@../../CSS/style.css"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Wallet_Transaction">
+   <padding>
+      <Insets bottom="20.0" left="24.0" right="24.0" top="16.0" />
+   </padding>
+   <children>
+
+      <!-- Tiêu đề -->
+      <Label text="NẠP / RÚT TIỀN" alignment="CENTER" maxWidth="1.7976931348623157E308">
+         <font><Font name="System Bold" size="26.0" /></font>
+      </Label>
+
+      <!-- Card: Số dư hiện tại -->
+      <HBox styleClass="floating-card" alignment="CENTER_LEFT" prefHeight="64.0"
+            maxWidth="1.7976931348623157E308">
+         <padding><Insets bottom="12.0" left="20.0" right="20.0" top="12.0" /></padding>
+         <children>
+            <VBox spacing="2.0">
+               <children>
+                  <Label text="Số dư hiện tại" style="-fx-font-size: 13px; -fx-text-fill: #888;" />
+                  <Label fx:id="lbl_balance" text="0 ₫"
+                         style="-fx-font-size: 22px; -fx-font-weight: bold; -fx-text-fill: #029ef2;" />
+               </children>
+            </VBox>
+            <Region HBox.hgrow="ALWAYS" />
+            <Button fx:id="btn_refresh" text="↻ Làm mới" onAction="#onRefreshBalance"
+                    prefWidth="100.0" prefHeight="32.0" style="-fx-font-size: 13px;" />
+         </children>
+      </HBox>
+
+      <!-- Card: Nạp tiền + Rút tiền (2 cột) -->
+      <HBox spacing="16.0" maxWidth="1.7976931348623157E308" prefHeight="300.0">
+
+         <!-- ── Nạp tiền ── -->
+         <VBox styleClass="floating-card" spacing="10.0" HBox.hgrow="ALWAYS"
+               prefHeight="280.0">
+            <padding><Insets bottom="16.0" left="16.0" right="16.0" top="14.0" /></padding>
+            <children>
+               <Label text="💰  Nạp tiền" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+               <Separator />
+
+               <Label text="Số tiền muốn nạp (₫):"
+                      style="-fx-font-size: 13px; -fx-font-weight: bold;" />
+               <TextField fx:id="field_deposit_amount" promptText="Nhập số tiền..."
+                          prefHeight="34.0" maxWidth="1.7976931348623157E308" />
+
+               <!-- Gợi ý nhanh -->
+               <Label text="Nạp nhanh:" style="-fx-font-size: 12px; -fx-text-fill: #666;" />
+               <HBox spacing="6.0">
+                  <children>
+                     <Button text="50K"   onAction="#onDepositQuick50"   prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                     <Button text="100K"  onAction="#onDepositQuick100"  prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                     <Button text="500K"  onAction="#onDepositQuick500"  prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                     <Button text="1M"    onAction="#onDepositQuick1M"   prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                  </children>
+               </HBox>
+
+               <Label text="Ghi chú (tuỳ chọn):"
+                      style="-fx-font-size: 13px; -fx-font-weight: bold;">
+                  <VBox.margin><Insets top="4.0" /></VBox.margin>
+               </Label>
+               <TextField fx:id="field_deposit_note" promptText="Vd: Nạp từ ngân hàng ABC..."
+                          prefHeight="34.0" maxWidth="1.7976931348623157E308" />
+
+               <Region VBox.vgrow="ALWAYS" />
+
+               <Button fx:id="btn_deposit" text="✔  Xác nhận nạp tiền"
+                       onAction="#onDeposit"
+                       prefHeight="38.0" maxWidth="1.7976931348623157E308"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold;
+                              -fx-background-color: #029ef2; -fx-text-fill: white;
+                              -fx-background-radius: 6px;" />
+
+               <Label fx:id="lbl_deposit_status" text="" wrapText="true"
+                      maxWidth="1.7976931348623157E308" alignment="CENTER"
+                      style="-fx-font-size: 12px;" />
+            </children>
+         </VBox>
+
+         <!-- ── Rút tiền ── -->
+         <VBox styleClass="floating-card" spacing="10.0" HBox.hgrow="ALWAYS"
+               prefHeight="280.0">
+            <padding><Insets bottom="16.0" left="16.0" right="16.0" top="14.0" /></padding>
+            <children>
+               <Label text="🏦  Rút tiền" style="-fx-font-size: 16px; -fx-font-weight: bold;" />
+               <Separator />
+
+               <Label text="Số tiền muốn rút (₫):"
+                      style="-fx-font-size: 13px; -fx-font-weight: bold;" />
+               <TextField fx:id="field_withdraw_amount" promptText="Nhập số tiền..."
+                          prefHeight="34.0" maxWidth="1.7976931348623157E308" />
+
+               <!-- Gợi ý nhanh -->
+               <Label text="Rút nhanh:" style="-fx-font-size: 12px; -fx-text-fill: #666;" />
+               <HBox spacing="6.0">
+                  <children>
+                     <Button text="50K"   onAction="#onWithdrawQuick50"  prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                     <Button text="100K"  onAction="#onWithdrawQuick100" prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                     <Button text="500K"  onAction="#onWithdrawQuick500" prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                     <Button text="Tất cả" onAction="#onWithdrawAll"      prefWidth="55.0" prefHeight="28.0" style="-fx-font-size: 12px;" />
+                  </children>
+               </HBox>
+
+               <Label text="Ghi chú (tuỳ chọn):"
+                      style="-fx-font-size: 13px; -fx-font-weight: bold;">
+                  <VBox.margin><Insets top="4.0" /></VBox.margin>
+               </Label>
+               <TextField fx:id="field_withdraw_note" promptText="Vd: Rút về tài khoản Vietcombank..."
+                          prefHeight="34.0" maxWidth="1.7976931348623157E308" />
+
+               <Region VBox.vgrow="ALWAYS" />
+
+               <Button fx:id="btn_withdraw" text="✔  Xác nhận rút tiền"
+                       onAction="#onWithdraw"
+                       prefHeight="38.0" maxWidth="1.7976931348623157E308"
+                       style="-fx-font-size: 14px; -fx-font-weight: bold;
+                              -fx-background-color: #e74c3c; -fx-text-fill: white;
+                              -fx-background-radius: 6px;" />
+
+               <Label fx:id="lbl_withdraw_status" text="" wrapText="true"
+                      maxWidth="1.7976931348623157E308" alignment="CENTER"
+                      style="-fx-font-size: 12px;" />
+            </children>
+         </VBox>
+
+      </HBox>
+
+      <!-- Nút điều hướng -->
+      <HBox alignment="CENTER" spacing="16.0" maxWidth="1.7976931348623157E308">
+         <children>
+            <Button text="📋  Xem lịch sử giao dịch"
+                    onAction="#onViewHistory"
+                    prefHeight="36.0" prefWidth="220.0"
+                    style="-fx-font-size: 13px;" />
+            <Region HBox.hgrow="ALWAYS" />
+            <Button text="← Quay lại trang chủ"
+                    onAction="#onBack"
+                    prefHeight="36.0" prefWidth="185.0"
+                    style="-fx-font-size: 13px;" />
+         </children>
+      </HBox>
+
+   </children>
+</VBox>

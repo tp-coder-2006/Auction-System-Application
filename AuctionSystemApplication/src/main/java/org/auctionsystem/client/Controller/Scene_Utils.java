@@ -1,6 +1,6 @@
 package org.auctionsystem.client.Controller;
 
-import com.google.gson.JsonObject;
+import javafx.animation.FadeTransition;
 import javafx.application.Platform;
 import javafx.collections.ObservableList;
 import javafx.collections.transformation.FilteredList;
@@ -10,36 +10,38 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Node;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
-import javafx.scene.control.Alert;
 import javafx.scene.control.ListView;
 import javafx.scene.control.MenuItem;
 import javafx.scene.control.TextField;
-import javafx.scene.input.KeyEvent;
-import javafx.scene.input.MouseEvent;
 import javafx.stage.Stage;
-import org.auctionsystem.client.Connectivity.ServerConnection;
-import org.auctionsystem.client.session.UserSession;
+import javafx.util.Duration;
 
 import java.io.IOException;
 import java.util.Objects;
-import java.util.concurrent.Executors;
-import java.util.concurrent.ScheduledExecutorService;
-import java.util.concurrent.TimeUnit;
 
 public class Scene_Utils {
 
-    // [MỚI] Lưu primaryStage — dùng cho startSessionChecker() chuyển về login
+    // Lưu primaryStage — set 1 lần duy nhất trong Main.start()
     private static Stage primaryStage;
 
-    // [MỚI] Track thời gian ping gần nhất — tránh ping quá nhiều
-    private static long lastPingTime = 0;
+    // Lưu kích thước stage gốc 1 lần duy nhất khi app khởi động
+    private static double initialWidth  = -1;
+    private static double initialHeight = -1;
 
-    // [MỚI] Scheduler kiểm tra session định kỳ
-    private static ScheduledExecutorService checkPingScheduler;
-
-    // [MỚI] Gọi 1 lần duy nhất trong Main.start()
+    /** Gọi 1 lần duy nhất trong Main.start() trước stage.show() */
     public static void setPrimaryStage(Stage stage) {
         primaryStage = stage;
+    }
+
+    /** Lấy primaryStage — dùng trong BanWatcher hoặc bất kỳ nơi nào cần Stage mà không có ActionEvent */
+    public static Stage getPrimaryStage() {
+        return primaryStage;
+    }
+
+    /** Gọi 1 lần trong Main.java sau stage.show() */
+    public static void Init_Stage_Size(Stage stage) {
+        initialWidth  = stage.getWidth();
+        initialHeight = stage.getHeight();
     }
 
     @FXML
@@ -55,13 +57,30 @@ public class Scene_Utils {
             throw new IllegalArgumentException();
         }
 
-        Scene scene = new Scene(root);
+        boolean wasMaximized = stage.isMaximized();
+        double targetWidth   = stage.getWidth();
+        double targetHeight  = stage.getHeight();
 
-        // [MỚI] Gắn activity listener cho mỗi scene mới
-        attachActivityListener(scene);
+        Scene scene = new Scene(root);
         Apply_Default_CSS_Style(scene);
 
+        stage.setMaximized(false);
+        stage.setOpacity(0);
         stage.setScene(scene);
+
+        Platform.runLater(() -> {
+            if (wasMaximized) {
+                stage.setMaximized(true);
+            } else {
+                stage.setWidth(targetWidth);
+                stage.setHeight(targetHeight);
+            }
+            stage.setOpacity(1);
+            FadeTransition fade = new FadeTransition(Duration.millis(250), root);
+            fade.setFromValue(0);
+            fade.setToValue(1);
+            fade.play();
+        });
         stage.show();
     }
 
@@ -73,13 +92,9 @@ public class Scene_Utils {
                 if (new_value == null || new_value.isBlank()) return true;
                 return item.toLowerCase().contains(new_value.toLowerCase());
             });
-            if (new_value == null || new_value.isBlank()) {
-                item_list.setVisible(false);
-                item_list.setManaged(false);
-            } else {
-                item_list.setVisible(true);
-                item_list.setManaged(true);
-            }
+            boolean hasText = new_value != null && !new_value.isBlank();
+            item_list.setVisible(hasText);
+            item_list.setManaged(hasText);
         });
         item_list.setItems(filtered_data);
     }
@@ -95,92 +110,6 @@ public class Scene_Utils {
             }
         } else {
             System.err.println("⚠️ Không tìm thấy file CSS tại: " + default_css_path);
-        }
-    }
-
-    // [MỚI] Gắn event listener — track hoạt động chuột/bàn phím
-    private static void attachActivityListener(Scene scene) {
-        scene.addEventFilter(MouseEvent.MOUSE_MOVED, e -> ping());
-        scene.addEventFilter(MouseEvent.MOUSE_CLICKED, e -> ping());
-        scene.addEventFilter(KeyEvent.KEY_PRESSED, e -> ping());
-    }
-
-    // [MỚI] Gửi PING lên server mỗi 1 phút khi có hoạt động
-    private static void ping() {
-        if (UserSession.getInstance().getSessionId() == null) return;
-        long now = System.currentTimeMillis();
-        if (now - lastPingTime > 60 * 1000) {
-            Scene_Utils.resetLastPingTime();
-            new Thread(() -> {  // ← chạy riêng, không block UI
-                JsonObject request = new JsonObject();
-                request.addProperty("action", "PING");
-                ServerConnection.sendAuthRequest(request);
-            }, "ping-thread").start();
-        }
-    }
-
-    // [MỚI] Reset lastPingTime — gọi ngay sau khi login thành công
-    public static void resetLastPingTime() {
-        lastPingTime = System.currentTimeMillis();
-    }
-
-    // [MỚI] Bắt đầu kiểm tra session định kỳ mỗi 2 phút
-    public static void startSessionChecker() {
-        stopSessionChecker();
-
-        // [MỚI] setDaemon(true) — khi JavaFX tắt, thread này tự tắt theo
-        // Không setDaemon → JVM không tắt được dù user đã đóng cửa sổ
-        checkPingScheduler = Executors.newSingleThreadScheduledExecutor(runnable -> {
-            Thread t = new Thread(runnable, "session-checker-thread");
-            t.setDaemon(true);
-            return t;
-        });
-        checkPingScheduler.scheduleAtFixedRate(() -> {
-
-            if (UserSession.getInstance().getSessionId() == null) return;
-
-            JsonObject request = new JsonObject();
-            request.addProperty("action", "CHECK_PING");
-            JsonObject response = ServerConnection.sendAuthRequest(request);
-
-            if (response != null) {
-                String status = response.get("status").getAsString();
-                if ("expired".equals(status) || "error".equals(status)) {
-                    Platform.runLater(() -> {
-                        Alert alert = new Alert(Alert.AlertType.WARNING);
-                        alert.setTitle("Phiên đăng nhập hết hạn");
-                        alert.setHeaderText(null);
-                        alert.setContentText("Phiên đăng nhập của bạn đã hết hạn. Vui lòng đăng nhập lại!");
-                        alert.showAndWait();
-
-                        UserSession.getInstance().clear();
-                        stopSessionChecker();
-
-                        try {
-                            Parent root = FXMLLoader.load(
-                                    Scene_Utils.class.getResource(
-                                            "/org/auctionsystem/client/View/Login_scene.fxml"
-                                    )
-                            );
-                            Scene scene = new Scene(root);
-                            attachActivityListener(scene);
-                            Apply_Default_CSS_Style(scene);
-                            primaryStage.setScene(scene);
-                            primaryStage.show();
-                        } catch (IOException e) {
-                            e.printStackTrace();
-                        }
-                    });
-                }
-            }
-
-        }, 2, 2, TimeUnit.MINUTES);
-    }
-
-    // [MỚI] Dừng session checker — gọi khi logout hoặc app đóng
-    public static void stopSessionChecker() {
-        if (checkPingScheduler != null && !checkPingScheduler.isShutdown()) {
-            checkPingScheduler.shutdown();
         }
     }
 }

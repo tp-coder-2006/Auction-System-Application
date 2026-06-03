@@ -17,7 +17,7 @@ public class Bidder extends User {
         super();
     }
 
-    public Bidder(String id, String name, String username, String password, double balance, String email, String phone, UserRole role) {
-        super(id, name, username, password, balance, email, phone, role);
+    public Bidder(String id, String name, String username, String password, double balance, String email, String phone, UserRole role, boolean active, String avatarUrl) {
+        super(id, name, username, password, balance, email, phone, role, active, avatarUrl);
     }
 }

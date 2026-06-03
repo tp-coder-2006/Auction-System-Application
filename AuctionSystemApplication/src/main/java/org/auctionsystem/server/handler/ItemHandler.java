@@ -34,6 +34,14 @@ public class ItemHandler {
         return itemService.getItemsByOwner(request);
     }
 
+    public JsonObject handleGetAllItems(JsonObject request) {
+        return itemService.getAllItems(request);
+    }
+
+    public JsonObject handleGetVisibleItems(JsonObject request) {
+        return itemService.getVisibleItems(request);
+    }
+
     public JsonObject handleGetActiveItems(JsonObject request) {
         return itemService.getAllActiveItems(request);
     }
@@ -44,5 +52,13 @@ public class ItemHandler {
 
     public JsonObject handleRestartAuction(JsonObject request) {
         return itemService.restartItemAuction(request);
+    }
+
+    public JsonObject handleRestoreHiddenItem(JsonObject request) {
+        return itemService.restoreHiddenItem(request);
+    }
+
+    public JsonObject handleSearchItems(JsonObject request) {
+        return itemService.searchItems(request);
     }
 }

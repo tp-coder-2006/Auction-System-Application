@@ -1,28 +1,270 @@
 package org.auctionsystem.client.Controller.Bidder;
 
+import com.google.gson.JsonArray;
+import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
+import javafx.application.Platform;
+import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
-import javafx.event.ActionEvent;
+import javafx.scene.control.Label;
+import javafx.scene.control.ScrollPane;
+import javafx.scene.layout.HBox;
+import javafx.scene.layout.Priority;
+import javafx.scene.layout.Region;
+import javafx.scene.layout.VBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.BanWatcher;
+import org.auctionsystem.client.event.NotificationManager;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 
 public class Controller_Bidder_Dashboard {
-    private static final String Login_View          = "/org/auctionsystem/client/View/Login_scene.fxml";
-    private static final String Bidder_Profile_View = "/org/auctionsystem/client/View/Bidder_Profile.fxml";
-    private static final String Bidding_History_View = "/org/auctionsystem/client/View/Bidding_History.fxml";
-    private static final String Searching_Room_View  = "/org/auctionsystem/client/View/Searching_room.fxml";
+
+    @FXML private Label     lbl_balance;
+    @FXML private VBox      widget_leading;
+    @FXML private VBox      vbox_leading_items;
+    @FXML private ScrollPane scroll_leading;
+    @FXML private Label     lbl_leading_count;
+
+    private static final String Login_View               = "/org/auctionsystem/client/View/Login_scene.fxml";
+    private static final String Bidder_Profile_View      = "/org/auctionsystem/client/View/Bidder_Profile.fxml";
+    private static final String Bidding_History_View     = "/org/auctionsystem/client/View/Bidding_History.fxml";
+    private static final String Bidding_Result_View      = "/org/auctionsystem/client/View/Bidding_Result.fxml";
+    private static final String Search_User_View         = "/org/auctionsystem/client/View/Search_User.fxml";
+    private static final String Searching_Room_View      = "/org/auctionsystem/client/View/Searching_room.fxml";
+    private static final String Wallet_View              = "/org/auctionsystem/client/View/Wallet_Transaction.fxml";
+    private static final String Transaction_History_View = "/org/auctionsystem/client/View/Transaction_History.fxml";
+    private static final String My_Items_Bidder_View     = "/org/auctionsystem/client/View/My_Items_Bidder.fxml";
+
+    private static final DateTimeFormatter TIME_FMT =
+            DateTimeFormatter.ofPattern("HH:mm:ss dd/MM");
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Khởi tạo
+    // ─────────────────────────────────────────────────────────────────────────
+
+    @FXML
+    public void initialize() {
+        updateBalanceLabel(UserSession.getInstance().getBalance());
+
+        // Đăng ký events real-time
+        EventDispatcher.register(EventType.BALANCE_UPDATED, this::onBalanceEvent);
+        EventDispatcher.register(EventType.BID_DEDUCT,      this::onBalanceEvent);
+        EventDispatcher.register(EventType.BID_CREDIT,      this::onBalanceEvent);
+
+        // Refresh widget khi có bid mới, phiên kết thúc — đã xóa real-time auto-refresh.
+        // Widget chỉ load 1 lần khi vào màn hình.
+
+        // Load widget lần đầu
+        loadLeadingBids();
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Widget: Đang dẫn đầu
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void loadLeadingBids() {
+        String bidderId = UserSession.getInstance().getUserId();
+        new Thread(() -> {
+            JsonObject req = new JsonObject();
+            req.addProperty("action",     "GET_ACTIVE_BIDS_BY_BIDDER");
+            req.addProperty("bidder_id",  bidderId);
+            JsonObject res = ServerConnection.sendAuthRequest(req);
+
+            Platform.runLater(() -> {
+                if (vbox_leading_items == null) return;
+                vbox_leading_items.getChildren().clear();
+
+                if (res == null || !"success".equals(getString(res, "status", ""))) {
+                    Label err = new Label("Không thể tải dữ liệu.");
+                    err.getStyleClass().add("leading-widget-empty");
+                    vbox_leading_items.getChildren().add(err);
+                    if (lbl_leading_count != null) lbl_leading_count.setText("");
+                    return;
+                }
+
+                JsonArray arr = res.get("message").getAsJsonArray();
+
+                if (arr.isEmpty()) {
+                    Label empty = new Label("Bạn chưa dẫn đầu phiên nào đang diễn ra.");
+                    empty.getStyleClass().add("leading-widget-empty");
+                    vbox_leading_items.getChildren().add(empty);
+                    if (lbl_leading_count != null) lbl_leading_count.setText("");
+                    return;
+                }
+
+                if (lbl_leading_count != null)
+                    lbl_leading_count.setText(arr.size() + " phiên");
+
+                for (JsonElement el : arr) {
+                    JsonObject item = el.getAsJsonObject();
+                    vbox_leading_items.getChildren().add(buildItemRow(item));
+                }
+            });
+        }, "Dashboard-LeadingBids").start();
+    }
+
+    /** Tạo một hàng hiển thị cho 1 item đang dẫn đầu */
+    private HBox buildItemRow(JsonObject item) {
+        String name      = getString(item, "itemName", getString(item, "item_id", "—"));
+        String priceRaw  = item.has("bidAmount") && !item.get("bidAmount").isJsonNull()
+                           ? String.format("%,.0f ₫", item.get("bidAmount").getAsDouble())
+                           : "—";
+        String timeLabel = buildTimeLabel(item);
+
+        // Tên item (co giãn)
+        Label lblName = new Label(name);
+        lblName.getStyleClass().add("leading-item-name");
+        lblName.setMaxWidth(Double.MAX_VALUE);
+        lblName.setWrapText(false);
+        lblName.setEllipsisString("…");
+        HBox.setHgrow(lblName, Priority.ALWAYS);
+
+        // Giá bid
+        Label lblPrice = new Label(priceRaw);
+        lblPrice.getStyleClass().add("leading-item-price");
+
+        // Thời gian còn lại / kết thúc
+        Label lblTime = new Label(timeLabel);
+        lblTime.getStyleClass().add("leading-item-time");
+
+        Region spacer = new Region();
+        HBox.setHgrow(spacer, Priority.SOMETIMES);
+
+        HBox row = new HBox(8, lblName, spacer, lblPrice, lblTime);
+        row.getStyleClass().add("leading-item-row");
+        row.setMaxWidth(Double.MAX_VALUE);
+
+        return row;
+    }
+
+    /** Tính nhãn thời gian: "còn Xh Ym" nếu < 24h, ngày giờ nếu xa hơn */
+    private String buildTimeLabel(JsonObject item) {
+        if (!item.has("itemEndTime") || item.get("itemEndTime").isJsonNull()) return "";
+        try {
+            // Gson serialize LocalDateTime thành object {date:{year,month,day}, time:{hour,minute,...}}
+            // hoặc string tùy cấu hình — thử parse string trước
+            String raw = item.get("itemEndTime").toString();
+            // Nếu là JsonObject (Gson default LocalDateTime serialization)
+            if (item.get("itemEndTime").isJsonObject()) {
+                JsonObject dt = item.get("itemEndTime").getAsJsonObject();
+                JsonObject date = dt.getAsJsonObject("date");
+                JsonObject time = dt.getAsJsonObject("time");
+                int year = date.get("year").getAsInt();
+                int month = date.get("monthValue").getAsInt();
+                int day   = date.get("dayOfMonth").getAsInt();
+                int hour  = time.get("hour").getAsInt();
+                int min   = time.get("minute").getAsInt();
+                int sec   = time.get("second").getAsInt();
+                LocalDateTime end = LocalDateTime.of(year, month, day, hour, min, sec);
+                return formatCountdown(end);
+            }
+            // Nếu là string ISO
+            String s = item.get("itemEndTime").getAsString();
+            LocalDateTime end = LocalDateTime.parse(s.replace(" ", "T"));
+            return formatCountdown(end);
+        } catch (Exception e) {
+            return "";
+        }
+    }
+
+    private String formatCountdown(LocalDateTime end) {
+        LocalDateTime now = LocalDateTime.now();
+        long totalSecs = ChronoUnit.SECONDS.between(now, end);
+        if (totalSecs <= 0) return "Đã hết giờ";
+        if (totalSecs < 3600) {
+            long m = totalSecs / 60, s = totalSecs % 60;
+            return String.format("còn %dm%02ds", m, s);
+        }
+        if (totalSecs < 86400) {
+            long h = totalSecs / 3600, m = (totalSecs % 3600) / 60;
+            return String.format("còn %dh%02dm", h, m);
+        }
+        return "đến " + end.format(TIME_FMT);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Real-time balance
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void onBalanceEvent(JsonObject payload) {
+        try {
+            double newBalance = payload.get("balance").getAsDouble();
+            UserSession.getInstance().setBalance(newBalance);
+            updateBalanceLabel(newBalance);
+        } catch (Exception e) {
+            System.err.println("[BidderDashboard] Lỗi parse balance event: " + e.getMessage());
+        }
+    }
+
+    private void updateBalanceLabel(double balance) {
+        if (lbl_balance != null)
+            lbl_balance.setText("Số dư tài khoản của bạn: " + String.format("%,.0f ₫", balance));
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private static String getString(JsonObject o, String k, String fb) {
+        return (o != null && o.has(k) && !o.get(k).isJsonNull())
+               ? o.get(k).getAsString() : fb;
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Điều hướng
+    // ─────────────────────────────────────────────────────────────────────────
 
     private void switch_scene(ActionEvent event, String fxml_path) {
-        try {
-            Scene_Utils.Change_Scene(event, fxml_path);
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+        try { Scene_Utils.Change_Scene(event, fxml_path); }
+        catch (IOException e) { e.printStackTrace(); }
+    }
+
+    @FXML
+    public void Go_to_bidder_profile(ActionEvent event) {
+        unregisterAll();
+        new Thread(() -> {
+            JsonObject request = new JsonObject();
+            request.addProperty("action",  "GET_PROFILE");
+            request.addProperty("user_id", UserSession.getInstance().getUserId());
+            JsonObject response = ServerConnection.sendAuthRequest(request);
+            if (response != null && "success".equals(response.get("status").getAsString())) {
+                JsonObject info = response.get("information").getAsJsonObject();
+                UserSession s = UserSession.getInstance();
+                s.setBalance(info.get("balance").getAsDouble());
+                s.setPhone(info.has("phone") && !info.get("phone").isJsonNull()
+                        ? info.get("phone").getAsString() : null);
+                s.setRating(info.has("rating") && !info.get("rating").isJsonNull()
+                        ? info.get("rating").getAsDouble() : null);
+            }
+            Platform.runLater(() -> switch_scene(event, Bidder_Profile_View));
+        }, "Nav-BidderProfile").start();
+    }
+
+    @FXML public void Go_to_bidding_history(ActionEvent event)     { unregisterAll(); switch_scene(event, Bidding_History_View); }
+    @FXML public void Go_to_bidding_result(ActionEvent event)      { unregisterAll(); switch_scene(event, Bidding_Result_View); }
+    @FXML public void Go_to_search_user(ActionEvent event)         { unregisterAll(); switch_scene(event, Search_User_View); }
+    @FXML public void Go_to_searching_room(ActionEvent event)      { unregisterAll(); switch_scene(event, Searching_Room_View); }
+    @FXML public void Go_to_wallet(ActionEvent event)              { unregisterAll(); switch_scene(event, Wallet_View); }
+    @FXML public void Go_to_transaction_history(ActionEvent event) { unregisterAll(); switch_scene(event, Transaction_History_View); }
+    @FXML public void Go_to_my_items(ActionEvent event)            { unregisterAll(); switch_scene(event, My_Items_Bidder_View); }
+
+    private void unregisterAll() {
+        EventDispatcher.unregister(EventType.BALANCE_UPDATED);
+        EventDispatcher.unregister(EventType.BID_DEDUCT);
+        EventDispatcher.unregister(EventType.BID_CREDIT);
+        EventDispatcher.unregister(EventType.BID_PLACED);
+        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
+        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
     }
 
     @FXML
@@ -31,55 +273,18 @@ public class Controller_Bidder_Dashboard {
         alert.setTitle("Đăng xuất");
         alert.setHeaderText("Bạn chuẩn bị đăng xuất khỏi tài khoản này.");
         alert.setContentText("Bạn có chắc chắn muốn đăng xuất?");
-
         alert.showAndWait().ifPresent(response -> {
             if (response == ButtonType.OK) {
-                // [MỚI] Gửi LOGOUT lên server — xóa session khỏi SessionManager ngay lập tức
-                // Trước đây chỉ chuyển màn hình, session vẫn còn trên server đến khi tự hết hạn
                 JsonObject request = new JsonObject();
                 request.addProperty("action", "LOGOUT");
                 ServerConnection.sendAuthRequest(request);
-
-                // [MỚI] Dừng session checker — trước đây checker vẫn chạy sau logout
-                Scene_Utils.stopSessionChecker();
-
-                // [MỚI] Clear toàn bộ UserSession phía client
+                BanWatcher.deactivate();
+                NotificationManager.deactivate();
+                EventDispatcher.unregisterAll();
                 UserSession.getInstance().clear();
-
+                ServerConnection.disconnect();
                 switch_scene(event, Login_View);
             }
         });
-    }
-
-    @FXML
-    public void Go_to_bidder_profile(ActionEvent event) {
-        // Gửi GET_PROFILE để cập nhật dữ liệu mới nhất vào UserSession trước khi vào Profile
-        // Profile sẽ đọc trực tiếp từ UserSession mà không cần gọi thêm request
-        JsonObject request = new JsonObject();
-        request.addProperty("action", "GET_PROFILE");
-        request.addProperty("user_id", UserSession.getInstance().getUserId());
-        JsonObject response = ServerConnection.sendAuthRequest(request);
-
-        if (response != null && "success".equals(response.get("status").getAsString())) {
-            com.google.gson.JsonObject info = response.get("information").getAsJsonObject();
-            UserSession s = UserSession.getInstance();
-            s.setBalance(info.get("balance").getAsDouble());
-            s.setPhone(info.has("phone") && !info.get("phone").isJsonNull()
-                    ? info.get("phone").getAsString() : null);
-            s.setRating(info.has("rating") && !info.get("rating").isJsonNull()
-                    ? info.get("rating").getAsDouble() : null);
-        }
-
-        switch_scene(event, Bidder_Profile_View);
-    }
-
-    @FXML
-    public void Go_to_bidding_history(ActionEvent event) {
-        switch_scene(event, Bidding_History_View);
-    }
-
-    @FXML
-    public void Go_to_searching_room(ActionEvent event) {
-        switch_scene(event, Searching_Room_View);
     }
 }

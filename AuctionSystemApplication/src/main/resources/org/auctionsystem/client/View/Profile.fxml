@@ -31,13 +31,13 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField layoutX="14.0" layoutY="74.0" />
-      <TextField layoutX="14.0" layoutY="191.0" />
-      <PasswordField layoutX="15.0" layoutY="134.0" />
-      <Button layoutX="20.0" layoutY="361.0" mnemonicParsing="false" text="Chỉnh sửa thông tin" />
+      <TextField fx:id="field_username" layoutX="14.0" layoutY="74.0" />
+      <TextField fx:id="field_email" layoutX="14.0" layoutY="191.0" />
+      <PasswordField fx:id="field_password" layoutX="15.0" layoutY="134.0" />
+      <Button fx:id="btn_edit" layoutX="20.0" layoutY="361.0" mnemonicParsing="false" text="Chỉnh sửa thông tin" />
       <StackPane alignment="TOP_RIGHT" layoutX="438.0" layoutY="12.0" prefHeight="201.0" prefWidth="152.0">
          <children>
-            <Circle fill="#d9e0e7" radius="76.0" stroke="BLACK" strokeType="INSIDE" />
+            <Circle fx:id="avatarCircle" fill="#d9e0e7" radius="76.0" stroke="BLACK" strokeType="INSIDE" />
          </children>
       </StackPane>
       <Label layoutX="16.0" layoutY="231.0" text="Số điện thoại">
@@ -45,6 +45,6 @@
             <Font name="System Bold" size="14.0" />
          </font>
       </Label>
-      <TextField layoutX="15.0" layoutY="251.0" />
+      <TextField fx:id="field_phone" layoutX="15.0" layoutY="251.0" />
    </children>
 </AnchorPane>

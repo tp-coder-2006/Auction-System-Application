@@ -1,0 +1,37 @@
+/* ----------------------------------------------------
+   TRANG TRÍ TILEPANE (KHUNG LƯỚI Ô GẠCH)
+---------------------------------------------------- */
+.product-grid {
+    -fx-background-color: #FDFBF7;       /* Màu nền tiệp với màu hệ thống (.root) của bạn */
+    -fx-padding: 20px;                   /* Khoảng cách đệm từ viền TilePane vào trong */
+
+    /* Thiết lập khoảng cách giữa các ô gạch */
+    -fx-hgap: 15px;                      /* Khoảng cách giữa các ô theo chiều ngang */
+    -fx-vgap: 15px;                      /* Khoảng cách giữa các ô theo chiều dọc */
+
+    /* Căn chỉnh toàn bộ các ô gạch ra giữa vùng chứa */
+    -fx-alignment: center;
+}
+/* ----------------------------------------------------
+   TRANG TRÍ CARD SẢN PHẨM TRONG TILEPANE
+---------------------------------------------------- */
+.product-card {
+    -fx-background-color: brown;
+    -fx-background-radius: 10px;
+    -fx-border-color: #eef0f2;
+    -fx-border-radius: 10px;
+    -fx-border-width: 1px;
+    -fx-padding: 5px;
+
+    /* Hiệu ứng đổ bóng mờ giúp chiếc Card nổi lên như một tấm thẻ phẳng (Gống class .floating-card của bạn) */
+    -fx-effect: dropshadow(three-pass-box, rgba(0, 0, 0, 0.08), 10, 0, 0, 4);
+
+    /* Hiệu ứng chuyển động mượt mà khi di chuột (nếu môi trường Java hỗ trợ) */
+    -fx-transition: 0.3s;
+}
+
+/* Hiệu ứng nhấc nhẹ Card lên và đổi viền sang vàng nâu khi di chuột vào */
+.product-card:hover {
+    -fx-border-color: #c8a96e; /* Màu vàng nâu đặc trưng của bạn */
+    -fx-effect: dropshadow(three-pass-box, rgba(198, 134, 66, 0.2), 15, 0, 0, 6);
+}

@@ -8,40 +8,67 @@
 <?import javafx.scene.control.MenuItem?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 
-<BorderPane prefHeight="466.0" prefWidth="580.0" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
+<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="38.0" prefWidth="580.0" text="Chào mừng đến với hệ thống đấu giá">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="161.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
-                  <Font name="Times New Roman Bold" size="30.0" />
+                  <Font name="Times New Roman Bold" size="48.0" />
                </font>
                <VBox.margin>
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Label>
-            <Button mnemonicParsing="false" onAction="#Go_to_searching_room" prefHeight="51.0" prefWidth="221.0" text="Đấu giá ngay!!!">
+            <HBox alignment="CENTER" prefHeight="282.0" prefWidth="658.0">
+               <children>
+                  <VBox alignment="CENTER" prefHeight="245.0" prefWidth="594.0" spacing="10.0" styleClass="floating-card" stylesheets="@../../CSS/style.css">
+                     <children>
+                        <Button fx:id="btn_start_bidding" mnemonicParsing="false" onAction="#Go_to_searching_room" prefHeight="51.0" prefWidth="221.0" text="Đấu giá ngay!!!">
+                           <font>
+                              <Font name="System Italic" size="24.0" />
+                           </font>
+                        </Button>
+                        <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Để bắt đầu đấu giá sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrappingWidth="462.4117126464844">
+                           <font>
+                              <Font name="System Bold Italic" size="32.0" />
+                           </font>
+                           <VBox.margin>
+                              <Insets top="10.0" />
+                           </VBox.margin>
+                        </Text>
+                     </children>
+                  </VBox>
+               </children>
+            </HBox>
+            <Region prefHeight="16.0" prefWidth="658.0" />
+
+            <!-- ── Widget: Đang dẫn đầu ───────────────────────────────── -->
+            <VBox fx:id="widget_leading" styleClass="leading-widget" maxWidth="620.0" spacing="6.0">
+               <padding><Insets top="0" bottom="0" left="0" right="0"/></padding>
+               <HBox alignment="CENTER_LEFT" spacing="8.0">
+                  <Label text="🏆 Đang dẫn đầu" styleClass="leading-widget-title" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lbl_leading_count" styleClass="leading-widget-title" text="" />
+               </HBox>
+               <ScrollPane fx:id="scroll_leading" fitToWidth="true" prefHeight="110.0"
+                           style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+                  <VBox fx:id="vbox_leading_items" spacing="5.0" style="-fx-background-color: transparent;" />
+               </ScrollPane>
+            </VBox>
+
+            <Region prefHeight="10.0" prefWidth="658.0" VBox.vgrow="ALWAYS" />
+            <Label fx:id="lbl_balance" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
                <font>
-                  <Font name="System Italic" size="24.0" />
-               </font>
-            </Button>
-            <Text strokeType="OUTSIDE" strokeWidth="0.0" text="Để bắt đầu đấu giá sản phẩm, hãy bấm vào nút bên trên" textAlignment="CENTER" wrappingWidth="462.4117126464844">
-               <font>
-                  <Font name="System Bold Italic" size="24.0" />
-               </font>
-               <VBox.margin>
-                  <Insets top="10.0" />
-               </VBox.margin>
-            </Text>
-            <Region prefHeight="200.0" prefWidth="200.0" VBox.vgrow="ALWAYS" />
-            <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
-               <font>
-                  <Font size="24.0" />
+                  <Font size="30.0" />
                </font>
                <padding>
                   <Insets bottom="10.0" left="10.0" />
@@ -51,27 +78,25 @@
       </VBox>
    </center>
    <top>
-      <MenuBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="26.0" prefWidth="580.0" stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
+      <MenuBar nodeOrientation="LEFT_TO_RIGHT" prefHeight="50.0" prefWidth="658.0" stylesheets="@../../CSS/menu.css" BorderPane.alignment="CENTER">
         <menus>
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#Go_to_bidder_profile" text="Tài khoản" />
-                  <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_history" text="Lịch sử mua hàng" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_history" text="Lịch sử đấu giá" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_result" text="Kết quả đấu giá" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_my_items" text="Sản phẩm của tôi" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_search_user" text="Tìm kiếm người dùng" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="log_out_button" mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />
             </items>
           </Menu>
           <Menu mnemonicParsing="false" text="Số dư tài khoản">
             <items>
-              <MenuItem mnemonicParsing="false" text="Nạp tiền" />
-                  <MenuItem mnemonicParsing="false" text="Rút tiền" />
+              <MenuItem mnemonicParsing="false" onAction="#Go_to_wallet" text="Nạp / Rút tiền" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_transaction_history" text="Lịch sử giao dịch" />
             </items>
           </Menu>
-            <Menu mnemonicParsing="false" text="Trợ giúp">
-              <items>
-                <MenuItem mnemonicParsing="false" text="Action 1" />
-              </items>
-            </Menu>
         </menus>
       </MenuBar>
    </top>

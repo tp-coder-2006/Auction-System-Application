@@ -18,7 +18,6 @@ public class Controller_Register {
     @FXML private TextField     register_name;
     @FXML private TextField     register_username;
     @FXML private TextField     register_email;
-    @FXML private TextField     register_phone;       // [MỚI] nullable
     @FXML private PasswordField register_password;
     @FXML private Label         register_error_announcement;
 
@@ -27,7 +26,6 @@ public class Controller_Register {
         String name     = register_name.getText().trim();
         String username = register_username.getText().trim();
         String email    = register_email.getText().trim();
-        String phone    = register_phone.getText().trim(); // [MỚI]
         String password = register_password.getText();
 
         if (!register_as_bidder.isSelected() && !register_as_seller.isSelected()) {
@@ -57,9 +55,7 @@ public class Controller_Register {
         request.addProperty("email",    email);
         request.addProperty("name",     name);
         request.addProperty("role",     role);
-        // [MỚI] phone không bắt buộc — gửi null nếu để trống
-        if (!phone.isEmpty()) request.addProperty("phone", phone);
-        else                  request.addProperty("phone", (String) null);
+        request.addProperty("phone", (String) null);
 
         JsonObject response = ServerConnection.sendRequest(request);
 

@@ -1,0 +1,154 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.geometry.Insets?>
+<?import javafx.scene.control.Button?>
+<?import javafx.scene.control.Label?>
+<?import javafx.scene.control.TextField?>
+<?import javafx.scene.image.ImageView?>
+<?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
+<?import javafx.scene.layout.VBox?>
+<?import javafx.scene.shape.Circle?>
+<?import javafx.scene.text.Font?>
+
+<VBox alignment="CENTER" prefHeight="570.0" prefWidth="680.0" spacing="20.0"
+      stylesheets="@../../CSS/style.css"
+      xmlns="http://javafx.com/javafx/25"
+      xmlns:fx="http://javafx.com/fxml/1"
+      fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_View_Other_Profile">
+
+   <padding><Insets bottom="10.0" left="10.0" right="10.0" top="10.0" /></padding>
+
+   <!-- Tiêu đề -->
+   <Label alignment="CENTER" prefHeight="32.0" prefWidth="526.0" text="HỒ SƠ NGƯỜI DÙNG">
+      <font><Font name="System Bold" size="30.0" /></font>
+      <VBox.margin><Insets bottom="5.0" /></VBox.margin>
+   </Label>
+
+   <!-- Card chính -->
+   <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+         prefHeight="414.0" prefWidth="624.0" styleClass="floating-card">
+      <padding><Insets right="10.0" top="15.0" /></padding>
+
+      <!-- Cột trái: thông tin văn bản -->
+      <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308"
+            maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="250.0"
+            HBox.hgrow="ALWAYS">
+         <padding><Insets bottom="10.0" left="10.0" /></padding>
+
+         <Label text="Họ và tên">
+            <font><Font name="System Bold" size="18.0" /></font>
+         </Label>
+         <TextField fx:id="field_name" editable="false"
+                    maxHeight="-Infinity" maxWidth="-Infinity"
+                    prefHeight="30.0" prefWidth="189.0" />
+
+         <Label text="Tên người dùng">
+            <font><Font name="System Bold" size="18.0" /></font>
+            <VBox.margin><Insets top="15.0" /></VBox.margin>
+         </Label>
+         <TextField fx:id="field_username" editable="false"
+                    maxHeight="-Infinity" maxWidth="-Infinity"
+                    prefHeight="30.0" prefWidth="189.0" />
+
+         <Label text="Email">
+            <font><Font name="System Bold" size="18.0" /></font>
+            <VBox.margin><Insets top="10.0" /></VBox.margin>
+         </Label>
+         <TextField fx:id="field_email" editable="false"
+                    maxHeight="-Infinity" maxWidth="-Infinity"
+                    prefHeight="30.0" prefWidth="189.0" />
+
+         <Label text="Số điện thoại">
+            <font><Font name="System Bold" size="18.0" /></font>
+            <VBox.margin><Insets top="10.0" /></VBox.margin>
+         </Label>
+         <TextField fx:id="field_phone" editable="false"
+                    maxHeight="-Infinity" maxWidth="-Infinity"
+                    prefHeight="30.0" prefWidth="189.0">
+            <VBox.margin><Insets /></VBox.margin>
+         </TextField>
+      </VBox>
+
+      <Region prefHeight="400.0" prefWidth="148.0" />
+
+      <!-- Cột phải: avatar + role badge + rating (nếu là seller) -->
+      <VBox alignment="TOP_CENTER" prefHeight="321.0" prefWidth="221.0" HBox.hgrow="NEVER">
+         <padding><Insets left="10.0" right="10.0" /></padding>
+
+         <Label alignment="TOP_CENTER" text="Avatar">
+            <font><Font name="System Bold" size="18.0" /></font>
+            <padding><Insets bottom="5.0" /></padding>
+         </Label>
+
+         <StackPane alignment="CENTER" minHeight="190.0" minWidth="190.0"
+                    prefHeight="190.0" prefWidth="190.0"
+                    maxHeight="190.0" maxWidth="190.0">
+            <Circle fx:id="avatarCircle" fill="#d9e0e7" radius="95.0"
+                    stroke="BLACK" strokeType="INSIDE" />
+            <ImageView fx:id="avatar_view"
+                       fitWidth="0.0" fitHeight="0.0"
+                       managed="false" pickOnBounds="true" preserveRatio="true"
+                       visible="false" />
+         </StackPane>
+
+         <!-- Badge vai trò -->
+         <Label fx:id="lbl_role_badge" alignment="CENTER"
+                prefWidth="152.0" wrapText="true"
+                style="-fx-text-fill: #5a6a7a; -fx-font-style: italic;">
+            <font><Font size="13.0" /></font>
+            <VBox.margin><Insets top="8.0" /></VBox.margin>
+         </Label>
+
+         <!-- Đánh giá (hiện khi là seller) -->
+         <Label fx:id="lbl_rating_title" text="Đánh giá" managed="false" visible="false">
+            <font><Font name="System Bold" size="18.0" /></font>
+            <VBox.margin><Insets top="10.0" /></VBox.margin>
+         </Label>
+         <HBox fx:id="hbox_stars" alignment="CENTER" prefWidth="152.0" spacing="4.0"
+               managed="false" visible="false">
+            <ImageView fx:id="imageStar1" fitHeight="25.0" fitWidth="25.0"
+                       pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imageStar2" fitHeight="25.0" fitWidth="25.0"
+                       pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imageStar3" fitHeight="25.0" fitWidth="25.0"
+                       pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imageStar4" fitHeight="25.0" fitWidth="25.0"
+                       pickOnBounds="true" preserveRatio="true" />
+            <ImageView fx:id="imageStar5" fitHeight="25.0" fitWidth="25.0"
+                       pickOnBounds="true" preserveRatio="true" />
+         </HBox>
+         <Label fx:id="lbl_rating_text" alignment="CENTER" prefWidth="152.0"
+                managed="false" visible="false"
+                style="-fx-text-fill: #888;">
+            <font><Font size="11.0" /></font>
+         </Label>
+
+         <!-- Nút đánh giá seller (chỉ hiện nếu bidder đã mua hàng) -->
+         <Button fx:id="btn_rate_seller" mnemonicParsing="false"
+                 onAction="#onRateSeller"
+                 text="⭐ Đánh giá Seller"
+                 prefWidth="152.0"
+                 prefHeight="36.0"
+                 managed="false" visible="false">
+            <font><Font size="13.0" /></font>
+            <VBox.margin><Insets top="10.0" /></VBox.margin>
+         </Button>
+      </VBox>
+   </HBox>
+
+   <Region prefHeight="0.0" prefWidth="591.0" VBox.vgrow="ALWAYS" />
+
+   <!-- Nút điều hướng -->
+   <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity"
+         prefHeight="35.0" prefWidth="591.0">
+      <padding><Insets left="10.0" right="10.0" /></padding>
+      <Region HBox.hgrow="ALWAYS" />
+      <Button mnemonicParsing="false" onAction="#back_to_search"
+              prefHeight="64.0" prefWidth="184.0" text="Quay lại tìm kiếm">
+         <font><Font size="14.0" /></font>
+      </Button>
+   </HBox>
+
+</VBox>

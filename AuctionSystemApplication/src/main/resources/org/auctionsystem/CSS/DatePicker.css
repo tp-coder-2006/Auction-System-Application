@@ -1,0 +1,91 @@
+/* ----------------------------------------------------
+   TRANG TRÍ DATEPICKER (LỊCH CHỌN NGÀY)
+---------------------------------------------------- */
+
+/* 1. Khung lớn bên ngoài của DatePicker */
+.date-picker {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-color: #dcdde1;
+    -fx-border-radius: 5px;
+    -fx-padding: 0px;
+}
+
+.date-picker:hover {
+    -fx-border-color: #c8a96e;
+}
+
+/* 2. Ô nhập liệu text của DatePicker */
+.date-picker .text-field {
+    -fx-background-color: transparent; /* Để lộ nền trắng của khung cha */
+    -fx-border-color: transparent;     /* Xóa viền riêng của text-field */
+    -fx-padding: 6px 10px;
+}
+
+/* 3. Nút bấm hình quyển lịch bên phải */
+.date-picker .arrow-button {
+    -fx-background-color: transparent;
+    -fx-cursor: hand;
+}
+
+/* Đổi màu icon quyển lịch */
+.date-picker .arrow-button .calendar-icon {
+    -fx-background-color: #c8a96e;
+}
+
+/* 4. TRANG TRÍ BẢNG LỊCH BẬT LÊN (Popup Calendar) */
+.date-picker-popup {
+    -fx-background-color: white;
+    -fx-border-color: #c8a96e;
+    -fx-border-radius: 8px;
+    -fx-background-radius: 8px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 5);
+}
+
+/* Thanh tháng/năm ở trên cùng (Header) */
+.date-picker-popup .calendar-header {
+    -fx-background-color: #c8a96e;
+}
+.date-picker-popup .calendar-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+}
+
+/* Các nút điều hướng tháng trước/sau (< và >) */
+.date-picker-popup .left-arrow, .date-picker-popup .right-arrow {
+    -fx-background-color: white;
+}
+
+/* Định dạng các ô ngày thường */
+.date-picker-popup .day-cell {
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+    -fx-padding: 6px;
+}
+
+/* Khi rê chuột qua ô ngày */
+.date-picker-popup .day-cell:hover {
+    -fx-background-color: #f5d37d;
+    -fx-background-radius: 4px;
+}
+
+/* Ô ngày hiện tại (Hôm nay) */
+.date-picker-popup .today {
+    -fx-background-color: #fdfbf7;
+    -fx-border-color: #c68642;
+    -fx-border-radius: 4px;
+    -fx-text-fill: #c68642;
+    -fx-font-weight: bold;
+}
+
+/* Ô ngày được chọn */
+.date-picker-popup .day-cell:selected {
+    -fx-background-color: #c68642;
+    -fx-background-radius: 4px;
+    -fx-text-fill: white;
+}
+
+/* Các ngày thuộc tháng trước hoặc tháng sau (ngày mờ) */
+.date-picker-popup .previous-month, .date-picker-popup .next-month {
+    -fx-text-fill: #b2bec3;
+}

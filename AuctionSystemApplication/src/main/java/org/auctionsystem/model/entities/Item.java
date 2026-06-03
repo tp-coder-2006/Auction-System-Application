@@ -15,14 +15,18 @@ public class Item {
     private LocalDateTime startTime;
     private LocalDateTime endTime;
     private ItemStatus status;
+    private boolean isActive; // true = bình thường, false = soft delete
     private String sellerId;
+    private String sellerUsername; // [MỚI] lấy từ JOIN khi admin query
+    private String ownerUsername;  // [MỚI] lấy từ JOIN khi admin query
     private String ownerId;
+    private String imageUrl; // [MỚI]
 
     public Item() {}
 
     public Item(String name, String description, double startingPrice,
                 LocalDateTime startTime, LocalDateTime endTime,
-                ItemStatus itemStatus, String sellerId) {
+                ItemStatus itemStatus, String sellerId, String imageUrl) {
         this.id                  = UUID.randomUUID().toString();
         this.name                = name;
         this.description         = description;
@@ -31,8 +35,10 @@ public class Item {
         this.startTime           = startTime;
         this.endTime             = endTime;
         this.status              = itemStatus;
+        this.isActive            = true; // mặc định là active khi tạo mới
         this.sellerId            = sellerId;
         this.ownerId             = sellerId; // owner ban đầu = seller
+        this.imageUrl           = imageUrl;
     }
 
     // Getters
@@ -44,8 +50,12 @@ public class Item {
     public LocalDateTime getStartTime()    { return startTime; }
     public LocalDateTime getEndTime()      { return endTime; }
     public ItemStatus getStatus()          { return status; }
+    public boolean isActive()              { return isActive; }
     public String getSellerId()            { return sellerId; }
+    public String getSellerUsername()      { return sellerUsername; } // [MỚI]
+    public String getOwnerUsername()       { return ownerUsername; }  // [MỚI]
     public String getOwnerId()             { return ownerId; }
+    public String getImageUrl()            { return imageUrl; } // [MỚI]
 
     // Setters
     public void setId(String id)                             { this.id = id; }
@@ -56,6 +66,10 @@ public class Item {
     public void setStartTime(LocalDateTime startTime)        { this.startTime = startTime; }
     public void setEndTime(LocalDateTime endTime)            { this.endTime = endTime; }
     public void setStatus(ItemStatus status)                 { this.status = status; }
+    public void setActive(boolean active)                    { this.isActive = active; }
     public void setSellerId(String sellerId)                 { this.sellerId = sellerId; }
+    public void setSellerUsername(String u)                  { this.sellerUsername = u; } // [MỚI]
+    public void setOwnerUsername(String u)                   { this.ownerUsername = u; }  // [MỚI]
     public void setOwnerId(String ownerId)                   { this.ownerId = ownerId; }
+    public void setImageUrl(String imageUrl)                 { this.imageUrl = imageUrl; } // [MỚI]
 }

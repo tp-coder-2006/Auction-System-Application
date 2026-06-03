@@ -14,19 +14,37 @@ public class UserHandler {
         return userService.registerUser(request);
     }
 
-    public JsonObject handleGetProfile(JsonObject request) {
-        return userService.getProfile(request);
+    public JsonObject handleGetMyProfile(JsonObject request) {
+        return userService.getMyProfile(request);
+    }
+
+    // [THÊM MỚI] Cập nhật thông tin cá nhân (Tên, Email, SĐT, Avatar)
+    public JsonObject handleUpdateProfile(JsonObject request) {
+        return userService.updateProfile(request);
     }
 
     public JsonObject handleUpdatePassword(JsonObject request) {
         return userService.updatePassword(request);
     }
 
-    public JsonObject handleDeposit(JsonObject request) {
-        return userService.deposit(request);
+    // [MỚI] Đánh giá seller — chỉ bidder đã từng mua hàng mới được gọi
+    public JsonObject handleUpdateRating(JsonObject request) {
+        return userService.updateRating(request);
     }
 
-    public JsonObject handleWithdraw(JsonObject request) {
-        return userService.withdraw(request);
+    public JsonObject handleGetOtherProfile(JsonObject request) {
+        return userService.getOtherProfle(request);
+    }
+
+    public JsonObject handleSearchUsers(JsonObject request) {
+        return userService.searchUsers(request);
+    }
+
+    public JsonObject handleGetAllActiveUsers(JsonObject request) {
+        return userService.getAllActiveUsers(request);
+    }
+
+    public JsonObject handleUploadAvatar(JsonObject request) {
+        return userService.uploadAvatar(request);
     }
 }

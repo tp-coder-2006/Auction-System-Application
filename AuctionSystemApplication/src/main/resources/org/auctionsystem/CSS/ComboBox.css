@@ -1,0 +1,67 @@
+/* ----------------------------------------------------
+   TRANG TRÍ COMBOBOX (HỘP CHỌN)
+---------------------------------------------------- */
+
+/* 1. Định dạng khung lớn bên ngoài của ComboBox */
+.combo-box {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-color: #dcdde1; /* Màu xám nhạt giống text-field của bạn */
+    -fx-border-radius: 5px;
+    -fx-padding: 2px;
+    -fx-cursor: hand;
+}
+
+/* Hiệu ứng khi người dùng hover (rê chuột) vào ComboBox */
+.combo-box:hover {
+    -fx-border-color: #c8a96e; /* Đổi sang viền vàng nâu */
+}
+
+/* Hiệu ứng khi ComboBox đang được tập trung (Focus) */
+.combo-box:focused {
+    -fx-border-color: #029ef2; /* Viền xanh cyan highlight */
+}
+
+/* 2. Định dạng chữ hiển thị bên trong ô ComboBox */
+.combo-box .label {
+    -fx-text-fill: #333333;
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+}
+
+/* 3. Trang trí nút mũi tên thả xuống (Arrow Button) */
+.combo-box .arrow-button {
+    -fx-background-color: transparent; /* Xóa nền xám mặc định */
+}
+
+.combo-box .arrow {
+    -fx-background-color: #c8a96e; /* Đổi mũi tên sang màu vàng nâu */
+}
+
+/* 4. Trang trí danh sách menu thả xuống (ListView popup) */
+.combo-box-popup .list-view {
+    -fx-background-color: white;
+    -fx-background-radius: 5px;
+    -fx-border-color: #c8a96e;
+    -fx-border-radius: 5px;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 4);
+}
+
+/* Định dạng từng dòng item bên trong danh sách */
+.combo-box-popup .list-cell {
+    -fx-padding: 8px 12px;
+    -fx-background-color: transparent;
+    -fx-text-fill: #333333;
+}
+
+/* Khi rê chuột qua từng item trong danh sách */
+.combo-box-popup .list-cell:hover {
+    -fx-background-color: #f5d37d; /* Màu nền vàng nhạt */
+    -fx-text-fill: black;
+}
+
+/* Khi một item được chọn */
+.combo-box-popup .list-cell:filled:selected {
+    -fx-background-color: #c68642; /* Màu cam nâu giống button của bạn */
+    -fx-text-fill: white;
+}

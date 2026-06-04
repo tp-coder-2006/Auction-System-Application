@@ -1,0 +1,6 @@
+.heading {
+    -fx-text-fill: #4A3728;
+}
+.error-announcement {
+    -fx-text-fill: red;
+}

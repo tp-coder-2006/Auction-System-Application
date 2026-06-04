@@ -1,6 +1,6 @@
 /* Class chung dành cho VBox (Các ô thống kê tĩnh) */
 .stat-card {
-    -fx-background-color: white;
+    -fx-background-color: #fffbf2;
     -fx-background-radius: 10;
     -fx-padding: 20;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.05), 10, 0, 0, 4);
@@ -25,4 +25,10 @@
 /* Hiệu ứng khi click chuột vào nút */
 .stat-card-button:armed {
     -fx-background-color: #f1f3f5;
+}
+.admin-card {
+    -fx-background-color: rgba(245, 230, 198, 1);
+    -fx-background-radius: 0;
+    -fx-padding: 5;
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 20, 0, 0, 0);
 }

@@ -8,7 +8,10 @@
 <?import javafx.scene.control.RadioButton?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.control.ToggleGroup?>
+<?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
@@ -17,109 +20,134 @@
     để khớp với Controller_Register yêu cầu 4 tham số khi gọi UserRepository.registerUser()
 -->
 
-<VBox alignment="CENTER" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
-   <children>
-      <Label alignment="CENTER" prefHeight="50.0" prefWidth="600.0" text="ĐĂNG KÝ TÀI KHOẢN" textAlignment="CENTER">
-         <font>
-            <Font size="30.0" />
-         </font>
-         <VBox.margin>
-            <Insets bottom="10.0" top="10.0" />
-         </VBox.margin>
-      </Label>
-
-            <!-- Họ và tên -->
-      <Label prefWidth="151.0" text="Họ và tên">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <TextField fx:id="register_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </TextField>
-
-            <!-- Tên người dùng -->
-      <Label prefWidth="151.0" text="Tên người dùng">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <TextField fx:id="register_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="37.0" prefWidth="154.0">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </TextField>
-
-            <!-- Email -->
-      <Label prefWidth="151.0" text="Email">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <TextField fx:id="register_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </TextField>
-
-            <!-- Mật khẩu -->
-      <Label prefWidth="151.0" text="Mật khẩu">
-         <font>
-            <Font size="18.0" />
-         </font>
-      </Label>
-      <PasswordField fx:id="register_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
-         <font>
-            <Font size="16.0" />
-         </font>
-      </PasswordField>
-      <HBox maxWidth="-Infinity" prefHeight="58.0" prefWidth="154.0">
+<BorderPane prefHeight="534.0" prefWidth="576.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
+   <center>
+      <StackPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@../../CSS/style.css">
          <children>
-            <Label text="Vai trò:">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Label>
-            <VBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="10.0">
+            <VBox alignment="CENTER" fillWidth="false" maxHeight="-Infinity" maxWidth="-Infinity" minHeight="-Infinity" minWidth="-Infinity" prefHeight="541.0" prefWidth="553.0" styleClass="floating-card">
                <children>
-                  <RadioButton fx:id="register_as_bidder" mnemonicParsing="false" text="Bidder">
+                  <Label alignment="CENTER" prefHeight="50.0" prefWidth="600.0" styleClass="heading" stylesheets="@../../CSS/Label.css" text="ĐĂNG KÝ TÀI KHOẢN" textAlignment="CENTER">
                      <font>
-                        <Font size="14.0" />
+                        <Font name="System Bold" size="30.0" />
                      </font>
                      <VBox.margin>
-                        <Insets left="10.0" top="8.0" />
+                        <Insets />
                      </VBox.margin>
-                     <toggleGroup>
-                        <ToggleGroup fx:id="role_group" />
-                     </toggleGroup>
-                  </RadioButton>
-                  <RadioButton fx:id="register_as_seller" mnemonicParsing="false" text="Seller" toggleGroup="$role_group">
+                  </Label>
+
+                        <!-- Họ và tên -->
+                  <Label prefWidth="151.0" text="Họ và tên">
                      <font>
-                        <Font size="14.0" />
+                        <Font size="18.0" />
                      </font>
+                  </Label>
+                  <TextField fx:id="register_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </TextField>
+
+                        <!-- Tên người dùng -->
+                  <Label prefWidth="151.0" text="Tên người dùng">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="register_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="37.0" prefWidth="154.0">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </TextField>
+
+                        <!-- Email -->
+                  <Label prefWidth="151.0" text="Email">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="register_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </TextField>
+
+                        <!-- Mật khẩu -->
+                  <Label prefWidth="151.0" text="Mật khẩu">
+                     <font>
+                        <Font size="18.0" />
+                     </font>
+                  </Label>
+                  <PasswordField fx:id="register_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
+                     <font>
+                        <Font size="16.0" />
+                     </font>
+                  </PasswordField>
+                  <HBox maxWidth="-Infinity" prefHeight="58.0" prefWidth="154.0">
+                     <children>
+                        <Label text="Vai trò:">
+                           <font>
+                              <Font size="18.0" />
+                           </font>
+                        </Label>
+                        <VBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="10.0">
+                           <children>
+                              <RadioButton fx:id="register_as_bidder" mnemonicParsing="false" text="Bidder">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" top="8.0" />
+                                 </VBox.margin>
+                                 <toggleGroup>
+                                    <ToggleGroup fx:id="role_group" />
+                                 </toggleGroup>
+                              </RadioButton>
+                              <RadioButton fx:id="register_as_seller" mnemonicParsing="false" text="Seller" toggleGroup="$role_group">
+                                 <font>
+                                    <Font size="14.0" />
+                                 </font>
+                                 <VBox.margin>
+                                    <Insets left="10.0" />
+                                 </VBox.margin>
+                              </RadioButton>
+                           </children>
+                        </VBox>
+                     </children>
+                  </HBox>
+                  <HBox prefHeight="39.0" prefWidth="568.0">
+                     <children>
+                        <Region prefHeight="36.0" prefWidth="163.0" />
+
+                              <!-- Thông báo lỗi -->
+                        <Label fx:id="register_error_announcement" prefHeight="34.0" prefWidth="260.0" styleClass="error-announcement" stylesheets="@../../CSS/Label.css" textFill="RED" wrapText="true" />
+                     </children>
+                  </HBox>
+
+                        <Button fx:id="register_button" mnemonicParsing="false" onAction="#Registering" prefHeight="30.0" prefWidth="75.0" text="Đăng ký">
                      <VBox.margin>
-                        <Insets left="10.0" />
+                        <Insets bottom="10.0" />
                      </VBox.margin>
-                  </RadioButton>
+                  </Button>
+                  <Hyperlink fx:id="back_to_login_scene" onAction="#Switching_to_login_scene" text="Đã có tài khoản? Quay lại trang đăng nhập">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </Hyperlink>
                </children>
             </VBox>
          </children>
-      </HBox>
-
-            <!-- Thông báo lỗi -->
-      <Label fx:id="register_error_announcement" prefHeight="34.0" prefWidth="158.0" textFill="RED" wrapText="true" />
-
-            <Button fx:id="register_button" mnemonicParsing="false" onAction="#Registering" prefHeight="30.0" prefWidth="75.0" text="Đăng ký">
-         <VBox.margin>
-            <Insets bottom="10.0" />
-         </VBox.margin>
-      </Button>
-      <Hyperlink fx:id="back_to_login_scene" onAction="#Switching_to_login_scene" text="Đã có tài khoản? Quay lại trang đăng nhập">
-         <VBox.margin>
-            <Insets bottom="15.0" />
-         </VBox.margin>
-      </Hyperlink>
-   </children>
-</VBox>
+      </StackPane>
+   </center>
+   <top>
+      <Region prefHeight="20.0" prefWidth="20.0" BorderPane.alignment="CENTER" />
+   </top>
+   <left>
+      <Region prefHeight="20.0" prefWidth="20.0" BorderPane.alignment="CENTER" />
+   </left>
+   <bottom>
+      <Region prefHeight="20.0" prefWidth="640.0" BorderPane.alignment="CENTER" />
+   </bottom>
+   <right>
+      <Region prefHeight="20.0" prefWidth="20.0" BorderPane.alignment="CENTER" />
+   </right>
+</BorderPane>

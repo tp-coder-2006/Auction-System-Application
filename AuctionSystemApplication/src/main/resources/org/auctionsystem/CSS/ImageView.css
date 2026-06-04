@@ -1,0 +1,17 @@
+/* Trang trí cho chiếc khung chứa ảnh */
+.image-frame {
+    -fx-background-color: white;             /* Màu nền bọc ngoài ảnh */
+    -fx-background-radius: 15px;             /* Bo góc khung chứa ảnh */
+    -fx-border-radius: 15px;                 /* Bo góc đường viền */
+    -fx-border-color: #c8a96e;               /* Màu đường viền (tông màu vàng nâu giống file css của bạn) */
+    -fx-border-width: 2px;                   /* Độ dày đường viền */
+
+    /* Hiệu ứng đổ bóng mờ giúp ảnh nổi bật lên khỏi màn hình */
+    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 10, 0, 0, 4);
+}
+
+/* Ép bức ảnh bên trong tuân thủ theo góc bo của khung */
+.image-frame .image-view {
+    /* Tạo hiệu ứng góc cắt (clip) theo khung cha */
+    -fx-background-radius: 15px;
+}

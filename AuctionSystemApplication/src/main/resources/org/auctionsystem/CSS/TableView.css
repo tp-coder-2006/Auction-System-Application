@@ -1,0 +1,53 @@
+.table-view .column-header-background {
+    -fx-background-color: #c8a96e;
+    -fx-background-radius: 8 8 0 0;  /* bo góc trên */
+}
+
+.table-view .column-header {
+    -fx-background-color: transparent;
+    -fx-border-color: transparent;
+}
+
+.table-view .column-header .label {
+    -fx-text-fill: white;
+    -fx-font-weight: bold;
+    -fx-font-size: 14px;
+}
+/* Dòng thường */
+.table-view .table-row-cell {
+    -fx-background-color: white;
+    -fx-border-color: transparent transparent #e8dcc8 transparent;
+}
+
+/* Dòng xen kẽ (zebra) */
+.table-view .table-row-cell:odd {
+    -fx-background-color: #faf6f0;
+}
+
+/* Hover */
+.table-view .table-row-cell:hover {
+    -fx-background-color: #f0e6d0;
+}
+
+/* Dòng được chọn */
+.table-view .table-row-cell:selected {
+    -fx-background-color: #c8a96e;
+}
+.table-view .table-cell {
+    -fx-text-fill: #333333;
+    -fx-font-size: 13px;
+    -fx-alignment: center;         /* căn giữa nội dung */
+    -fx-border-color: transparent;
+}
+.table-view .placeholder .label {
+    -fx-text-fill: #999999;
+    -fx-font-style: italic;
+}
+.table-view .scroll-bar:vertical { /*Thanh cuộn*/
+    -fx-background-color: transparent;
+}
+
+.table-view .scroll-bar:vertical .thumb {
+    -fx-background-color: #c8a96e;
+    -fx-background-radius: 4;
+}

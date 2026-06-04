@@ -36,7 +36,7 @@ public class DatabaseConnection {
     private static final String URL      = "jdbc:mysql://localhost:3306/mydb"
             + "?useSSL=false&serverTimezone=Asia%2FHo_Chi_Minh&allowPublicKeyRetrieval=true";
     private static final String USER     = "root";
-    private static final String PASSWORD = "root";
+    private static final String PASSWORD = "12345678";
 
     private final HikariDataSource dataSource;
 

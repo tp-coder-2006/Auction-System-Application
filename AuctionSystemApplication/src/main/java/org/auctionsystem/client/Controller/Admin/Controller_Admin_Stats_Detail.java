@@ -14,6 +14,8 @@ import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 
 import java.io.IOException;
 import java.text.NumberFormat;
@@ -112,7 +114,8 @@ public class Controller_Admin_Stats_Detail {
     public void initialize() {
         setupTables();
 
-        // Real-time auto-refresh đã được xóa. Dữ liệu load 1 lần khi vào màn hình.
+        // Đăng ký nhận event real-time từ AdminStatsScheduler
+        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, this::onStatsUpdate);
 
         // Chủ động tải ngay khi mở màn hình
         loadAllStats();
@@ -266,7 +269,7 @@ public class Controller_Admin_Stats_Detail {
             for (JsonElement el : arr) {
                 JsonObject o = el.getAsJsonObject();
                 double rating = o.get("rating").isJsonNull() ? 0.0
-                              : o.get("rating").getAsDouble();
+                        : o.get("rating").getAsDouble();
                 sellerRows.add(new SellerRow(
                         o.get("rank").getAsInt(),
                         o.get("username").getAsString(),
@@ -460,6 +463,7 @@ public class Controller_Admin_Stats_Detail {
 
     @FXML
     private void goBack(ActionEvent event) {
+        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
         try {
             Scene_Utils.Change_Scene(event, ADMIN_DASHBOARD_VIEW);
         } catch (IOException e) {
@@ -485,7 +489,7 @@ public class Controller_Admin_Stats_Detail {
             this.displayName      = name + " (@" + username + ")";
             this.totalSold        = totalSold;
             this.revenueFormatted = NumberFormat.getNumberInstance(new Locale("vi", "VN"))
-                                                .format((long) totalRevenue) + " ₫";
+                    .format((long) totalRevenue) + " ₫";
             this.ratingFormatted  = rating > 0 ? String.format("%.1f ⭐", rating) : "—";
         }
 

@@ -8,6 +8,7 @@ import javafx.scene.control.PasswordField;
 import javafx.scene.control.TextField;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.event.BanWatcher;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.event.NotificationManager;
 import org.auctionsystem.client.session.UserSession;
 
@@ -97,8 +98,10 @@ public class Controller_Login {
             String role = response.get("role").getAsString();
             String fxml_path;
             if ("SELLER".equalsIgnoreCase(role)) {
+                BalanceWatcher.activate();
                 fxml_path = "/org/auctionsystem/client/View/Seller_Dashboard.fxml";
             } else if ("BIDDER".equalsIgnoreCase(role)) {
+                BalanceWatcher.activate();
                 fxml_path = "/org/auctionsystem/client/View/Bidder_Dashboard.fxml";
             } else if ("ADMIN".equalsIgnoreCase(role)) {
                 fxml_path = "/org/auctionsystem/client/View/Admin_Dashboard.fxml";

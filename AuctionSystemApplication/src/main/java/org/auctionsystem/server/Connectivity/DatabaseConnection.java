@@ -34,7 +34,7 @@ public class DatabaseConnection {
     private static volatile DatabaseConnection instance = null;
 
     private static final String URL      = "jdbc:mysql://localhost:3306/mydb"
-            + "?useSSL=false&serverTimezone=UTC&allowPublicKeyRetrieval=true";
+            + "?useSSL=false&serverTimezone=Asia%2FHo_Chi_Minh&allowPublicKeyRetrieval=true";
     private static final String USER     = "root";
     private static final String PASSWORD = "root";
 

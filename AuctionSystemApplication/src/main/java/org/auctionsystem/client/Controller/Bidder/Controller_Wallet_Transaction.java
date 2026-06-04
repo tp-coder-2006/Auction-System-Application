@@ -10,8 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
-import org.auctionsystem.client.event.EventDispatcher;
-import org.auctionsystem.client.event.EventType;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -71,7 +70,8 @@ public class Controller_Wallet_Transaction {
     @FXML
     public void initialize() {
         refreshBalanceLabel();
-        registerBalanceEvent();
+        BalanceWatcher.registerListener("WalletTransaction", balance ->
+                Platform.runLater(this::refreshBalanceLabel));
     }
 
     /**
@@ -80,19 +80,6 @@ public class Controller_Wallet_Transaction {
     private void refreshBalanceLabel() {
         double balance = UserSession.getInstance().getBalance();
         lbl_balance.setText(formatVnd(balance) + " ₫");
-    }
-
-    /**
-     * Đăng ký lắng nghe event BALANCE_UPDATED từ server.
-     * Khi server trả về event này (sau DEPOSIT hoặc WITHDRAW),
-     * cập nhật số dư trong session và trên label ngay lập tức.
-     */
-    private void registerBalanceEvent() {
-        EventDispatcher.register(EventType.BALANCE_UPDATED, payload -> {
-            double newBalance = payload.get("balance").getAsDouble();
-            UserSession.getInstance().setBalance(newBalance);
-            Platform.runLater(this::refreshBalanceLabel);
-        });
     }
 
     // ── Nạp tiền ──────────────────────────────────────────────────────────────
@@ -267,6 +254,7 @@ public class Controller_Wallet_Transaction {
     @FXML
     private void onViewHistory(ActionEvent event) {
         try {
+            BalanceWatcher.unregisterListener("WalletTransaction");
             // Set màn hình quay lại là Wallet_Transaction để nút "Quay lại" hoạt động
             org.auctionsystem.client.Controller.Controller_Transaction_History
                     .setPreviousView("/org/auctionsystem/client/View/Wallet_Transaction.fxml");
@@ -281,6 +269,7 @@ public class Controller_Wallet_Transaction {
     @FXML
     private void onBack(ActionEvent event) {
         try {
+            BalanceWatcher.unregisterListener("WalletTransaction");
             Scene_Utils.Change_Scene(event,
                     "/org/auctionsystem/client/View/Bidder_Dashboard.fxml");
         } catch (IOException e) {

@@ -41,6 +41,59 @@ public final class EventType {
      */
     public static final String ITEM_TIME_UPDATED  = "ITEM_TIME_UPDATED";
 
+    /**
+     * Server broadcast khi seller cập nhật thông tin item (tên, giá, thời gian, ảnh).
+     *
+     * Payload JSON:
+     *   item_id        — id item
+     *   name           — tên mới
+     *   starting_price — giá khởi điểm mới
+     *   start_time     — yyyy-MM-dd HH:mm:ss
+     *   end_time       — yyyy-MM-dd HH:mm:ss
+     *   image_url      — path ảnh mới (nếu có thay đổi)
+     */
+    public static final String ITEM_UPDATED       = "ITEM_UPDATED";
+
+    /**
+     * Server broadcast khi seller thêm item mới thành công.
+     *
+     * Payload JSON:
+     *   item_id               — id item mới
+     *   name                  — tên item
+     *   status                — luôn là "PENDING"
+     *   starting_price        — giá khởi điểm
+     *   current_highest_price — bằng starting_price lúc mới tạo
+     *   start_time            — yyyy-MM-dd HH:mm:ss
+     *   end_time              — yyyy-MM-dd HH:mm:ss
+     *   seller_id             — id seller
+     *   image_url             — path ảnh (nếu có)
+     */
+    public static final String ITEM_ADDED         = "ITEM_ADDED";
+
+    /**
+     * Server broadcast khi admin/seller xóa item.
+     * Hard delete: xóa hẳn khỏi DB. Soft delete: is_active = 0.
+     * Cả hai đều cần xóa item khỏi bảng phía client ngay lập tức.
+     *
+     * Payload JSON:
+     *   item_id     — id của item bị xóa
+     *   delete_type — "hard" hoặc "soft"
+     */
+    public static final String ITEM_DELETED       = "ITEM_DELETED";
+
+    /**
+     * Server broadcast khi seller đăng lại item đã CANCELLED → PENDING.
+     *
+     * Payload JSON:
+     *   item_id        — id của item
+     *   name           — tên item
+     *   starting_price — giá khởi điểm mới
+     *   start_time     — thời gian bắt đầu mới (yyyy-MM-dd HH:mm:ss)
+     *   end_time       — thời gian kết thúc mới (yyyy-MM-dd HH:mm:ss)
+     *   seller_id      — id của seller
+     */
+    public static final String ITEM_RELISTED      = "ITEM_RELISTED";
+
     /** Admin dashboard cần refresh thống kê */
     public static final String ADMIN_STATS_UPDATE = "ADMIN_STATS_UPDATE";
 

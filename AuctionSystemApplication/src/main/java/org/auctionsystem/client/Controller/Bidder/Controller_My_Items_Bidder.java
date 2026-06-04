@@ -13,6 +13,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -38,7 +40,14 @@ public class Controller_My_Items_Bidder {
         setupColumns();
         loadData();
 
-        // Real-time auto-update trạng thái bảng đã được xóa. Dữ liệu load 1 lần khi vào màn hình.
+        // Xóa item khỏi bảng ngay lập tức khi admin hard delete
+        EventDispatcher.register(EventType.ITEM_DELETED, payload -> {
+            String itemId = payload.has("item_id") ? payload.get("item_id").getAsString() : "";
+            if (!itemId.isEmpty()) {
+                Platform.runLater(() -> masterList.removeIf(item ->
+                        itemId.equals(item.has("id") ? item.get("id").getAsString() : "")));
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────

@@ -19,6 +19,7 @@ import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.event.EventDispatcher;
 import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
@@ -84,6 +85,9 @@ public class Controller_Bidding_room {
 
     private static final DateTimeFormatter DT_FMT          = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DT_DISPLAY       = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private static final DateTimeFormatter DT_FLEXIBLE      = new java.time.format.DateTimeFormatterBuilder()
+            .appendPattern("yyyy-MM-dd['T'][' ']HH:mm").optionalStart().appendPattern(":ss").optionalEnd()
+            .optionalStart().appendPattern(".SSSSSSSSS").optionalEnd().toFormatter();
     private static final String           ITEM_DETAIL_VIEW  = "/org/auctionsystem/client/View/Item_Detail.fxml";
     private static final String           SEARCHING_ROOM_VIEW = "/org/auctionsystem/client/View/Searching_room.fxml";
 
@@ -126,8 +130,8 @@ public class Controller_Bidding_room {
         EventDispatcher.register(EventType.END_TIME_EXTENDED,  this::onEndTimeExtended);
         EventDispatcher.register(EventType.AUCTION_SETTLED,    this::onAuctionSettled);
         EventDispatcher.register(EventType.ITEM_CANCELLED,     this::onItemCancelled);
-        EventDispatcher.register(EventType.BID_DEDUCT,         this::onBalanceChanged);
-        EventDispatcher.register(EventType.BID_CREDIT,         this::onBalanceChanged);
+        BalanceWatcher.registerListener("BiddingRoom", balance ->
+                updateBalanceLabel(balance));
     }
 
     // ── Setup bảng lịch sử bid phiên ─────────────────────────────────────────
@@ -228,10 +232,16 @@ public class Controller_Bidding_room {
             Platform.runLater(() -> {
                 bidHistoryList.clear();
                 if (res != null && "success".equals(res.get("status").getAsString())) {
-                    JsonArray arr = res.get("message").getAsJsonArray();
-                    for (int i = arr.size() - 1; i >= 0; i--) {
-                        bidHistoryList.add(arr.get(i).getAsJsonObject());
-                    }
+                    java.util.List<JsonObject> sorted = new java.util.ArrayList<>();
+                    res.get("message").getAsJsonArray()
+                            .forEach(el -> sorted.add(el.getAsJsonObject()));
+                    // Sort giảm dần theo bidTime (mới nhất lên đầu)
+                    sorted.sort((a, b) -> {
+                        String ta = a.has("bidTime") ? a.get("bidTime").getAsString() : "";
+                        String tb = b.has("bidTime") ? b.get("bidTime").getAsString() : "";
+                        return tb.compareTo(ta);
+                    });
+                    bidHistoryList.setAll(sorted);
                 }
             });
         }, "BiddingRoom-LoadBidHistory").start();
@@ -246,8 +256,16 @@ public class Controller_Bidding_room {
             Platform.runLater(() -> {
                 allBidHistoryList.clear();
                 if (res != null && "success".equals(res.get("status").getAsString())) {
+                    java.util.List<JsonObject> sorted = new java.util.ArrayList<>();
                     res.get("message").getAsJsonArray()
-                            .forEach(el -> allBidHistoryList.add(el.getAsJsonObject()));
+                            .forEach(el -> sorted.add(el.getAsJsonObject()));
+                    // Sort giảm dần theo bidTime (mới nhất lên đầu)
+                    sorted.sort((a, b) -> {
+                        String ta = a.has("bidTime") ? a.get("bidTime").getAsString() : "";
+                        String tb = b.has("bidTime") ? b.get("bidTime").getAsString() : "";
+                        return tb.compareTo(ta);
+                    });
+                    allBidHistoryList.setAll(sorted);
                 }
             });
         }, "BiddingRoom-LoadAllBidHistory").start();
@@ -259,7 +277,7 @@ public class Controller_Bidding_room {
         String rawEnd = getString(currentItem, "endTime");
         if (rawEnd.isBlank()) return;
         try {
-            endTime = LocalDateTime.parse(rawEnd.replace("T", " "), DT_FMT);
+            endTime = LocalDateTime.parse(rawEnd, DT_FLEXIBLE);
         } catch (Exception e) { return; }
         restartCountdown();
     }
@@ -428,7 +446,10 @@ public class Controller_Bidding_room {
 
         Platform.runLater(() -> {
             updateCurrentPriceLabel();
+            // "Phiên này": mới nhất lên đầu
             bidHistoryList.add(0, entry);
+            // "Toàn bộ lịch sử": thêm lên đầu để giữ thứ tự giảm dần (mới nhất lên đầu)
+            allBidHistoryList.add(0, entry);
             clearError();
         });
     }
@@ -438,7 +459,7 @@ public class Controller_Bidding_room {
         String newEnd = payload.has("new_end_time") ? payload.get("new_end_time").getAsString() : "";
         long   extBy  = payload.has("extended_by")  ? payload.get("extended_by").getAsLong()   : 30;
         try {
-            endTime = LocalDateTime.parse(newEnd.replace("T", " "), DT_FMT);
+            endTime = LocalDateTime.parse(newEnd, DT_FLEXIBLE);
             if (currentItem != null) currentItem.addProperty("endTime", newEnd);
             restartCountdown();
         } catch (Exception ignored) {}
@@ -453,11 +474,11 @@ public class Controller_Bidding_room {
         setText(lbl_status_message, "🏁 Phiên đấu giá đã kết thúc.");
         show(lbl_status_message);
 
-        String buyerId = payload.has("buyer_id") ? payload.get("buyer_id").getAsString() : "";
+        String buyerId = payload.has("bidder_id") ? payload.get("bidder_id").getAsString() : "";
         boolean iWon   = UserSession.getInstance().getUserId().equals(buyerId);
         Platform.runLater(() -> showAlert(Alert.AlertType.INFORMATION, "Kết thúc đấu giá",
                 iWon ? "🎉 Chúc mừng! Bạn đã thắng phiên đấu giá này!"
-                     : "Phiên đấu giá đã kết thúc."));
+                        : "Phiên đấu giá đã kết thúc."));
     }
 
     private void onItemCancelled(JsonObject payload) {
@@ -471,16 +492,6 @@ public class Controller_Bidding_room {
         });
         showAlert(Alert.AlertType.WARNING, "Sản phẩm bị hủy",
                 "Sản phẩm này đã bị hủy bởi người bán hoặc quản trị viên.");
-    }
-
-    private void onBalanceChanged(JsonObject payload) {
-        try {
-            double newBalance = payload.get("balance").getAsDouble();
-            UserSession.getInstance().setBalance(newBalance);
-            Platform.runLater(() -> updateBalanceLabel(newBalance));
-        } catch (Exception e) {
-            System.err.println("[BiddingRoom] Lỗi parse balance: " + e.getMessage());
-        }
     }
 
     // ── Helpers ──────────────────────────────────────────────────────────────
@@ -503,12 +514,11 @@ public class Controller_Bidding_room {
     }
 
     private void unregisterEvents() {
+        BalanceWatcher.unregisterListener("BiddingRoom");
         EventDispatcher.unregister(EventType.BID_PLACED);
         EventDispatcher.unregister(EventType.END_TIME_EXTENDED);
         EventDispatcher.unregister(EventType.AUCTION_SETTLED);
         EventDispatcher.unregister(EventType.ITEM_CANCELLED);
-        EventDispatcher.unregister(EventType.BID_DEDUCT);
-        EventDispatcher.unregister(EventType.BID_CREDIT);
     }
 
     private static void setText(Label lbl, String text) {
@@ -554,7 +564,7 @@ public class Controller_Bidding_room {
     private static String formatDatetime(String raw) {
         if (raw == null || raw.isBlank()) return "—";
         try {
-            LocalDateTime dt = LocalDateTime.parse(raw.replace("T", " "), DT_FMT);
+            LocalDateTime dt = LocalDateTime.parse(raw, DT_FLEXIBLE);
             return dt.format(DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss"));
         } catch (Exception e) {
             return raw;

@@ -22,6 +22,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 
 public class BidService {
@@ -167,10 +168,11 @@ public class BidService {
                 event.addProperty("item_name",  itemName);
                 event.addProperty("item_image", itemImg);
                 event.addProperty("bidder_id",  bidderId);
-                event.addProperty("bidder_name", session.getName());
+                event.addProperty("bidder_name", session.getUsername());
                 event.addProperty("bid_amount", bidAmount);
-                event.addProperty("bid_time",   LocalDateTime.now().toString());
-                event.addProperty("end_time",   newEndTime.toString());
+                String formattedEndTime = newEndTime.format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss"));
+                event.addProperty("bid_time",   LocalDateTime.now().format(DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss")));
+                event.addProperty("end_time",   formattedEndTime);
                 ConnectedClientRegistry.broadcastAll(event);
 
                 // Broadcast thêm event riêng để client cập nhật đồng hồ đếm ngược
@@ -179,7 +181,7 @@ public class BidService {
                     extendEvent.addProperty("event", EventType.END_TIME_EXTENDED);
                     extendEvent.addProperty("item_id",      itemId);
                     extendEvent.addProperty("item_name",    itemName);
-                    extendEvent.addProperty("new_end_time", newEndTime.toString());
+                    extendEvent.addProperty("new_end_time", formattedEndTime);
                     extendEvent.addProperty("extended_by",  EXTEND_SECONDS);
                     ConnectedClientRegistry.broadcastAll(extendEvent);
                 }
@@ -261,7 +263,7 @@ public class BidService {
                     event.addProperty("item_id",   itemId);
                     event.addProperty("item_name", item.getName());
                     event.addProperty("amount",    amount);
-                    event.addProperty("buyer_id",  buyerId);
+                    event.addProperty("bidder_id", buyerId);
                     event.addProperty("seller_id", sellerId);
                     if (item.getImageUrl() != null) {
                         event.addProperty("image_url", item.getImageUrl());

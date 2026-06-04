@@ -14,6 +14,8 @@ import javafx.scene.control.cell.PropertyValueFactory;
 import javafx.scene.layout.HBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 
 import java.io.IOException;
 import java.util.Optional;
@@ -62,6 +64,9 @@ public class Controller_Admin_Item_Management {
         if (fieldSearch != null) {
             fieldSearch.textProperty().addListener((obs, oldVal, newVal) -> filterItems(newVal));
         }
+
+        // Tự động reload khi có item đổi trạng thái, thêm/sửa/xóa từ bất kỳ client nào
+        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, payload -> loadItems());
     }
 
     // ─── Cột hành động: nút Xóa vĩnh viễn ────────────────────────────────────
@@ -73,9 +78,9 @@ public class Controller_Admin_Item_Management {
             {
                 box.setAlignment(Pos.CENTER);
                 btnDelete.setStyle(
-                    "-fx-background-color: #c0392b; -fx-text-fill: white; " +
-                    "-fx-font-size: 12px; -fx-font-weight: bold; " +
-                    "-fx-padding: 4 10; -fx-cursor: hand; -fx-background-radius: 4;");
+                        "-fx-background-color: #c0392b; -fx-text-fill: white; " +
+                                "-fx-font-size: 12px; -fx-font-weight: bold; " +
+                                "-fx-padding: 4 10; -fx-cursor: hand; -fx-background-radius: 4;");
                 btnDelete.setOnAction(e -> {
                     ItemRow row = getTableView().getItems().get(getIndex());
                     handleHardDeleteItem(row);
@@ -101,14 +106,14 @@ public class Controller_Admin_Item_Management {
         warn.setTitle("⚠ Xóa vĩnh viễn sản phẩm");
         warn.setHeaderText("Hành động này KHÔNG THỂ HOÀN TÁC!");
         warn.setContentText(
-            "Sản phẩm: \"" + row.getName() + "\"\n\n" +
-            "Toàn bộ dữ liệu sau sẽ bị xóa vĩnh viễn:\n" +
-            "  • Tất cả lượt đặt giá (bids)\n" +
-            "  • Lịch sử sở hữu (item_ownership_history)\n" +
-            "  • Ảnh sản phẩm (images)\n" +
-            "  • Bản ghi sản phẩm\n\n" +
-            "(Lịch sử giao dịch tài chính được giữ lại)\n\n" +
-            "Bạn có chắc chắn muốn tiếp tục?"
+                "Sản phẩm: \"" + row.getName() + "\"\n\n" +
+                        "Toàn bộ dữ liệu sau sẽ bị xóa vĩnh viễn:\n" +
+                        "  • Tất cả lượt đặt giá (bids)\n" +
+                        "  • Lịch sử sở hữu (item_ownership_history)\n" +
+                        "  • Ảnh sản phẩm (images)\n" +
+                        "  • Bản ghi sản phẩm\n\n" +
+                        "(Lịch sử giao dịch tài chính được giữ lại)\n\n" +
+                        "Bạn có chắc chắn muốn tiếp tục?"
         );
         warn.getButtonTypes().setAll(ButtonType.YES, ButtonType.NO);
 
@@ -240,6 +245,7 @@ public class Controller_Admin_Item_Management {
     // ─── Quay lại dashboard ───────────────────────────────────────────────────
     @FXML
     public void back_to_admin_dashboard(ActionEvent event) {
+        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
         try {
             Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Admin_Dashboard.fxml");
         } catch (IOException e) {

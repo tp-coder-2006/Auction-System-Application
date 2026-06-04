@@ -2,6 +2,7 @@ package org.auctionsystem.client.event;
 
 import com.google.gson.JsonObject;
 import javafx.application.Platform;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.event.NotificationManager;
 import javafx.scene.control.Alert;
 import javafx.scene.control.ButtonType;
@@ -117,6 +118,7 @@ public final class BanWatcher {
     private static void performForcedLogout(Stage primaryStage) {
         // 1. Hủy tất cả event handlers còn lại
         NotificationManager.deactivate();
+        BalanceWatcher.deactivate();
         EventDispatcher.unregisterAll();
 
         // 2. Clear dữ liệu phiên phía client

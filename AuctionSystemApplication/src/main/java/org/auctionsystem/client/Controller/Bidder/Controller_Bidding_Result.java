@@ -14,6 +14,8 @@ import javafx.scene.control.*;
 import javafx.scene.layout.HBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -69,7 +71,11 @@ public class Controller_Bidding_Result {
         setupFilter();
         loadData();
 
-        // Real-time auto-refresh bảng đã được xóa. Dữ liệu load 1 lần khi vào màn hình.
+        // Real-time: lắng nghe các sự kiện server broadcast
+        EventDispatcher.register(EventType.BID_PLACED,      this::onBidPlaced);
+        EventDispatcher.register(EventType.AUCTION_SETTLED, this::onAuctionSettled);
+        EventDispatcher.register(EventType.ITEM_CANCELLED,  this::onItemCancelled);
+        EventDispatcher.register(EventType.ITEM_DELETED,    this::onItemDeleted);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -247,10 +253,126 @@ public class Controller_Bidding_Result {
 
     @FXML
     public void back_to_dashboard(ActionEvent event) {
+        unregisterEvents();
         try {
             Scene_Utils.Change_Scene(event, DASHBOARD_VIEW);
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Real-time event handlers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    /**
+     * Khi có bid mới: cập nhật bidAmount + itemStatus của row khớp itemId.
+     * Nếu item chưa có trong danh sách (bidder vừa đặt giá lần đầu) → reload toàn bộ.
+     */
+    private void onBidPlaced(JsonObject payload) {
+        if (!payload.has("item_id")) return;
+        String itemId    = payload.get("item_id").getAsString();
+        String myId      = UserSession.getInstance().getUserId();
+        String bidderId  = payload.has("bidder_id") ? payload.get("bidder_id").getAsString() : "";
+        double bidAmount = payload.has("bid_amount") ? payload.get("bid_amount").getAsDouble() : 0;
+
+        Platform.runLater(() -> {
+            // Tìm row của item này trong masterList
+            boolean found = false;
+            for (int i = 0; i < masterList.size(); i++) {
+                JsonObject row = masterList.get(i);
+                if (itemId.equals(getString(row, "itemId", ""))) {
+                    found = true;
+                    // Nếu bid mới là của chính mình → cập nhật bidAmount + status ongoing
+                    if (myId.equals(bidderId)) {
+                        row.addProperty("bidAmount",  bidAmount);
+                        row.addProperty("itemStatus", "ongoing");
+                        if (payload.has("bid_time")) {
+                            row.addProperty("bidTime", payload.get("bid_time").getAsString());
+                        }
+                    } else {
+                        // Người khác outbid → đổi status của mình sang losing (nếu đang ongoing)
+                        if ("ongoing".equals(getString(row, "itemStatus", ""))) {
+                            row.addProperty("itemStatus", "losing");
+                        }
+                    }
+                    // Trigger refresh của cell bằng cách replace phần tử
+                    masterList.set(i, row);
+                    break;
+                }
+            }
+            // Nếu chưa có (bidder vừa tham gia lần đầu) → reload để lấy row mới
+            if (!found && myId.equals(bidderId)) {
+                loadData();
+                return;
+            }
+            applyFilter();
+            updateCounters();
+        });
+    }
+
+    /**
+     * Khi phiên kết thúc: cập nhật itemStatus → won / lost cho row tương ứng.
+     */
+    private void onAuctionSettled(JsonObject payload) {
+        if (!payload.has("item_id")) return;
+        String itemId  = payload.get("item_id").getAsString();
+        String myId    = UserSession.getInstance().getUserId();
+        String winner  = payload.has("bidder_id") ? payload.get("bidder_id").getAsString() : "";
+
+        Platform.runLater(() -> {
+            for (int i = 0; i < masterList.size(); i++) {
+                JsonObject row = masterList.get(i);
+                if (itemId.equals(getString(row, "itemId", ""))) {
+                    row.addProperty("itemStatus", myId.equals(winner) ? "won" : "lost");
+                    masterList.set(i, row);
+                    break;
+                }
+            }
+            applyFilter();
+            updateCounters();
+        });
+    }
+
+    /**
+     * Khi item bị hủy: cập nhật itemStatus → cancelled.
+     */
+    private void onItemCancelled(JsonObject payload) {
+        if (!payload.has("item_id")) return;
+        String itemId = payload.get("item_id").getAsString();
+
+        Platform.runLater(() -> {
+            for (int i = 0; i < masterList.size(); i++) {
+                JsonObject row = masterList.get(i);
+                if (itemId.equals(getString(row, "itemId", ""))) {
+                    row.addProperty("itemStatus", "cancelled");
+                    masterList.set(i, row);
+                    break;
+                }
+            }
+            applyFilter();
+            updateCounters();
+        });
+    }
+
+    /**
+     * Khi admin xóa item (hard/soft delete): xóa row khỏi danh sách luôn.
+     */
+    private void onItemDeleted(JsonObject payload) {
+        if (!payload.has("item_id")) return;
+        String itemId = payload.get("item_id").getAsString();
+
+        Platform.runLater(() -> {
+            masterList.removeIf(row -> itemId.equals(getString(row, "itemId", "")));
+            applyFilter();
+            updateCounters();
+        });
+    }
+
+    private void unregisterEvents() {
+        EventDispatcher.unregister(EventType.BID_PLACED);
+        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
+        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
+        EventDispatcher.unregister(EventType.ITEM_DELETED);
     }
 }

@@ -125,8 +125,74 @@ public class TransactionService {
     }
 
     /**
-     * Gửi event chỉ đến đúng 1 user theo userId.
-     * Tìm sessionId của user đang online rồi dùng ConnectedClientRegistry.sendTo().
+     * Ghi 2 transaction trong 1 phiên settle đấu giá: trừ tiền bidder (BID_DEDUCT)
+     * và cộng tiền seller (BID_CREDIT).
+     *
+     * Nhận Connection từ ngoài để tham gia vào transaction của AuctionScheduler —
+     * KHÔNG commit, KHÔNG rollback, KHÔNG đóng connection ở đây.
+     * Caller (AuctionScheduler) chịu trách nhiệm quản lý transaction.
+     *
+     * @return double[] { bidderBalanceAfter, sellerBalanceAfter } nếu thành công, null nếu thất bại
+     */
+    public double[] settleTransfer(Connection conn,
+                                   String winnerId, String sellerId,
+                                   double amount, String itemId, String itemName) {
+        try {
+            // Trừ tiền bidder
+            double bidderBefore = transactionDAO.getBalanceById(winnerId, conn);
+            boolean deducted = transactionDAO.updateBalance(winnerId, -amount, conn);
+            if (!deducted) return null;
+            double bidderAfter = bidderBefore - amount;
+            transactionDAO.insertTransaction(conn, winnerId, TransactionType.BID_DEDUCT,
+                    amount, bidderBefore, bidderAfter,
+                    itemId, "Thanh toán đấu giá " + itemName);
+
+            // Cộng tiền seller
+            double sellerBefore = transactionDAO.getBalanceById(sellerId, conn);
+            transactionDAO.updateBalance(sellerId, amount, conn);
+            double sellerAfter = sellerBefore + amount;
+            transactionDAO.insertTransaction(conn, sellerId, TransactionType.BID_CREDIT,
+                    amount, sellerBefore, sellerAfter,
+                    itemId, "Nhận tiền bán hàng " + itemName);
+
+            return new double[]{ bidderAfter, sellerAfter };
+        } catch (Exception e) {
+            System.err.println("[TransactionService] Lỗi settleTransfer: " + e.getMessage());
+            return null;
+        }
+    }
+
+    /**
+     * Broadcast BID_DEDUCT đến bidder và BID_CREDIT đến seller sau khi settle commit xong.
+     * Gọi SAU conn.commit() — không liên quan đến transaction DB.
+     */
+    public void broadcastSettleEvents(String winnerId, String sellerId,
+                                      double amount, String itemId, String itemName,
+                                      double bidderBalanceAfter, double sellerBalanceAfter) {
+        // Sync session balance
+        syncSessionBalance(winnerId, bidderBalanceAfter);
+        syncSessionBalance(sellerId, sellerBalanceAfter);
+
+        // BID_DEDUCT → bidder
+        JsonObject deductEvent = new JsonObject();
+        deductEvent.addProperty("event",     EventType.BID_DEDUCT);
+        deductEvent.addProperty("item_id",   itemId);
+        deductEvent.addProperty("item_name", itemName);
+        deductEvent.addProperty("amount",    amount);
+        deductEvent.addProperty("balance",   bidderBalanceAfter);
+        sendToUser(winnerId, deductEvent);
+
+        // BID_CREDIT → seller
+        JsonObject creditEvent = new JsonObject();
+        creditEvent.addProperty("event",     EventType.BID_CREDIT);
+        creditEvent.addProperty("item_id",   itemId);
+        creditEvent.addProperty("item_name", itemName);
+        creditEvent.addProperty("amount",    amount);
+        creditEvent.addProperty("balance",   sellerBalanceAfter);
+        sendToUser(sellerId, creditEvent);
+    }
+
+    /**
      * Nếu user không online → bỏ qua (không có lỗi).
      */
     private void sendToUser(String userId, JsonObject event) {

@@ -244,6 +244,13 @@ public class AdminService {
             if (itemDAO.adminHardDeleteItem(itemId)) {
                 response.addProperty("status", "success");
                 response.addProperty("message", "Đã xóa vĩnh viễn sản phẩm và toàn bộ dữ liệu liên quan thành công!");
+
+                // Broadcast để Searching Room xóa item khỏi bảng ngay lập tức
+                JsonObject event = new JsonObject();
+                event.addProperty("event",   EventType.ITEM_DELETED);
+                event.addProperty("item_id", itemId);
+                ConnectedClientRegistry.broadcastAll(event);
+
                 AdminStatsScheduler.notifyStatsChanged();
             } else {
                 response.addProperty("status", "error");

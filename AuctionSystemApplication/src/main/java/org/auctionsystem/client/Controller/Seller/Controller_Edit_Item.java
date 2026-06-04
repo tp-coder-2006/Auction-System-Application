@@ -45,6 +45,9 @@ public class Controller_Edit_Item {
 
     // Item được truyền từ Controller_My_Items
     private static JsonObject currentItem;
+    private static boolean relistMode = false;
+
+    public static void setRelistMode(boolean mode) { relistMode = mode; }
 
     private File   selectedImageFile;
     private String imageExtension;
@@ -83,6 +86,12 @@ public class Controller_Edit_Item {
 
         // Điền dữ liệu item hiện tại
         if (currentItem != null) prefillFields();
+
+        // Relist mode: khóa tên sản phẩm, đổi tiêu đề nút lưu
+        if (relistMode) {
+            if (field_name  != null) field_name.setDisable(true);
+            if (btn_save    != null) btn_save.setText("Đăng bán lại");
+        }
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -212,22 +221,41 @@ public class Controller_Edit_Item {
         final double finalPrice = price;
         new Thread(() -> {
             JsonObject req = new JsonObject();
-            req.addProperty("action",         "UPDATE_ITEM");
-            req.addProperty("item_id",        getString(currentItem, "id"));
-            req.addProperty("seller_id",      UserSession.getInstance().getUserId());
-            req.addProperty("name",           name);
-            req.addProperty("description",    description);
-            req.addProperty("starting_price", finalPrice);
-            req.addProperty("start_time",     startTime);
-            req.addProperty("end_time",       endTime);
+            if (relistMode) {
+                req.addProperty("action",          "RESTART_AUCTION");
+                req.addProperty("item_id",         getString(currentItem, "id"));
+                req.addProperty("owner_id",        UserSession.getInstance().getUserId());
+                req.addProperty("starting_price",  finalPrice);
+                req.addProperty("start_time",      startTime);
+                req.addProperty("end_time",        endTime);
 
-            if (selectedImageFile != null) {
-                try {
-                    byte[] bytes = Files.readAllBytes(selectedImageFile.toPath());
-                    req.addProperty("image_data", Base64.getEncoder().encodeToString(bytes));
-                    req.addProperty("extension",  imageExtension);
-                } catch (IOException e) {
-                    System.err.println("[EditItem] Lỗi đọc file ảnh: " + e.getMessage());
+                if (selectedImageFile != null) {
+                    try {
+                        byte[] bytes = Files.readAllBytes(selectedImageFile.toPath());
+                        req.addProperty("image_data", Base64.getEncoder().encodeToString(bytes));
+                        req.addProperty("extension",  imageExtension);
+                    } catch (IOException e) {
+                        System.err.println("[EditItem] Lỗi đọc file ảnh: " + e.getMessage());
+                    }
+                }
+            } else {
+                req.addProperty("action",          "UPDATE_ITEM");
+                req.addProperty("item_id",         getString(currentItem, "id"));
+                req.addProperty("seller_id",       UserSession.getInstance().getUserId());
+                req.addProperty("name",            name);
+                req.addProperty("description",     description);
+                req.addProperty("starting_price",  finalPrice);
+                req.addProperty("start_time",      startTime);
+                req.addProperty("end_time",        endTime);
+
+                if (selectedImageFile != null) {
+                    try {
+                        byte[] bytes = Files.readAllBytes(selectedImageFile.toPath());
+                        req.addProperty("image_data", Base64.getEncoder().encodeToString(bytes));
+                        req.addProperty("extension",  imageExtension);
+                    } catch (IOException e) {
+                        System.err.println("[EditItem] Lỗi đọc file ảnh: " + e.getMessage());
+                    }
                 }
             }
 
@@ -235,7 +263,14 @@ public class Controller_Edit_Item {
             Platform.runLater(() -> {
                 if (btn_save != null) btn_save.setDisable(false);
                 if (res != null && "success".equals(res.get("status").getAsString())) {
-                    showAlert(Alert.AlertType.INFORMATION, "Thành công", "Cập nhật sản phẩm thành công!");
+                    String msg = relistMode ? "Đăng bán lại thành công!" : "Cập nhật sản phẩm thành công!";
+                    // Cập nhật sellerUsername trong currentItem để Item_Detail hiện đúng
+                    if (relistMode && res.has("seller_username") && currentItem != null) {
+                        currentItem.addProperty("sellerUsername", res.get("seller_username").getAsString());
+                        currentItem.addProperty("status", "PENDING");
+                    }
+                    showAlert(Alert.AlertType.INFORMATION, "Thành công", msg);
+                    relistMode = false;
                     goToMyItems(event);
                 } else {
                     String msg = (res != null && res.has("message"))
@@ -247,6 +282,7 @@ public class Controller_Edit_Item {
     }
 
     public void onCancel(ActionEvent event) {
+        relistMode = false;
         goToMyItems(event);
     }
 

@@ -10,6 +10,7 @@ import javafx.scene.control.ButtonType;
 import javafx.scene.control.Label;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.event.BanWatcher;
 import org.auctionsystem.client.event.NotificationManager;
 import org.auctionsystem.client.event.EventDispatcher;
@@ -44,18 +45,8 @@ public class Controller_Seller_Dashboard {
             btn_add_item.setOnAction(this::Go_to_add_item);
 
         // Real-time: cập nhật số dư khi nạp/rút/bid
-        EventDispatcher.register(EventType.BALANCE_UPDATED, this::onBalanceUpdated);
-        EventDispatcher.register(EventType.BID_CREDIT,      this::onBalanceUpdated);
-    }
-
-    private void onBalanceUpdated(JsonObject payload) {
-        try {
-            double newBal = payload.get("balance").getAsDouble();
-            UserSession.getInstance().setBalance(newBal);
-            Platform.runLater(() -> updateBalanceLabel(newBal));
-        } catch (Exception e) {
-            System.err.println("[SellerDashboard] Lỗi parse balance: " + e.getMessage());
-        }
+        BalanceWatcher.registerListener("SellerDashboard", balance ->
+                updateBalanceLabel(balance));
     }
 
     private void updateBalanceLabel(double balance) {
@@ -73,8 +64,7 @@ public class Controller_Seller_Dashboard {
     }
 
     private void unregister() {
-        EventDispatcher.unregister(EventType.BALANCE_UPDATED);
-        EventDispatcher.unregister(EventType.BID_CREDIT);
+        BalanceWatcher.unregisterListener("SellerDashboard");
     }
 
     @FXML
@@ -145,6 +135,7 @@ public class Controller_Seller_Dashboard {
 
                 BanWatcher.deactivate();
                 NotificationManager.deactivate();
+                BalanceWatcher.deactivate();
                 EventDispatcher.unregisterAll();
                 UserSession.getInstance().clear();
                 ServerConnection.disconnect();

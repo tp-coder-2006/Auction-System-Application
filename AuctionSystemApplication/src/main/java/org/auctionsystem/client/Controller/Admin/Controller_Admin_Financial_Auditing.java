@@ -12,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 
 import java.io.IOException;
 import java.time.LocalDate;
@@ -82,6 +84,14 @@ public class Controller_Admin_Financial_Auditing {
 
         // [MỚI] Tải toàn bộ giao dịch khi mở màn hình
         loadAllTransactions();
+
+        // Tự động reload khi có giao dịch mới — chỉ reload nếu admin chưa đang filter theo user cụ thể
+        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, payload -> {
+            String currentSearch = (field_search_user != null) ? field_search_user.getText().trim() : "";
+            if (currentSearch.isEmpty()) {
+                loadAllTransactions();
+            }
+        });
     }
 
     // ─── [MỚI] Tải toàn bộ giao dịch từ server ────────────────────────────────
@@ -251,6 +261,7 @@ public class Controller_Admin_Financial_Auditing {
     // ─── Quay lại ─────────────────────────────────────────────────────────────
     @FXML
     public void back_to_admin_dashboard(ActionEvent event) {
+        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
         try { Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Admin_Dashboard.fxml"); }
         catch (IOException e) { throw new RuntimeException(e); }
     }

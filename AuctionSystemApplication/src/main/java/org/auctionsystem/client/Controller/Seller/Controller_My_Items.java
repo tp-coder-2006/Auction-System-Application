@@ -18,6 +18,8 @@ import javafx.scene.control.TableView;
 import javafx.scene.layout.HBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -56,7 +58,14 @@ public class Controller_My_Items {
         if (btn_back != null)
             btn_back.setOnAction(this::back_to_dashboard);
 
-        // Real-time auto-update trạng thái bảng đã được xóa. Dữ liệu load 1 lần khi vào màn hình.
+        // Xóa item khỏi bảng ngay lập tức khi admin hard delete
+        EventDispatcher.register(EventType.ITEM_DELETED, payload -> {
+            String itemId = payload.has("item_id") ? payload.get("item_id").getAsString() : "";
+            if (!itemId.isEmpty()) {
+                Platform.runLater(() -> itemList.removeIf(item ->
+                        itemId.equals(item.has("id") ? item.get("id").getAsString() : "")));
+            }
+        });
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -105,13 +114,21 @@ public class Controller_My_Items {
         // Cột hành động: nút Sửa + Hủy/Xóa tùy trạng thái
         col_action.setCellFactory(tc -> new TableCell<>() {
             private final Button btnEdit   = new Button("Sửa");
+            private final Button btnRelist = new Button("Bán lại");
             private final Button btnAction = new Button(); // Hủy hoặc Xóa
             private final HBox   box       = new HBox(6, btnEdit, btnAction);
+            private final HBox   boxRelist = new HBox(6, btnRelist, btnAction);
+            private final HBox   boxDelete  = new HBox(6, btnAction);
 
             {
                 btnEdit.setOnAction(e -> {
                     JsonObject item = getTableView().getItems().get(getIndex());
                     openEditItem(item);
+                });
+                btnRelist.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
+                btnRelist.setOnAction(e -> {
+                    JsonObject item = getTableView().getItems().get(getIndex());
+                    openRelistItem(item);
                 });
                 btnAction.setOnAction(e -> {
                     JsonObject item = getTableView().getItems().get(getIndex());
@@ -134,20 +151,24 @@ public class Controller_My_Items {
                 JsonObject item = getTableView().getItems().get(getIndex());
                 String status   = getString(item, "status").toUpperCase();
 
-                // Chỉ cho sửa khi PENDING
-                btnEdit.setDisable(!"PENDING".equals(status));
-
                 switch (status) {
+                    case "CANCELLED" -> {
+                        btnAction.setText("Xóa");
+                        btnAction.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                        setGraphic(boxRelist);
+                    }
                     case "ACTIVE", "PENDING" -> {
+                        btnEdit.setDisable(!"PENDING".equals(status));
                         btnAction.setText("Hủy");
                         btnAction.setStyle("-fx-background-color: #e67e22; -fx-text-fill: white;");
+                        setGraphic(box);
                     }
                     default -> {
                         btnAction.setText("Xóa");
                         btnAction.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                        setGraphic(boxDelete);
                     }
                 }
-                setGraphic(box);
             }
         });
 
@@ -219,11 +240,38 @@ public class Controller_My_Items {
     }
 
     // ─────────────────────────────────────────────────────────────────────────
+    //  Bán lại item (CANCELLED)
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void openRelistItem(JsonObject item) {
+        Controller_Edit_Item.setCurrentItem(item);
+        Controller_Edit_Item.setRelistMode(true);
+        try {
+            javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
+                    getClass().getResource(EDIT_ITEM_VIEW));
+            javafx.scene.Parent root = loader.load();
+            javafx.stage.Stage stage = Scene_Utils.getPrimaryStage();
+            double w = stage.getWidth(), h = stage.getHeight();
+            boolean max = stage.isMaximized();
+            javafx.scene.Scene scene = new javafx.scene.Scene(root);
+            Scene_Utils.Apply_Default_CSS_Style(scene);
+            stage.setMaximized(false);
+            stage.setScene(scene);
+            if (max) stage.setMaximized(true);
+            else { stage.setWidth(w); stage.setHeight(h); }
+            stage.show();
+        } catch (java.io.IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
     //  Edit item
     // ─────────────────────────────────────────────────────────────────────────
 
     private void openEditItem(JsonObject item) {
         Controller_Edit_Item.setCurrentItem(item);
+        Controller_Edit_Item.setRelistMode(false);
         try {
             javafx.fxml.FXMLLoader loader = new javafx.fxml.FXMLLoader(
                     getClass().getResource(EDIT_ITEM_VIEW));

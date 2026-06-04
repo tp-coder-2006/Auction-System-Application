@@ -57,6 +57,8 @@ public final class NotificationManager {
                 NotificationManager::onBidPlaced);
         EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED,  "NotificationManager",
                 NotificationManager::onAuctionSettled);
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED,  "NotificationManager",
+                NotificationManager::onItemCancelled);
 
         System.out.println("[NotificationManager] Đã kích hoạt.");
     }
@@ -67,6 +69,7 @@ public final class NotificationManager {
 
         EventDispatcher.unregisterGlobal(EventType.BID_PLACED,      "NotificationManager");
         EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED,  "NotificationManager");
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED,   "NotificationManager");
 
         queue.clear();
         showing.set(false);
@@ -94,7 +97,7 @@ public final class NotificationManager {
 
     private static void onAuctionSettled(JsonObject payload) {
         String itemName = getString(payload, "item_name", getString(payload, "item_id", "sản phẩm"));
-        String buyerId  = getString(payload, "buyer_id", "");
+        String buyerId  = getString(payload, "bidder_id", "");
         String myId     = UserSession.getInstance() != null
                 ? UserSession.getInstance().getUserId() : "";
 
@@ -125,6 +128,15 @@ public final class NotificationManager {
     // ─────────────────────────────────────────────────────────────────────────
     //  Toast queue & display
     // ─────────────────────────────────────────────────────────────────────────
+
+
+    private static void onItemCancelled(JsonObject payload) {
+        String itemName = getString(payload, "item_name", getString(payload, "item_id", "sản phẩm"));
+        enqueue(new ToastData(
+                "❌ Phiên đấu giá bị hủy",
+                "[" + itemName + "] đã bị hủy do không có lượt đặt giá hợp lệ.",
+                ToastType.INFO));
+    }
 
     private static synchronized void enqueue(ToastData data) {
         queue.add(data);

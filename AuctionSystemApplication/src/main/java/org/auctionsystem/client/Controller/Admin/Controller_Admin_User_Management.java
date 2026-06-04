@@ -12,6 +12,8 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 
 import java.io.IOException;
 
@@ -57,6 +59,9 @@ public class Controller_Admin_User_Management {
         if (btn_search != null) {
             btn_search.setOnAction(e -> filterUsers(field_search_user.getText()));
         }
+
+        // Tự động reload khi có thay đổi user (ban/unban từ client khác, user mới đăng ký, v.v.)
+        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, payload -> loadUsers());
     }
 
     // ─── Cột hành động (Khóa / Mở khóa) ──────────────────────────────────────
@@ -192,6 +197,7 @@ public class Controller_Admin_User_Management {
     // ─── Quay lại ─────────────────────────────────────────────────────────────
     @FXML
     public void back_to_admin_dashboard(ActionEvent event) {
+        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
         try { Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Admin_Dashboard.fxml"); }
         catch (IOException e) { throw new RuntimeException(e); }
     }

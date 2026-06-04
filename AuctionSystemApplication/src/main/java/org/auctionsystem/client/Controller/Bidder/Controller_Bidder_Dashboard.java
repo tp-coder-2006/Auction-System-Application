@@ -17,6 +17,7 @@ import javafx.scene.layout.VBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
 import org.auctionsystem.client.event.BanWatcher;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.event.NotificationManager;
 import org.auctionsystem.client.event.EventDispatcher;
 import org.auctionsystem.client.event.EventType;
@@ -56,13 +57,14 @@ public class Controller_Bidder_Dashboard {
     public void initialize() {
         updateBalanceLabel(UserSession.getInstance().getBalance());
 
-        // Đăng ký events real-time
-        EventDispatcher.register(EventType.BALANCE_UPDATED, this::onBalanceEvent);
-        EventDispatcher.register(EventType.BID_DEDUCT,      this::onBalanceEvent);
-        EventDispatcher.register(EventType.BID_CREDIT,      this::onBalanceEvent);
+        // Đăng ký nhận balance updates qua BalanceWatcher (global singleton)
+        BalanceWatcher.registerListener("BidderDashboard", balance -> updateBalanceLabel(balance));
 
-        // Refresh widget khi có bid mới, phiên kết thúc — đã xóa real-time auto-refresh.
-        // Widget chỉ load 1 lần khi vào màn hình.
+        // Đăng ký events real-time
+        EventDispatcher.register(EventType.ITEM_DELETED,     this::onItemDeleted);
+        EventDispatcher.register(EventType.BID_PLACED,       this::onBidPlaced);
+        EventDispatcher.register(EventType.AUCTION_SETTLED,  this::onAuctionSettled);
+        EventDispatcher.register(EventType.ITEM_CANCELLED,   this::onItemCancelled);
 
         // Load widget lần đầu
         loadLeadingBids();
@@ -117,8 +119,8 @@ public class Controller_Bidder_Dashboard {
     private HBox buildItemRow(JsonObject item) {
         String name      = getString(item, "itemName", getString(item, "item_id", "—"));
         String priceRaw  = item.has("bidAmount") && !item.get("bidAmount").isJsonNull()
-                           ? String.format("%,.0f ₫", item.get("bidAmount").getAsDouble())
-                           : "—";
+                ? String.format("%,.0f ₫", item.get("bidAmount").getAsDouble())
+                : "—";
         String timeLabel = buildTimeLabel(item);
 
         // Tên item (co giãn)
@@ -143,6 +145,9 @@ public class Controller_Bidder_Dashboard {
         HBox row = new HBox(8, lblName, spacer, lblPrice, lblTime);
         row.getStyleClass().add("leading-item-row");
         row.setMaxWidth(Double.MAX_VALUE);
+        // userData dùng để xóa row khi nhận event — ưu tiên "itemId" (Gson/Bid), fallback "item_id"
+        String rowItemId = getString(item, "itemId", getString(item, "item_id", ""));
+        row.setUserData(rowItemId);
 
         return row;
     }
@@ -196,13 +201,123 @@ public class Controller_Bidder_Dashboard {
     //  Real-time balance
     // ─────────────────────────────────────────────────────────────────────────
 
-    private void onBalanceEvent(JsonObject payload) {
-        try {
-            double newBalance = payload.get("balance").getAsDouble();
-            UserSession.getInstance().setBalance(newBalance);
-            updateBalanceLabel(newBalance);
-        } catch (Exception e) {
-            System.err.println("[BidderDashboard] Lỗi parse balance event: " + e.getMessage());
+    private void onItemDeleted(JsonObject payload) {
+        String itemId = payload.has("item_id") ? payload.get("item_id").getAsString() : "";
+        if (itemId.isEmpty() || vbox_leading_items == null) return;
+        Platform.runLater(() -> {
+            vbox_leading_items.getChildren().removeIf(node -> itemId.equals(node.getUserData()));
+            updateLeadingCount();
+        });
+    }
+
+    /**
+     * Có bid mới được đặt cho 1 item:
+     * - Nếu là chính mình bid → thêm item vào danh sách nếu chưa có (vừa dẫn đầu item mới),
+     *   hoặc cập nhật giá nếu đã có (tự bid thêm lên item mình đang dẫn đầu).
+     * - Nếu là người khác bid → xóa item khỏi danh sách vì mình không còn dẫn đầu nữa.
+     */
+    private void onBidPlaced(JsonObject payload) {
+        String itemId   = getString(payload, "item_id", "");
+        String bidderId = getString(payload, "bidder_id", "");
+        String myId     = UserSession.getInstance().getUserId();
+        if (itemId.isEmpty() || vbox_leading_items == null) return;
+
+        if (myId.equals(bidderId)) {
+            // Mình vừa bid — kiểm tra item đã có trong danh sách chưa
+            Platform.runLater(() -> {
+                if (vbox_leading_items == null) return;
+                boolean alreadyLeading = vbox_leading_items.getChildren().stream()
+                        .anyMatch(node -> itemId.equals(node.getUserData()));
+                if (alreadyLeading) {
+                    // Đã có rồi — cập nhật giá hiển thị
+                    double newPrice = payload.has("bid_amount")
+                            ? payload.get("bid_amount").getAsDouble() : -1;
+                    if (newPrice >= 0) {
+                        vbox_leading_items.getChildren().stream()
+                                .filter(node -> itemId.equals(node.getUserData()) && node instanceof HBox)
+                                .map(node -> (HBox) node)
+                                .forEach(row -> row.getChildren().stream()
+                                        .filter(c -> c instanceof Label lbl
+                                                && lbl.getStyleClass().contains("leading-item-price"))
+                                        .map(c -> (Label) c)
+                                        .findFirst()
+                                        .ifPresent(lbl -> lbl.setText(String.format("%,.0f \u20ab", newPrice))));
+                    }
+                } else {
+                    // Chưa có — fetch thông tin item từ server rồi thêm vào danh sách
+                    new Thread(() -> {
+                        JsonObject req = new JsonObject();
+                        req.addProperty("action",    "GET_ACTIVE_BIDS_BY_BIDDER");
+                        req.addProperty("bidder_id", myId);
+                        JsonObject res = ServerConnection.sendAuthRequest(req);
+                        if (res == null || !"success".equals(getString(res, "status", ""))) return;
+                        JsonArray arr = res.get("message").getAsJsonArray();
+                        for (JsonElement el : arr) {
+                            JsonObject item = el.getAsJsonObject();
+                            if (itemId.equals(getString(item, "itemId", getString(item, "item_id", "")))) {
+                                Platform.runLater(() -> {
+                                    if (vbox_leading_items == null) return;
+                                    // Xóa label "chưa dẫn đầu" nếu còn đó
+                                    vbox_leading_items.getChildren()
+                                            .removeIf(n -> n.getUserData() == null);
+                                    vbox_leading_items.getChildren().add(buildItemRow(item));
+                                    updateLeadingCount();
+                                });
+                                break;
+                            }
+                        }
+                    }, "Dashboard-AddLeadingItem").start();
+                }
+            });
+            return;
+        }
+
+        // Người khác vừa bid — mình bị vượt qua → xóa item khỏi danh sách dẫn đầu
+        Platform.runLater(() -> {
+            if (vbox_leading_items == null) return;
+            boolean removed = vbox_leading_items.getChildren()
+                    .removeIf(node -> itemId.equals(node.getUserData()));
+            if (removed) updateLeadingCount();
+        });
+    }
+
+    /**
+     * Phiên đấu giá kết thúc — xóa item khỏi danh sách vì không còn ACTIVE.
+     */
+    private void onAuctionSettled(JsonObject payload) {
+        String itemId = getString(payload, "item_id", "");
+        if (itemId.isEmpty() || vbox_leading_items == null) return;
+        Platform.runLater(() -> {
+            if (vbox_leading_items == null) return;
+            vbox_leading_items.getChildren().removeIf(node -> itemId.equals(node.getUserData()));
+            updateLeadingCount();
+        });
+    }
+
+    /**
+     * Item bị hủy — xóa khỏi danh sách dẫn đầu.
+     */
+    private void onItemCancelled(JsonObject payload) {
+        String itemId = getString(payload, "item_id", "");
+        if (itemId.isEmpty() || vbox_leading_items == null) return;
+        Platform.runLater(() -> {
+            if (vbox_leading_items == null) return;
+            vbox_leading_items.getChildren().removeIf(node -> itemId.equals(node.getUserData()));
+            updateLeadingCount();
+        });
+    }
+
+    /** Cập nhật label đếm số phiên sau khi xóa row, hiện thông báo trống nếu danh sách rỗng. */
+    private void updateLeadingCount() {
+        if (lbl_leading_count == null || vbox_leading_items == null) return;
+        long count = vbox_leading_items.getChildren().stream()
+                .filter(n -> n.getUserData() != null)
+                .count();
+        lbl_leading_count.setText(count > 0 ? count + " phiên" : "");
+        if (count == 0) {
+            Label empty = new Label("Bạn chưa dẫn đầu phiên nào đang diễn ra.");
+            empty.getStyleClass().add("leading-widget-empty");
+            vbox_leading_items.getChildren().add(empty);
         }
     }
 
@@ -217,7 +332,7 @@ public class Controller_Bidder_Dashboard {
 
     private static String getString(JsonObject o, String k, String fb) {
         return (o != null && o.has(k) && !o.get(k).isJsonNull())
-               ? o.get(k).getAsString() : fb;
+                ? o.get(k).getAsString() : fb;
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -259,11 +374,10 @@ public class Controller_Bidder_Dashboard {
     @FXML public void Go_to_my_items(ActionEvent event)            { unregisterAll(); switch_scene(event, My_Items_Bidder_View); }
 
     private void unregisterAll() {
-        EventDispatcher.unregister(EventType.BALANCE_UPDATED);
-        EventDispatcher.unregister(EventType.BID_DEDUCT);
-        EventDispatcher.unregister(EventType.BID_CREDIT);
+        BalanceWatcher.unregisterListener("BidderDashboard");
         EventDispatcher.unregister(EventType.BID_PLACED);
         EventDispatcher.unregister(EventType.AUCTION_SETTLED);
+        EventDispatcher.unregister(EventType.ITEM_DELETED);
         EventDispatcher.unregister(EventType.ITEM_CANCELLED);
     }
 
@@ -280,6 +394,7 @@ public class Controller_Bidder_Dashboard {
                 ServerConnection.sendAuthRequest(request);
                 BanWatcher.deactivate();
                 NotificationManager.deactivate();
+                BalanceWatcher.deactivate();
                 EventDispatcher.unregisterAll();
                 UserSession.getInstance().clear();
                 ServerConnection.disconnect();

@@ -224,6 +224,10 @@ public class ItemService {
                 // ── HARD DELETE: pending + chưa có bid nào ──────────────────
                 success        = itemDAO.hardDeleteItem(itemId, sellerId);
                 successMessage = "Xóa sản phẩm thành công!";
+                // Xóa file ảnh vật lý sau khi hard delete thành công
+                if (success && item.getImageUrl() != null && !item.getImageUrl().isEmpty()) {
+                    ImageService.deleteFileQuietly("auction_images/" + item.getImageUrl());
+                }
             } else {
                 // ── SOFT DELETE: đã có bid, hoặc pending nhưng có bid lịch sử
                 // Chỉ cho phép với status PENDING / CANCELLED / CLOSED
@@ -241,7 +245,13 @@ public class ItemService {
                 response.addProperty("status", "success");
                 response.addProperty("message", successMessage);
                 response.addProperty("delete_type", everHadBid ? "soft" : "hard");
-                // Trigger cập nhật thống kê admin
+
+                // Broadcast để Searching Room xóa item khỏi bảng ngay lập tức
+                JsonObject event = new JsonObject();
+                event.addProperty("event",   EventType.ITEM_DELETED);
+                event.addProperty("item_id", itemId);
+                ConnectedClientRegistry.broadcastAll(event);
+
                 AdminStatsScheduler.notifyStatsChanged();
             } else {
                 response.addProperty("status", "error");
@@ -265,14 +275,86 @@ public class ItemService {
             String newStartTime     = request.get("start_time").getAsString();
             String newEndTime       = request.get("end_time").getAsString();
 
-            if (itemDAO.restartItemAuction(itemId, requesterId, newStartingPrice, newStartTime, newEndTime)) {
-                response.addProperty("status", "success");
-                response.addProperty("message", "Đã tái khởi động phiên đấu giá thành công!");
-                AuctionScheduler.wakeUpActivate();
-            } else {
+            if (!itemDAO.restartItemAuction(itemId, requesterId, newStartingPrice, newStartTime, newEndTime)) {
                 response.addProperty("status", "error");
                 response.addProperty("message", "Không thể tái khởi động — sai chủ sở hữu hoặc sản phẩm đang active.");
+                return response;
             }
+
+            // Upload ảnh mới nếu có
+            boolean hasImage = request.has("image_data")
+                    && !request.get("image_data").isJsonNull()
+                    && !request.get("image_data").getAsString().isBlank()
+                    && request.has("extension")
+                    && !request.get("extension").isJsonNull();
+
+            if (hasImage) {
+                String imageData = request.get("image_data").getAsString();
+                String extension = request.get("extension").getAsString().toLowerCase();
+
+                if (!ImageService.isAllowedExtension(extension)) {
+                    response.addProperty("status", "error");
+                    response.addProperty("message", "Định dạng ảnh không hợp lệ! Chỉ chấp nhận: jpg, jpeg, png, webp");
+                    return response;
+                }
+
+                byte[] imageBytes = ImageService.decodeBase64(imageData);
+                if (imageBytes == null) {
+                    response.addProperty("status", "error");
+                    response.addProperty("message", "Dữ liệu ảnh base64 không hợp lệ!");
+                    return response;
+                }
+                if (imageBytes.length > 5 * 1024 * 1024L) {
+                    response.addProperty("status", "error");
+                    response.addProperty("message", "Ảnh quá lớn! Tối đa 5MB.");
+                    return response;
+                }
+
+                String newImageId  = UUID.randomUUID().toString();
+                String newFilename = newImageId + "." + extension;
+                String newRelative = "items/" + newFilename;
+                String newAbsolute = "auction_images" + "/" + newRelative;
+
+                try {
+                    ImageService.writeFile(newAbsolute, imageBytes);
+                } catch (IOException ioEx) {
+                    response.addProperty("status", "error");
+                    response.addProperty("message", "Lỗi ghi file ảnh: " + ioEx.getMessage());
+                    return response;
+                }
+
+                boolean registered = imageDAO.registerImage(newImageId, newRelative, "item", itemId);
+                if (!registered) {
+                    ImageService.deleteFileQuietly(newAbsolute);
+                    response.addProperty("status", "error");
+                    response.addProperty("message", "Lỗi đăng ký ảnh vào database!");
+                    return response;
+                }
+
+                itemDAO.updateImageUrl(itemId, newRelative);
+            }
+
+            // Trả về sellerUsername để client cập nhật currentItem
+            Item updatedItem = itemDAO.getAItemById(itemId);
+            if (updatedItem != null && updatedItem.getSellerUsername() != null) {
+                response.addProperty("seller_username", updatedItem.getSellerUsername());
+            }
+            response.addProperty("status", "success");
+            response.addProperty("message", "Đã tái khởi động phiên đấu giá thành công!");
+
+            // Broadcast ITEM_RELISTED đến tất cả client để cập nhật bảng ngay lập tức
+            JsonObject event = new JsonObject();
+            event.addProperty("event",         EventType.ITEM_RELISTED);
+            event.addProperty("item_id",       itemId);
+            event.addProperty("starting_price", newStartingPrice);
+            event.addProperty("start_time",    newStartTime);
+            event.addProperty("end_time",      newEndTime);
+            event.addProperty("seller_id",     requesterId);
+            if (updatedItem != null) {
+                event.addProperty("name", updatedItem.getName());
+            }
+            ConnectedClientRegistry.broadcastAll(event);
+            AdminStatsScheduler.notifyStatsChanged();
         } catch (Exception e) {
             response.addProperty("status", "error");
             response.addProperty("message", "Lỗi máy chủ: " + e.getMessage());
@@ -438,7 +520,21 @@ public class ItemService {
             if (finalImageUrl != null) {
                 response.addProperty("image_url", finalImageUrl);
             }
-            AuctionScheduler.wakeUpActivate();
+
+            // Broadcast để Searching Room thêm item mới vào bảng ngay lập tức
+            JsonObject event = new JsonObject();
+            event.addProperty("event",                "ITEM_ADDED");
+            event.addProperty("item_id",              itemId);
+            event.addProperty("name",                 name);
+            event.addProperty("status",               "PENDING");
+            event.addProperty("starting_price",       startingPrice);
+            event.addProperty("current_highest_price", startingPrice);
+            event.addProperty("start_time",           startTime);
+            event.addProperty("end_time",             endTime);
+            event.addProperty("seller_id",            sellerId);
+            if (finalImageUrl != null) event.addProperty("image_url", finalImageUrl);
+            ConnectedClientRegistry.broadcastAll(event);
+            AdminStatsScheduler.notifyStatsChanged();
 
         } catch (Exception e) {
             // Nếu đã tạo item nhưng xảy ra lỗi ngoài ý muốn → rollback xóa item
@@ -546,7 +642,19 @@ public class ItemService {
                 if (finalImageUrl != null) {
                     response.addProperty("image_url", finalImageUrl);
                 }
-                AuctionScheduler.wakeUpActivate();
+
+                // Broadcast để Searching Room cập nhật item ngay lập tức
+                JsonObject event = new JsonObject();
+                event.addProperty("event",          "ITEM_UPDATED");
+                event.addProperty("item_id",        itemId);
+                event.addProperty("name",           name);
+                event.addProperty("starting_price",       startingPrice);
+                event.addProperty("current_highest_price", startingPrice);
+                event.addProperty("start_time",     startTime);
+                event.addProperty("end_time",       endTime);
+                if (finalImageUrl != null) event.addProperty("image_url", finalImageUrl);
+                ConnectedClientRegistry.broadcastAll(event);
+                AdminStatsScheduler.notifyStatsChanged();
             } else {
                 // Rollback: xóa ảnh mới nếu vừa upload
                 if (hasImage && finalImageUrl != null) {

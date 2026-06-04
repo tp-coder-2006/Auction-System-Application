@@ -3,6 +3,7 @@ package org.auctionsystem.server.DAO;
 import org.auctionsystem.model.entities.Item;
 import org.auctionsystem.model.enums.ItemStatus;
 import org.auctionsystem.server.Connectivity.DatabaseConnection;
+import org.auctionsystem.server.service.ImageService;
 
 import java.sql.*;
 import java.time.LocalDateTime;
@@ -433,6 +434,15 @@ public class ItemDAO {
             conn = DatabaseConnection.getInstance().getConnection();
             conn.setAutoCommit(false);
 
+            // 0. Lấy image_url trước khi xóa để xóa file ảnh vật lý sau
+            String imageUrl = null;
+            try (PreparedStatement ps = conn.prepareStatement(
+                    "SELECT image_url FROM items WHERE id = ?")) {
+                ps.setString(1, itemId);
+                ResultSet rs = ps.executeQuery();
+                if (rs.next()) imageUrl = rs.getString("image_url");
+            }
+
             // 1. Xóa tất cả bids của item này
             try (PreparedStatement ps = conn.prepareStatement(
                     "DELETE FROM bids WHERE item_id = ?")) {
@@ -470,6 +480,12 @@ public class ItemDAO {
             }
 
             conn.commit();
+
+            // Xóa file ảnh vật lý sau khi DB commit thành công
+            if (imageUrl != null && !imageUrl.isEmpty()) {
+                ImageService.deleteFileQuietly("auction_images/" + imageUrl);
+            }
+
             return rows > 0;
 
         } catch (SQLException e) {

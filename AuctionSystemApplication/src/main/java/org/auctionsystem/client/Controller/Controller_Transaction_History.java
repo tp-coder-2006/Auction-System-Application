@@ -12,6 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.BalanceWatcher;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -46,6 +49,9 @@ public class Controller_Transaction_History {
         previousView = fxmlPath;
     }
 
+    // Filter hiện tại — để biết có nên hiện row mới khi nhận event không
+    private String currentFilter = null;  // null = Tất cả
+
     // ── Khởi tạo ─────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
@@ -69,6 +75,14 @@ public class Controller_Transaction_History {
 
         // Load toàn bộ lịch sử
         loadTransactions(null);
+
+        // Đăng ký BalanceWatcher để cập nhật label số dư realtime
+        BalanceWatcher.registerListener("TransactionHistory", balance ->
+                lbl_balance.setText("Số dư: " + formatMoney(balance) + " ₫"));
+
+        // Đăng ký real-time events để thêm row mới vào bảng
+        EventDispatcher.register(EventType.BID_DEDUCT, this::onTransactionEvent);
+        EventDispatcher.register(EventType.BID_CREDIT, this::onTransactionEvent);
     }
 
     // ── Xử lý filter ─────────────────────────────────────────────────────────
@@ -76,14 +90,51 @@ public class Controller_Transaction_History {
     public void on_filter(ActionEvent event) {
         String selected = combo_filter.getValue();
         if (selected == null) return;
-        String typeCode = switch (selected) {
+        currentFilter = switch (selected) {
             case "Nạp tiền (DEPOSIT)"             -> "DEPOSIT";
             case "Rút tiền (WITHDRAW)"            -> "WITHDRAW";
             case "Trừ tiền đấu giá (BID_DEDUCT)"  -> "BID_DEDUCT";
             case "Nhận tiền bán hàng (BID_CREDIT)" -> "BID_CREDIT";
             default -> null;  // "Tất cả"
         };
-        loadTransactions(typeCode);
+        loadTransactions(currentFilter);
+    }
+
+    // ── Real-time: nhận BID_DEDUCT hoặc BID_CREDIT → thêm row mới lên đầu bảng ──
+    private void onTransactionEvent(com.google.gson.JsonObject payload) {
+        String eventType = payload.has("event") ? payload.get("event").getAsString() : "";
+        String typeCode  = eventType.equals(EventType.BID_DEDUCT) ? "BID_DEDUCT" : "BID_CREDIT";
+
+        // Nếu đang filter theo loại khác thì bỏ qua
+        if (currentFilter != null && !currentFilter.equals(typeCode)) return;
+
+        double amount  = getDblSafe(payload, "amount");
+        double balance = getDblSafe(payload, "balance");
+        String note    = payload.has("item_name") && !payload.get("item_name").isJsonNull()
+                ? (typeCode.equals("BID_DEDUCT") ? "Thanh toán đấu giá " : "Nhận tiền bán hàng ")
+                + payload.get("item_name").getAsString()
+                : typeCode;
+
+        // balance_before = balance_after ± amount
+        double balBefore = typeCode.equals("BID_DEDUCT") ? balance + amount : balance - amount;
+
+        String now = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        TransactionRow row = new TransactionRow(
+                now,
+                typeLabel(typeCode),
+                formatMoney(amount) + " ₫",
+                formatMoney(balBefore) + " ₫",
+                formatMoney(balance) + " ₫",
+                note
+        );
+
+        // Thêm lên đầu bảng — balance label đã được BalanceWatcher cập nhật tự động
+        ObservableList<TransactionRow> items = table_transactions.getItems();
+        if (items == null) items = FXCollections.observableArrayList();
+        items.add(0, row);
+        table_transactions.setItems(items);
     }
 
     // ── Load dữ liệu từ server ────────────────────────────────────────────────
@@ -158,6 +209,9 @@ public class Controller_Transaction_History {
     // ── Quay lại ─────────────────────────────────────────────────────────────
     @FXML
     public void on_back(ActionEvent event) {
+        BalanceWatcher.unregisterListener("TransactionHistory");
+        EventDispatcher.unregister(EventType.BID_DEDUCT);
+        EventDispatcher.unregister(EventType.BID_CREDIT);
         if (previousView == null) {
             String role = UserSession.getInstance().getRole();
             previousView = "seller".equalsIgnoreCase(role)

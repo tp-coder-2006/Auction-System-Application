@@ -10,8 +10,7 @@ import javafx.scene.control.Label;
 import javafx.scene.control.TextField;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
-import org.auctionsystem.client.event.EventDispatcher;
-import org.auctionsystem.client.event.EventType;
+import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -56,12 +55,9 @@ public class Controller_Seller_Wallet {
     @FXML
     public void initialize() {
         refreshBalanceLabel();
-        // Lắng nghe event balance thay đổi real-time (BID_CREDIT khi thắng đấu giá)
-        EventDispatcher.register(EventType.BALANCE_UPDATED, payload -> {
-            double newBalance = payload.get("balance").getAsDouble();
-            UserSession.getInstance().setBalance(newBalance);
-            Platform.runLater(this::refreshBalanceLabel);
-        });
+        // Lắng nghe balance updates qua BalanceWatcher (global singleton)
+        BalanceWatcher.registerListener("SellerWallet", balance ->
+                Platform.runLater(this::refreshBalanceLabel));
     }
 
     private void refreshBalanceLabel() {
@@ -143,7 +139,7 @@ public class Controller_Seller_Wallet {
         // Truyền đường dẫn màn hình hiện tại để nút "Quay lại" trong History hoạt động đúng
         Controller_Seller_Transaction_History.setPreviousView(SELLER_WALLET_VIEW);
         try {
-            EventDispatcher.unregister(EventType.BALANCE_UPDATED);
+            BalanceWatcher.unregisterListener("SellerWallet");
             Scene_Utils.Change_Scene(event, SELLER_HISTORY_VIEW);
         } catch (IOException e) {
             e.printStackTrace();
@@ -154,7 +150,7 @@ public class Controller_Seller_Wallet {
     @FXML
     private void onBack(ActionEvent event) {
         try {
-            EventDispatcher.unregister(EventType.BALANCE_UPDATED);
+            BalanceWatcher.unregisterListener("SellerWallet");
             Scene_Utils.Change_Scene(event, SELLER_DASHBOARD_VIEW);
         } catch (IOException e) {
             e.printStackTrace();

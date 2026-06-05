@@ -1,6 +1,13 @@
 .heading {
-    -fx-text-fill: #4A3728;
+    -fx-text-fill: #1F2937;
 }
 .error-announcement {
     -fx-text-fill: red;
+}
+.bidding-label {
+    -fx-text-fill: #333029;
+}
+.profile-field-label {
+    -fx-font-weight: bold;
+    -fx-text-fill: #332418;
 }

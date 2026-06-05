@@ -1,0 +1,44 @@
+/* Khung HBox bọc ngoài cùng */
+.search-box {
+    -fx-spacing: 0px !important;  /* BẮT BUỘC: Xóa bỏ hoàn toàn khoảng cách giữa ô nhập và nút */
+    -fx-alignment: center;
+}
+
+/* Ô nhập liệu TextField (Nằm bên trái) */
+.search-input {
+    -fx-background-color: #ffffff;  /* Nền trắng tinh */
+
+    /* Bo tròn 2 góc bên TRÁI (Trên/Dưới), giữ vuông 2 góc bên PHẢI để nối nút */
+    -fx-background-radius: 40px 0px 0px 40px;
+    -fx-border-radius: 40px 0px 0px 40px;
+
+    -fx-border-color: #cccccc;      /* Viền xám nhạt nhẹ nhàng */
+    -fx-border-width: 1px 0px 1px 1px; /* Không hiện viền bên phải để ráp nối sát */
+
+    -fx-padding: 8px 16px;          /* Tạo độ cao thông thoáng cho ô nhập */
+    -fx-font-size: 14px;
+    -fx-text-fill: #0f0f0f;         /* Màu chữ nhập vào (Đen xám) */
+}
+
+/* Hiệu ứng khi người dùng click vào gõ chữ (Focused) */
+.search-input:focused {
+    -fx-border-color: #1c62b9;
+    -fx-border-width: 1px 1px 1px 1px;
+    /* Tạo hiệu ứng đổ bóng chìm nhẹ bên trong */
+    -fx-effect: inset dropshadow(three-pass-box, rgba(28, 98, 185, 0.2), 4, 0, 0, 0);
+}
+
+/* Nút bấm Tìm kiếm Button (Nằm bên phải) */
+.search-button {
+    -fx-border-color: #cccccc;
+    -fx-border-width: 1px 1px 1px 1px;
+
+    -fx-padding: 8px 24px;
+    -fx-cursor: hand;
+}
+
+/* Hiệu ứng khi di chuột qua nút tìm kiếm */
+.search-button:hover {
+    -fx-background-color: #3b3a38;
+    -fx-border-color: #b3b3b3;
+}

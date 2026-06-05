@@ -1,0 +1,67 @@
+/* Class dành cho các nút trong profile */
+.button-edit {
+    -fx-background-color: #45a4f7;
+}
+.button-edit:hover {
+    -fx-background-color: #2ea7e8;
+}
+/* Class đặc biệt dành riêng cho nút Hủy */
+.button-cancel {
+    -fx-background-color: #95a5a6; /* Màu xám bê tông */
+    -fx-background-radius: 5px;
+}
+/* Hiệu ứng khi di chuột vào nút hủy */
+.button-cancel:hover {
+    -fx-background-color: #7f8c8d; /* Xám đậm hơn khi hover */
+}
+.button-money {
+    -fx-background-color: #1ac70e;
+}
+.button-money:hover {
+    -fx-background-color: #30cf25;
+}
+.button-admin {
+    -fx-background-color: #f5ba38;
+}
+.button-admin:hover {
+    -fx-background-color: #f2bd46;
+}
+/*Trang trí RadioButton*/
+.radio-button .label {
+    -fx-text-fill: #2C1A04;       /* Màu nâu đen Espresso đồng bộ hệ thống */
+    -fx-font-family: "Segoe UI";
+    -fx-font-size: 14px;
+    -fx-padding: 0 0 0 5px;       /* Tạo khoảng cách nhỏ giữa vòng tròn và chữ */
+}
+
+.radio-button .radio {
+    -fx-background-color: white;
+    -fx-border-color: #030303;
+    -fx-border-radius: 100px;
+    -fx-background-radius: 100px;
+    -fx-border-width: 1.5px;
+    -fx-padding: 3px;
+}
+
+/* Hiệu ứng khi người dùng di chuột (Hover) qua RadioButton */
+.radio-button:hover .radio {
+    -fx-border-color: #030303;
+    -fx-cursor: hand;
+}
+
+.radio-button:selected .radio {
+    -fx-background-color: white;
+    -fx-border-color: #030303;
+}
+
+/* Định dạng dấu chấm nhỏ xuất hiện ở TÂM vòng tròn khi được chọn */
+.radio-button:selected .radio .dot {
+    -fx-background-color: #030303;
+    -fx-background-radius: 100px;
+    -fx-padding: 4px;
+}
+
+/* Hiệu ứng khi RadioButton đang được tập trung (Focused) */
+.radio-button:focused .radio {
+    -fx-effect: dropshadow(three-pass-box, rgba(3, 3, 3, 0.3), 5, 0.0, 0.0, 0.0);
+}

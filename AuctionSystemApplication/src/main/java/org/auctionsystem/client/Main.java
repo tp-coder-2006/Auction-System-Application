@@ -28,8 +28,11 @@ public class Main extends Application {
         Scene_Utils.Init_Stage_Size(stage);
 
         stage.setTitle("Auction System Application");
+        stage.setMaximized(true);
+        stage.setResizable(false);
         stage.setScene(scene);
         stage.show();
+        Scene_Utils.Init_Stage_Size(stage);
     }
 
     public static void main(String[] args) {

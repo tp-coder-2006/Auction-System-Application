@@ -1,23 +1,40 @@
 .root {
-    -fx-background-color: #FDFBF7;
+    -fx-background-color: linear-gradient(to bottom, #fcfcfc, #fcfaf2);
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-font-family: "Segoe UI";
 }
+.label {
+    -fx-text-fill: #333333;
+}
 .button {
-    -fx-background-color:#c68642;
+    -fx-background-color:#171511;
     -fx-text-fill: white;
     -fx-border-color: transparent;
     -fx-cursor: hand;
     -fx-background-radius: 5px;
 }
 .button:hover {
-    -fx-background-color: #2ea7e8;
+    -fx-background-color: #121212;
 }
 .text-field {
-    -fx-background-radius: 5px;
-    -fx-border-color: #dcdde1;
-    -fx-border-radius: 5px;
+    -fx-background-color: white;
+    -fx-background-radius: 8;
+    -fx-border-color: #453d31;
+    -fx-border-radius: 8;
+    -fx-border-width: 1.5;
+    -fx-text-fill: #333333;
+    -fx-padding: 0 10 0 10;
+}
+.text-field:focused {
+    -fx-border-color: #61605f;
+    -fx-border-width: 2;
+    -fx-effect: dropshadow(three-pass-box, rgba(198,134,66,0.3), 6, 0, 0, 0);
+}
+.text-field:disabled {
+    -fx-opacity: 1;
+    -fx-background-color: #f5f0e8;
+    -fx-border-color: #e0cba8;
 }
 .menu-bar .menu {
     -fx-padding: 0 30px 0 30px;
@@ -26,167 +43,14 @@
     -fx-alignment: center;
 }
 .floating-card {
-    -fx-background-color: rgba(245, 211, 125, 0.8);
+    -fx-background-color: rgba(255, 255, 255, 0.8);
     -fx-background-radius: 12;
     -fx-padding: 40;
     -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.4), 20, 0, 0, 8);
 }
 .table-view {
     -fx-background-color: transparent;
-    -fx-border-color: #c8a96e;
+    -fx-border-color: #4d3902;
     -fx-border-radius: 8;
-    -fx-background-radius: 8;
-}
-/* Class đặc biệt dành riêng cho nút Hủy */
-.button-cancel {
-    -fx-background-color: #95a5a6; /* Màu xám bê tông */
-    -fx-text-fill: white;
-    -fx-cursor: hand;
-    -fx-background-radius: 5px;
-}
-
-/* Hiệu ứng khi di chuột vào nút hủy */
-.button-cancel:hover {
-    -fx-background-color: #7f8c8d; /* Xám đậm hơn khi hover */
-}
-/* ── Bidding Result: trạng thái kết quả ─────────────────────────────────── */
-.status-ongoing {
-    -fx-text-fill: #e67e22;
-    -fx-font-weight: bold;
-}
-.status-losing {
-    -fx-text-fill: #e74c3c;
-    -fx-font-weight: bold;
-}
-.status-won {
-    -fx-text-fill: #27ae60;
-    -fx-font-weight: bold;
-}
-.status-lost {
-    -fx-text-fill: #95a5a6;
-}
-.status-cancelled {
-    -fx-text-fill: #7f8c8d;
-    -fx-font-style: italic;
-}
-
-/* ── Filter toggle buttons ────────────────────────────────────────────────── */
-.filter-btn {
-    -fx-background-color: #ede0cc;
-    -fx-text-fill: #5d4037;
-    -fx-background-radius: 20;
-    -fx-padding: 4 14 4 14;
-    -fx-cursor: hand;
-    -fx-font-size: 12px;
-}
-.filter-btn:hover {
-    -fx-background-color: #c8a96e;
-    -fx-text-fill: white;
-}
-.filter-btn:selected {
-    -fx-background-color: #c68642;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-}
-
-/* ── Stat cards trên màn hình Bidding Result ─────────────────────────────── */
-.stat-card {
-    -fx-background-color: rgba(245, 211, 125, 0.6);
-    -fx-background-radius: 10;
-    -fx-padding: 10 16 10 16;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.15), 6, 0, 0, 3);
-    -fx-alignment: center;
-}
-.stat-number {
-    -fx-font-size: 28px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #5d4037;
-}
-.stat-label {
-    -fx-font-size: 11px;
-    -fx-text-fill: #8d6e63;
-}
-
-/* ── Leading Bids Widget trên Bidder Dashboard ───────────────────────────── */
-.leading-widget {
-    -fx-background-color: rgba(39, 174, 96, 0.12);
-    -fx-background-radius: 10;
-    -fx-border-color: rgba(39, 174, 96, 0.45);
-    -fx-border-radius: 10;
-    -fx-border-width: 1.2;
-    -fx-padding: 10 14 10 14;
-    -fx-effect: dropshadow(three-pass-box, rgba(0,0,0,0.12), 6, 0, 0, 3);
-}
-.leading-widget-title {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #1e8449;
-}
-.leading-widget-empty {
-    -fx-font-size: 11px;
-    -fx-text-fill: #7f8c8d;
-    -fx-font-style: italic;
-}
-.leading-item-row {
-    -fx-background-color: rgba(255,255,255,0.55);
-    -fx-background-radius: 6;
-    -fx-border-color: rgba(39,174,96,0.2);
-    -fx-border-radius: 6;
-    -fx-border-width: 0.8;
-    -fx-padding: 4 8 4 8;
-    -fx-cursor: hand;
-}
-.leading-item-row:hover {
-    -fx-background-color: rgba(39,174,96,0.18);
-}
-.leading-item-name {
-    -fx-font-size: 12px;
-    -fx-font-weight: bold;
-    -fx-text-fill: #2c3e50;
-}
-.leading-item-price {
-    -fx-font-size: 11px;
-    -fx-text-fill: #1e8449;
-    -fx-font-weight: bold;
-}
-.leading-item-time {
-    -fx-font-size: 10px;
-    -fx-text-fill: #e67e22;
-}
-/*
- * admin_stats_additions.css
- * ─────────────────────────────────────────────────────────────────────────────
- * CSS bổ sung cho màn hình Admin_Dashboard (cập nhật) và Admin_Stats_Detail (mới).
- *
- * CÁCH TÍCH HỢP:
- *   Thêm nội dung file này vào cuối file:
- *     src/main/resources/org/auctionsystem/CSS/style.css
- *
- *   Hoặc import vào các FXML cần dùng:
- *     stylesheets="@../../CSS/admin_stats_additions.css"
- */
-
-/* ── Card bao ngoài mỗi nhóm thống kê ─────────────────────────────────────── */
-.stat-card {
-    -fx-background-color: white;
-    -fx-border-color: #e0e0e0;
-    -fx-border-radius: 8;
-    -fx-background-radius: 8;
-    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.08), 6, 0, 0, 2);
-}
-
-/* ── Card con bên trong GridPane — mỗi con số một ô ───────────────────────── */
-.mini-stat-card {
-    -fx-background-color: #f8f9ff;
-    -fx-border-color: #e3e8f0;
-    -fx-border-radius: 6;
-    -fx-background-radius: 6;
-    -fx-padding: 10 8 10 8;
-    -fx-alignment: center;
-}
-
-.mini-stat-card:hover {
-    -fx-background-color: #eef2ff;
-    -fx-border-color: #1976D2;
-    -fx-effect: dropshadow(gaussian, rgba(25,118,210,0.15), 6, 0, 0, 2);
+    -fx-background-radius: 5px 5px 0px 0px;
 }

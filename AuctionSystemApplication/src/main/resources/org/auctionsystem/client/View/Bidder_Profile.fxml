@@ -4,6 +4,9 @@
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
 <?import javafx.scene.control.TextField?>
+<?import javafx.scene.control.Tooltip?>
+<?import javafx.scene.image.Image?>
+<?import javafx.scene.image.ImageView?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.StackPane?>
@@ -11,113 +14,68 @@
 <?import javafx.scene.shape.Circle?>
 <?import javafx.scene.text.Font?>
 
-<VBox alignment="CENTER" prefHeight="717.0" prefWidth="1243.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Profile">
+<VBox alignment="CENTER" prefHeight="570.0" prefWidth="680.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Profile">
    <children>
-      <Label alignment="CENTER" prefHeight="32.0" prefWidth="526.0" styleClass="profile-title" stylesheets="@../../CSS/Label.css" text="HỒ SƠ NGƯỜI DÙNG">
+      <Label alignment="CENTER" prefHeight="32.0" prefWidth="526.0" text="HỒ SƠ NGƯỜI DÙNG">
          <font>
-            <Font name="Times New Roman Bold" size="48.0" />
+            <Font name="System Bold" size="30.0" />
          </font>
          <VBox.margin>
             <Insets bottom="5.0" />
          </VBox.margin>
       </Label>
-      <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="551.0" prefWidth="1095.0" styleClass="floating-card" VBox.vgrow="ALWAYS">
+      <HBox alignment="TOP_CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="414.0" prefWidth="624.0" styleClass="floating-card">
          <children>
-            <VBox maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="399.0" prefWidth="528.0" HBox.hgrow="ALWAYS">
+            <VBox alignment="CENTER_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="400.0" prefWidth="250.0" HBox.hgrow="ALWAYS">
                <children>
-                  <HBox alignment="TOP_CENTER" prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label styleClass="profile-field-label" stylesheets="@../../CSS/Label.css" text="Họ và tên">
-                                 <font>
-                                    <Font name="System Bold" size="30.0" />
-                                 </font>
-                              </Label>
-                              <TextField fx:id="field_name" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="320.0">
-                                 <font>
-                                    <Font size="24.0" />
-                                 </font>
-                              </TextField>
-                              <Label fx:id="name_error" maxWidth="1.7976931348623157E308" styleClass="error-announcement" stylesheets="@../../CSS/Label.css" />
-                           </children>
-                        </VBox>
-                        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label styleClass="profile-field-label" stylesheets="@../../CSS/Label.css" text="Tên người dùng">
-                                 <font>
-                                    <Font name="System Bold" size="30.0" />
-                                 </font>
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                              </Label>
-                              <TextField fx:id="field_username" alignment="TOP_LEFT" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="320.0">
-                                 <font>
-                                    <Font size="24.0" />
-                                 </font>
-                              </TextField>
-                              <Label fx:id="username_error" maxWidth="1.7976931348623157E308" styleClass="error-announcement" stylesheets="@../../CSS/Label.css" />
-                           </children>
-                        </VBox>
-                     </children>
+                  <Label text="Họ và tên">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                  </Label>
+                  <TextField fx:id="field_name" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <Label text="Tên người dùng">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
                      <VBox.margin>
-                        <Insets bottom="50.0" top="50.0" />
+                        <Insets top="15.0" />
                      </VBox.margin>
-                  </HBox>
-                  <HBox prefHeight="100.0" prefWidth="200.0">
-                     <children>
-                        <VBox prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label styleClass="profile-field-label" stylesheets="@../../CSS/Label.css" text="Email">
-                                 <font>
-                                    <Font name="System Bold" size="30.0" />
-                                 </font>
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <TextField fx:id="field_email" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="320.0">
-                                 <font>
-                                    <Font size="24.0" />
-                                 </font>
-                              </TextField>
-                              <Label fx:id="email_error" maxWidth="1.7976931348623157E308" styleClass="error-announcement" stylesheets="@../../CSS/Label.css" />
-                           </children>
-                        </VBox>
-                        <VBox layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="100.0" HBox.hgrow="ALWAYS">
-                           <children>
-                              <Label styleClass="profile-field-label" stylesheets="@../../CSS/Label.css" text="Số điện thoại">
-                                 <font>
-                                    <Font name="System Bold" size="30.0" />
-                                 </font>
-                                 <VBox.margin>
-                                    <Insets top="10.0" />
-                                 </VBox.margin>
-                              </Label>
-                              <TextField fx:id="field_phone" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="320.0">
-                                 <VBox.margin>
-                                    <Insets />
-                                 </VBox.margin>
-                                 <font>
-                                    <Font size="24.0" />
-                                 </font>
-                              </TextField>
-                              <Label fx:id="phone_error" maxWidth="1.7976931348623157E308" styleClass="error-announcement" stylesheets="@../../CSS/Label.css" />
-                           </children>
-                        </VBox>
-                     </children>
-                  </HBox>
+                  </Label>
+                  <TextField fx:id="field_username" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <Label text="Email">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="field_email" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0" />
+                  <Label text="Số điện thoại">
+                     <font>
+                        <Font name="System Bold" size="18.0" />
+                     </font>
+                     <VBox.margin>
+                        <Insets top="10.0" />
+                     </VBox.margin>
+                  </Label>
+                  <TextField fx:id="field_phone" editable="false" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="189.0">
+                     <VBox.margin>
+                        <Insets />
+                     </VBox.margin>
+                  </TextField>
                </children>
                <padding>
                   <Insets bottom="10.0" left="10.0" />
                </padding>
             </VBox>
-            <VBox alignment="TOP_CENTER" prefHeight="321.0" prefWidth="221.0" HBox.hgrow="NEVER">
+            <Region prefHeight="400.0" prefWidth="148.0" />
+            <VBox alignment="TOP_CENTER" prefHeight="321.0" prefWidth="221.0" HBox.hgrow="NEVER" spacing="10.0">
                <children>
-                  <Label alignment="TOP_CENTER" styleClass="profile-field-label" stylesheets="@../../CSS/Label.css" text="Avatar">
+                  <Label alignment="TOP_CENTER" text="Avatar">
                      <font>
-                        <Font name="System Bold" size="30.0" />
+                        <Font name="System Bold" size="18.0" />
                      </font>
                      <padding>
                         <Insets bottom="5.0" />
@@ -125,47 +83,65 @@
                   </Label>
                   <StackPane alignment="TOP_RIGHT" prefHeight="159.0" prefWidth="152.0">
                      <children>
-                        <Circle fx:id="avatarCircle" fill="#d9e0e7" radius="180.0" stroke="BLACK" strokeType="INSIDE" />
+                        <Circle fx:id="avatarCircle" fill="#d9e0e7" radius="75.0" stroke="#cccccc" strokeType="INSIDE" strokeWidth="2.0" />
                      </children>
                   </StackPane>
+                  <Button fx:id="btn_change_avatar" mnemonicParsing="false" onAction="#onChangeAvatar"
+                          prefWidth="152.0" prefHeight="34.0"
+                          style="-fx-background-color: #f0f4f8; -fx-border-color: #b0bec5; -fx-border-radius: 6px; -fx-background-radius: 6px; -fx-cursor: hand;">
+                     <graphic>
+                        <HBox alignment="CENTER" spacing="6.0">
+                           <children>
+                              <ImageView fitHeight="18.0" fitWidth="18.0" pickOnBounds="true" preserveRatio="true">
+                                 <image>
+                                    <Image url="@../../../../../Icon/camera.png" />
+                                 </image>
+                              </ImageView>
+                              <Label text="Đổi ảnh đại diện" style="-fx-font-size: 12px; -fx-text-fill: #37474f;" />
+                           </children>
+                        </HBox>
+                     </graphic>
+                     <tooltip>
+                        <Tooltip text="Nhấn để thay đổi ảnh đại diện của bạn" />
+                     </tooltip>
+                  </Button>
                </children>
+               <padding>
+                  <Insets left="30.0" />
+               </padding>
             </VBox>
          </children>
          <padding>
-            <Insets left="20.0" right="20.0" top="5.0" />
+            <Insets right="10.0" top="15.0" />
          </padding>
-         <VBox.margin>
-            <Insets left="50.0" right="50.0" />
-         </VBox.margin>
       </HBox>
-      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="35.0" prefWidth="591.0" VBox.vgrow="ALWAYS">
+      <Region prefHeight="0.0" prefWidth="591.0" VBox.vgrow="ALWAYS" />
+      <HBox alignment="CENTER" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="35.0" prefWidth="591.0">
          <children>
-            <Button fx:id="Button_ChinhSua" mnemonicParsing="false" onAction="#onChinhSua" styleClass="button-edit" stylesheets="@../../CSS/Button.css" text="Chỉnh sửa thông tin">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="60.0" />
-               </HBox.margin>
-            </Button>
-            <Button mnemonicParsing="false" onAction="#changing_password" styleClass="button-edit" stylesheets="@../../CSS/Button.css" text="Đổi mật khẩu">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <HBox.margin>
-                  <Insets left="20.0" />
-               </HBox.margin>
-            </Button>
+            <VBox spacing="8.0" HBox.hgrow="NEVER">
+               <children>
+                  <Button fx:id="Button_ChinhSua" mnemonicParsing="false" onAction="#onChinhSua" prefHeight="38.0" prefWidth="168.0" text="Chỉnh sửa thông tin">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+                  <Button mnemonicParsing="false" onAction="#onDoiMatKhau" prefHeight="38.0" prefWidth="168.0" text="Đổi mật khẩu">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                  </Button>
+               </children>
+            </VBox>
             <Region HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#back_to_bidder_dashboard" prefHeight="42.0" prefWidth="219.0" text="← Quay lại trang chủ">
+            <Button mnemonicParsing="false" onAction="#back_to_bidder_dashboard" prefHeight="88.0" prefWidth="184.0" text="Quay lại trang chủ">
                <font>
-                  <Font size="18.0" />
+                  <Font size="14.0" />
                </font>
-               <HBox.margin>
-                  <Insets right="60.0" />
-               </HBox.margin>
             </Button>
          </children>
+         <padding>
+            <Insets left="10.0" right="10.0" />
+         </padding>
       </HBox>
    </children>
    <padding>

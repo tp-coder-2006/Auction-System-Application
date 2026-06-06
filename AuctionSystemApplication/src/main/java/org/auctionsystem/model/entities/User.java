@@ -13,10 +13,11 @@ public class User {
     private String email;
     private String phone;
     private UserRole role;
+    private String avatarUrl; // [MỚI]
 
     public User() {}
 
-    public User(String id, String name, String username, String password, double balance, String email, String phone, UserRole role) {
+    public User(String id, String name, String username, String password, double balance, String email, String phone, UserRole role, boolean isActive, String avatarUrl) {
         this.id       = id;
         this.name     = name;
         this.username = username;
@@ -25,21 +26,23 @@ public class User {
         this.phone    = phone;
         this.role     = role;
         this.balance  = balance;
-        this.isActive = true;
+        this.isActive = isActive;
+        this.avatarUrl = avatarUrl;
     }
 
     // =========================================
     // GETTERS
     // =========================================
-    public String getId()       { return id; }
-    public String getName()     { return name; }
-    public String getUsername() { return username; }
-    public String getPassword() { return password; }
-    public double getBalance()  { return balance; }
-    public boolean isActive()   { return isActive; }
-    public String getEmail()    { return email; }
-    public String getPhone()    { return phone; }
-    public UserRole getRole()   { return role; }
+    public String getId()         { return id; }
+    public String getName()       { return name; }
+    public String getUsername()   { return username; }
+    public String getPassword()   { return password; }
+    public double getBalance()    { return balance; }
+    public boolean isActive()     { return isActive; }
+    public String getEmail()      { return email; }
+    public String getPhone()      { return phone; }
+    public UserRole getRole()     { return role; }
+    public String getAvatarUrl()  { return avatarUrl; } // [MỚI]
 
     // =========================================
     // SETTERS
@@ -53,4 +56,5 @@ public class User {
     public void setEmail(String email)           { this.email = email; }
     public void setPhone(String phone)           { this.phone = phone; }
     public void setRole(UserRole role)           { this.role = role; }
+    public void setAvatarUrl(String avatarUrl)   { this.avatarUrl = avatarUrl; } // [MỚI]
 }

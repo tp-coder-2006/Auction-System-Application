@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
-<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Hyperlink?>
@@ -21,7 +20,7 @@
     để khớp với Controller_Register yêu cầu 4 tham số khi gọi UserRepository.registerUser()
 -->
 
-<BorderPane prefHeight="534.0" prefWidth="576.0" styleClass="login-pane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
+<BorderPane prefHeight="534.0" prefWidth="576.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
    <center>
       <StackPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@../../CSS/style.css">
          <children>
@@ -37,48 +36,48 @@
                   </Label>
 
                         <!-- Họ và tên -->
-                  <Label prefHeight="27.0" prefWidth="200.0" text="Họ và tên">
+                  <Label prefWidth="151.0" text="Họ và tên">
                      <font>
-                        <Font size="20.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="register_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                  <TextField fx:id="register_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </TextField>
 
                         <!-- Tên người dùng -->
-                  <Label prefWidth="200.0" text="Tên người dùng">
+                  <Label prefWidth="151.0" text="Tên người dùng">
                      <font>
-                        <Font size="20.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="register_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="37.0" prefWidth="200.0">
+                  <TextField fx:id="register_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="37.0" prefWidth="154.0">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </TextField>
 
                         <!-- Email -->
-                  <Label prefWidth="200.0" text="Email">
+                  <Label prefWidth="151.0" text="Email">
                      <font>
-                        <Font size="20.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="register_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                  <TextField fx:id="register_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
                      <font>
                         <Font size="16.0" />
                      </font>
                   </TextField>
 
                         <!-- Mật khẩu -->
-                  <Label prefWidth="200.0" text="Mật khẩu">
+                  <Label prefWidth="151.0" text="Mật khẩu">
                      <font>
-                        <Font size="20.0" />
+                        <Font size="18.0" />
                      </font>
                   </Label>
-                  <PasswordField fx:id="register_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                  <PasswordField fx:id="register_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="151.0">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -87,12 +86,12 @@
                      <children>
                         <Label text="Vai trò:">
                            <font>
-                              <Font size="20.0" />
+                              <Font size="18.0" />
                            </font>
                         </Label>
                         <VBox maxHeight="-Infinity" maxWidth="-Infinity" spacing="10.0">
                            <children>
-                              <RadioButton fx:id="register_as_bidder" mnemonicParsing="false" stylesheets="@../../CSS/Button.css" text="Bidder">
+                              <RadioButton fx:id="register_as_bidder" mnemonicParsing="false" text="Bidder">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -103,7 +102,7 @@
                                     <ToggleGroup fx:id="role_group" />
                                  </toggleGroup>
                               </RadioButton>
-                              <RadioButton fx:id="register_as_seller" mnemonicParsing="false" stylesheets="@../../CSS/Button.css" text="Seller" toggleGroup="$role_group">
+                              <RadioButton fx:id="register_as_seller" mnemonicParsing="false" text="Seller" toggleGroup="$role_group">
                                  <font>
                                     <Font size="14.0" />
                                  </font>
@@ -124,21 +123,15 @@
                      </children>
                   </HBox>
 
-                        <Button fx:id="register_button" mnemonicParsing="false" onAction="#Registering" prefHeight="38.0" prefWidth="114.0" style="-fx-background-color: #030303;" text="Đăng ký">
+                        <Button fx:id="register_button" mnemonicParsing="false" onAction="#Registering" prefHeight="30.0" prefWidth="75.0" text="Đăng ký">
                      <VBox.margin>
                         <Insets bottom="10.0" />
                      </VBox.margin>
-                     <font>
-                        <Font name="System Bold" size="16.0" />
-                     </font>
                   </Button>
                   <Hyperlink fx:id="back_to_login_scene" onAction="#Switching_to_login_scene" text="Đã có tài khoản? Quay lại trang đăng nhập">
                      <VBox.margin>
                         <Insets />
                      </VBox.margin>
-                     <font>
-                        <Font name="System Bold Italic" size="12.0" />
-                     </font>
                   </Hyperlink>
                </children>
             </VBox>
@@ -157,8 +150,4 @@
    <right>
       <Region prefHeight="20.0" prefWidth="20.0" BorderPane.alignment="CENTER" />
    </right>
-   <stylesheets>
-      <URL value="@../../CSS/background.css" />
-      <URL value="@../../CSS/style.css" />
-   </stylesheets>
 </BorderPane>

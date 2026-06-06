@@ -17,4 +17,8 @@ public class HistoryHandler {
     public JsonObject handleGetHistoryByItem(JsonObject request) {
         return historyService.getHistoryByItem(request);
     }
+
+    public JsonObject handleCheckBoughtFromSeller(JsonObject request) {
+        return historyService.checkBoughtFromSeller(request);
+    }
 }

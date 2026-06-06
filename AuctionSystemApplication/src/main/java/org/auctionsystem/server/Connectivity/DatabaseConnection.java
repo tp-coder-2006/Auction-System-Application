@@ -1,57 +1,83 @@
 package org.auctionsystem.server.Connectivity;
 
+import com.zaxxer.hikari.HikariConfig;
+import com.zaxxer.hikari.HikariDataSource;
+
 import java.sql.Connection;
-import java.sql.DriverManager;
 import java.sql.SQLException;
 
 /**
- * DatabaseConnection — Singleton Pattern (Double-Checked Locking).
+ * DatabaseConnection — Singleton bọc HikariCP connection pool.
  *
- * Lý do Singleton ở đây:
- *   - Driver chỉ cần load MỘT LẦN duy nhất trong suốt vòng đời ứng dụng.
- *   - Mọi cấu hình DB (URL, USER, PASSWORD) tập trung tại một chỗ.
- *   - Tránh trường hợp nhiều nơi tự tạo DatabaseConnection riêng với config khác nhau.
+ * Tại sao HikariCP thay vì DriverManager.getConnection():
+ *   - DriverManager mỗi lần tạo 1 TCP connection mới tới MySQL → chậm (~5-10ms overhead).
+ *   - 100 client đặt giá đồng thời = 100 connection cùng lúc → MySQL mặc định
+ *     max_connections=151, dễ hết slot → toàn bộ hệ thống văng exception.
+ *   - HikariCP giữ sẵn pool connection tái sử dụng → getConnection() chỉ lấy
+ *     từ pool (~microseconds), không tạo mới.
+ *   - Khi pool đầy, request xếp hàng chờ (connectionTimeout) thay vì crash.
  *
- * Tại sao mỗi getConnection() vẫn tạo connection mới:
- *   - AuctionServer xử lý nhiều client song song (mỗi client 1 Thread riêng).
- *   - JDBC Connection KHÔNG thread-safe — không thể chia sẻ 1 connection cho nhiều thread.
- *   - Mỗi Repository dùng try-with-resources → connection tự đóng sau khi xong việc.
- *   - Singleton ở đây quản lý CÁCH TẠO connection, không quản lý connection object.
+ * Cách dùng (giữ nguyên so với cũ — không cần đổi DAO):
+ *   try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
+ *       // ... làm việc với DB ...
+ *   } // conn trả về pool, không đóng thật sự
+ *
+ * Cài HikariCP: thêm vào pom.xml:
+ *   <dependency>
+ *       <groupId>com.zaxxer</groupId>
+ *       <artifactId>HikariCP</artifactId>
+ *       <version>5.1.0</version>
+ *   </dependency>
  */
 public class DatabaseConnection {
 
-    // volatile đảm bảo mọi thread đều thấy giá trị mới nhất của instance
-    // (tránh lỗi "partially constructed object" trong môi trường đa luồng)
     private static volatile DatabaseConnection instance = null;
 
-    private static final String URL      = "jdbc:mysql://localhost:3306/mydb";
+    private static final String URL      = "jdbc:mysql://localhost:3306/mydb"
+            + "?useSSL=false&serverTimezone=Asia%2FHo_Chi_Minh&allowPublicKeyRetrieval=true";
     private static final String USER     = "root";
     private static final String PASSWORD = "12345678";
 
-    // Constructor private — không ai bên ngoài được tạo đối tượng này
+    private final HikariDataSource dataSource;
+
     private DatabaseConnection() {
-        try {
-            // Driver chỉ load một lần duy nhất khi Singleton được khởi tạo
-            Class.forName("com.mysql.cj.jdbc.Driver");
-            System.out.println("✅ MySQL Driver đã được nạp.");
-        } catch (ClassNotFoundException e) {
-            // Nếu không có Driver → throw ngay, không cho ứng dụng chạy tiếp
-            throw new RuntimeException("Không tìm thấy MySQL Driver: " + e.getMessage());
-        }
+        HikariConfig config = new HikariConfig();
+        config.setJdbcUrl(URL);
+        config.setUsername(USER);
+        config.setPassword(PASSWORD);
+        config.setDriverClassName("com.mysql.cj.jdbc.Driver");
+
+        // Pool size: mỗi ClientHandler thread cần tối đa 1 connection,
+        // scheduler dùng thêm 2 → đặt maximumPoolSize vừa đủ.
+        config.setMaximumPoolSize(20);
+        config.setMinimumIdle(5);
+
+        // Thời gian tối đa chờ lấy connection từ pool (ms).
+        // Sau thời gian này mới ném SQLException thay vì chờ vô hạn.
+        config.setConnectionTimeout(30_000);
+
+        // Connection nhàn rỗi quá 10 phút → trả về pool để đóng bớt
+        config.setIdleTimeout(600_000);
+
+        // Mỗi connection sống tối đa 30 phút dù có dùng hay không
+        // (tránh MySQL server đóng connection phía nó mà pool không biết)
+        config.setMaxLifetime(1_800_000);
+
+        // Heartbeat: HikariCP ping connection này trước khi cho mượn
+        // để chắc chắn nó còn sống (tránh "stale connection" sau khi MySQL restart)
+        config.setConnectionTestQuery("SELECT 1");
+
+        config.setPoolName("AuctionSystemPool");
+
+        this.dataSource = new HikariDataSource(config);
+        System.out.println("✅ HikariCP pool khởi tạo thành công (max=" + config.getMaximumPoolSize() + ").");
     }
 
-    /**
-     * Lấy instance duy nhất của DatabaseConnection.
-     *
-     * Double-Checked Locking:
-     *   - Check lần 1 (không synchronized): tránh lock không cần thiết sau khi đã khởi tạo.
-     *   - Check lần 2 (bên trong synchronized): đảm bảo chỉ 1 thread tạo instance.
-     *   - volatile + 2 lần check = thread-safe mà không bị chậm vì lock liên tục.
-     */
+    /** Double-checked locking — thread-safe, không lock sau khi đã khởi tạo. */
     public static DatabaseConnection getInstance() {
-        if (instance == null) {                          // Check lần 1 — không lock
+        if (instance == null) {
             synchronized (DatabaseConnection.class) {
-                if (instance == null) {                  // Check lần 2 — trong lock
+                if (instance == null) {
                     instance = new DatabaseConnection();
                 }
             }
@@ -60,16 +86,22 @@ public class DatabaseConnection {
     }
 
     /**
-     * Mở một connection MỚI tới database.
-     *
-     * Người gọi CÓ TRÁCH NHIỆM đóng connection sau khi dùng xong.
-     * Luôn dùng try-with-resources:
-     *
-     *   try (Connection conn = DatabaseConnection.getInstance().getConnection()) {
-     *       // ... làm việc với DB ...
-     *   } // conn tự đóng ở đây
+     * Lấy connection từ pool.
+     * Người gọi CÓ TRÁCH NHIỆM đóng (close) sau khi dùng — dùng try-with-resources.
+     * close() trên HikariCP connection = trả về pool, không đóng thật sự.
      */
     public Connection getConnection() throws SQLException {
-        return DriverManager.getConnection(URL, USER, PASSWORD);
+        return dataSource.getConnection();
+    }
+
+    /**
+     * Đóng toàn bộ pool — gọi khi tắt server.
+     * Sau khi gọi, mọi getConnection() sẽ ném SQLException.
+     */
+    public void shutdown() {
+        if (dataSource != null && !dataSource.isClosed()) {
+            dataSource.close();
+            System.out.println("[DatabaseConnection] Pool đã đóng.");
+        }
     }
 }

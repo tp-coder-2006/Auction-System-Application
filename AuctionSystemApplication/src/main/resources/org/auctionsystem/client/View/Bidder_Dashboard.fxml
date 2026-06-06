@@ -9,15 +9,18 @@
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
+<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
+<?import javafx.scene.control.ScrollPane?>
+<?import javafx.scene.control.Separator?>
 
-<BorderPane prefHeight="744.0" prefWidth="967.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
+<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="32.0" prefWidth="967.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="161.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="Times New Roman Bold" size="48.0" />
                </font>
@@ -25,19 +28,11 @@
                   <Insets bottom="10.0" top="10.0" />
                </VBox.margin>
             </Label>
-            <Label text="Hãy tận hưởng thời gian mua sắm tại đây!!">
-               <font>
-                  <Font name="Times New Roman Bold" size="48.0" />
-               </font>
-               <VBox.margin>
-                  <Insets bottom="50.0" />
-               </VBox.margin>
-            </Label>
             <HBox alignment="CENTER" prefHeight="282.0" prefWidth="658.0">
                <children>
                   <VBox alignment="CENTER" prefHeight="245.0" prefWidth="594.0" spacing="10.0" styleClass="floating-card" stylesheets="@../../CSS/style.css">
                      <children>
-                        <Button mnemonicParsing="false" onAction="#Go_to_searching_room" prefHeight="51.0" prefWidth="221.0" text="Đấu giá ngay!!!">
+                        <Button fx:id="btn_start_bidding" mnemonicParsing="false" onAction="#Go_to_searching_room" prefHeight="51.0" prefWidth="221.0" text="Đấu giá ngay!!!">
                            <font>
                               <Font name="System Italic" size="24.0" />
                            </font>
@@ -53,10 +48,32 @@
                      </children>
                   </VBox>
                </children>
-               <VBox.margin>
-                  <Insets top="20.0" />
-               </VBox.margin>
             </HBox>
+            <Region prefHeight="16.0" prefWidth="658.0" />
+
+            <!-- ── Widget: Đang dẫn đầu ───────────────────────────────── -->
+            <VBox fx:id="widget_leading" styleClass="leading-widget" maxWidth="620.0" spacing="6.0">
+               <padding><Insets top="0" bottom="0" left="0" right="0"/></padding>
+               <HBox alignment="CENTER_LEFT" spacing="8.0">
+                  <Label text="🏆 Đang dẫn đầu" styleClass="leading-widget-title" />
+                  <Region HBox.hgrow="ALWAYS" />
+                  <Label fx:id="lbl_leading_count" styleClass="leading-widget-title" text="" />
+               </HBox>
+               <ScrollPane fx:id="scroll_leading" fitToWidth="true" prefHeight="110.0"
+                           style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+                  <VBox fx:id="vbox_leading_items" spacing="5.0" style="-fx-background-color: transparent;" />
+               </ScrollPane>
+            </VBox>
+
+            <Region prefHeight="10.0" prefWidth="658.0" VBox.vgrow="ALWAYS" />
+            <Label fx:id="lbl_balance" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
+               <font>
+                  <Font size="30.0" />
+               </font>
+               <padding>
+                  <Insets bottom="10.0" left="10.0" />
+               </padding>
+            </Label>
          </children>
       </VBox>
    </center>
@@ -66,7 +83,10 @@
           <Menu mnemonicParsing="false" text="Trang chủ">
             <items>
               <MenuItem mnemonicParsing="false" onAction="#Go_to_bidder_profile" text="Tài khoản" />
-                  <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_history" text="Lịch sử mua hàng" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_history" text="Lịch sử đấu giá" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_bidding_result" text="Kết quả đấu giá" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_my_items" text="Sản phẩm của tôi" />
+                  <MenuItem mnemonicParsing="false" onAction="#Go_to_search_user" text="Tìm kiếm người dùng" />
                   <SeparatorMenuItem mnemonicParsing="false" />
                   <MenuItem fx:id="log_out_button" mnemonicParsing="false" onAction="#Logging_out" text="Đăng xuất" />
             </items>
@@ -80,14 +100,4 @@
         </menus>
       </MenuBar>
    </top>
-   <bottom>
-      <Label maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:" BorderPane.alignment="CENTER">
-         <font>
-            <Font size="30.0" />
-         </font>
-         <padding>
-            <Insets bottom="10.0" left="10.0" />
-         </padding>
-      </Label>
-   </bottom>
 </BorderPane>

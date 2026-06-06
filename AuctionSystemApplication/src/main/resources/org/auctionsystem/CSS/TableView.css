@@ -1,103 +1,53 @@
-/* Bỏ focus border mặc định của JavaFX */
-.table-view:focused {
-    -fx-border-color: #b0c4d8;
-}
-
-/* ── Header ── */
 .table-view .column-header-background {
-    -fx-background-color: #4d3902;
-    -fx-background-radius: 5px 5px 0px 0px;
-
+    -fx-background-color: #c8a96e;
+    -fx-background-radius: 8 8 0 0;  /* bo góc trên */
 }
 
 .table-view .column-header {
     -fx-background-color: transparent;
-    -fx-border-color: rgba(255,255,255,0.25);
-    -fx-border-width: 0 1 0 0;
-}
-
-/* Bỏ viền cột cuối */
-.table-view .column-header:last-visible {
-    -fx-border-width: 0;
+    -fx-border-color: transparent;
 }
 
 .table-view .column-header .label {
     -fx-text-fill: white;
     -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-font-family: "Segoe UI";
-    -fx-alignment: CENTER;
+    -fx-font-size: 14px;
 }
-
-/* Bỏ nút resize góc phải header */
-.table-view .column-header-background .filler {
-    -fx-background-color: #c8a96e;
-}
-
-/* ── Dòng dữ liệu ── */
+/* Dòng thường */
 .table-view .table-row-cell {
     -fx-background-color: white;
-    -fx-border-color: transparent transparent #ede0cc transparent;
-    -fx-border-width: 0 0 1 0;
-    -fx-cell-size: 36px;
+    -fx-border-color: transparent transparent #e8dcc8 transparent;
 }
 
+/* Dòng xen kẽ (zebra) */
 .table-view .table-row-cell:odd {
-    -fx-background-color: #fdf8f2;
+    -fx-background-color: #faf6f0;
 }
 
+/* Hover */
 .table-view .table-row-cell:hover {
-    -fx-background-color: #faebd7;
+    -fx-background-color: #f0e6d0;
 }
 
+/* Dòng được chọn */
 .table-view .table-row-cell:selected {
-    -fx-background-color: #f0d9a8;
-    -fx-border-color: transparent transparent #d4a96a transparent;
+    -fx-background-color: #c8a96e;
 }
-
-/* ── Ô dữ liệu ── */
 .table-view .table-cell {
-    -fx-text-fill: #3d2b1f;
+    -fx-text-fill: #333333;
     -fx-font-size: 13px;
-    -fx-font-family: "Segoe UI";
-    -fx-alignment: CENTER;
+    -fx-alignment: center;         /* căn giữa nội dung */
     -fx-border-color: transparent;
-    -fx-padding: 0 8 0 8;
 }
-
-.table-view .table-row-cell:selected .table-cell {
-    -fx-text-fill: #3d2b1f;
-}
-
-/* ── Placeholder "Chưa có dữ liệu" ── */
 .table-view .placeholder .label {
-    -fx-text-fill: #a0896a;
+    -fx-text-fill: #999999;
     -fx-font-style: italic;
-    -fx-font-size: 14px;
-    -fx-font-family: "Segoe UI";
 }
-
-/* ── Thanh cuộn ── */
-.table-view .scroll-bar:vertical {
-    -fx-background-color: #fdf8f2;
-    -fx-pref-width: 10px;
+.table-view .scroll-bar:vertical { /*Thanh cuộn*/
+    -fx-background-color: transparent;
 }
 
 .table-view .scroll-bar:vertical .thumb {
     -fx-background-color: #c8a96e;
-    -fx-background-radius: 5;
-}
-
-.table-view .scroll-bar:vertical .thumb:hover {
-    -fx-background-color: #a0672f;
-}
-
-.table-view .scroll-bar:vertical .track {
-    -fx-background-color: transparent;
-}
-
-.table-view .scroll-bar:vertical .increment-button,
-.table-view .scroll-bar:vertical .decrement-button {
-    -fx-background-color: transparent;
-    -fx-pref-height: 0;
+    -fx-background-radius: 4;
 }

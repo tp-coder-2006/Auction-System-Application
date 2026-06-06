@@ -9,9 +9,10 @@
     <version>1.0-SNAPSHOT</version>
 
     <properties>
-        <maven.compiler.source>21</maven.compiler.source>
-        <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
+        <maven.compiler.release>21</maven.compiler.release>
+        <javafx.version>21.0.1</javafx.version>
     </properties>
 
     <dependencies>
@@ -20,32 +21,40 @@
             <artifactId>gson</artifactId>
             <version>2.10.1</version>
         </dependency>
+
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-controls</artifactId>
-            <version>21.0.1</version>
+            <version>${javafx.version}</version>
         </dependency>
         <dependency>
             <groupId>org.openjfx</groupId>
             <artifactId>javafx-fxml</artifactId>
-            <version>21.0.1</version>
+            <version>${javafx.version}</version>
         </dependency>
+
         <dependency>
             <groupId>com.mysql</groupId>
             <artifactId>mysql-connector-j</artifactId>
             <version>8.3.0</version>
         </dependency>
         <dependency>
+            <groupId>com.zaxxer</groupId>
+            <artifactId>HikariCP</artifactId>
+            <version>5.1.0</version>
+        </dependency>
+
+        <dependency>
             <groupId>org.mindrot</groupId>
             <artifactId>jbcrypt</artifactId>
             <version>0.4</version>
         </dependency>
+        <dependency>
+            <groupId>commons-validator</groupId>
+            <artifactId>commons-validator</artifactId>
+            <version>1.8.0</version>
+        </dependency>
 
-        <!--
-            ✅ Thêm mới: JUnit 5 để chạy "mvn test"
-            scope=test nghĩa là thư viện này chỉ dùng khi test,
-            không bị đóng gói vào file JAR cuối cùng
-        -->
         <dependency>
             <groupId>org.junit.jupiter</groupId>
             <artifactId>junit-jupiter</artifactId>
@@ -53,46 +62,44 @@
             <scope>test</scope>
         </dependency>
         <dependency>
-            <groupId>commons-validator</groupId>
-            <artifactId>commons-validator</artifactId>
-            <version>1.8.0</version>
+            <groupId>org.mockito</groupId>
+            <artifactId>mockito-junit-jupiter</artifactId>
+            <version>5.4.0</version>
+            <scope>test</scope>
         </dependency>
     </dependencies>
 
     <build>
         <plugins>
             <plugin>
-                <groupId>org.openjfx</groupId>
-                <artifactId>javafx-maven-plugin</artifactId>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.13.0</version>
                 <configuration>
-                    <mainClass>org.auctionsystem.client.Main</mainClass>
-                    <options>
-                        <option>-Dfile.encoding=UTF-8</option>
-                        <option>-Djavafx.encoding=UTF-8</option>
-                    </options>
+                    <release>21</release>
                 </configuration>
             </plugin>
-            <!-- Plugin để chạy "mvn javafx:run" như README hướng dẫn -->
+
             <plugin>
                 <groupId>org.openjfx</groupId>
                 <artifactId>javafx-maven-plugin</artifactId>
                 <version>0.0.8</version>
                 <configuration>
                     <mainClass>org.auctionsystem.client.Main</mainClass>
+                    <options>
+                        <option>-Dfile.encoding=UTF-8</option>
+                    </options>
                 </configuration>
             </plugin>
 
-            <!--
-                ✅ Thêm mới: plugin để Maven biết dùng JUnit 5 khi chạy test.
-                Không có plugin này, lệnh "mvn test" sẽ không tìm thấy test nào
-                dù file test đã được viết đầy đủ.
-            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-surefire-plugin</artifactId>
                 <version>3.1.2</version>
+                <configuration>
+                    <argLine>-Dfile.encoding=UTF-8</argLine>
+                </configuration>
             </plugin>
         </plugins>
     </build>
-
 </project>

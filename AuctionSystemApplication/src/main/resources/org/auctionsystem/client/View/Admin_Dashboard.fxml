@@ -3,135 +3,228 @@
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
+<?import javafx.scene.control.Separator?>
 <?import javafx.scene.layout.BorderPane?>
+<?import javafx.scene.layout.ColumnConstraints?>
+<?import javafx.scene.layout.GridPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
+<?import javafx.scene.layout.RowConstraints?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="555.0" prefWidth="848.0" stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Dashboard">
-   <center>
-      <VBox alignment="TOP_CENTER" prefHeight="542.0" prefWidth="591.0" spacing="20.0" styleClass="stat-card">
-         <children>
-            <Label style="-fx-text-fill: #523902;" text="TỔNG QUAN HỆ THỐNG">
-               <font>
-                  <Font name="Times New Roman Bold" size="30.0" />
-               </font>
+<!--
+    Admin_Dashboard.fxml  (CẬP NHẬT)
+    ──────────────────────────────────────────────────────────────────────────
+    Thay đổi so với bản cũ:
+      • CENTER hiển thị đầy đủ 3 nhóm thống kê tóm tắt nhận từ ADMIN_STATS_UPDATE:
+          - Người dùng: totalUsers, activeUsers, bannedUsers
+          - Sản phẩm : totalItems, activeItems, pendingItems
+          - Giao dịch: totalTransactions, totalRevenue
+      • Thêm nút "📊 Thống kê chi tiết" điều hướng đến Admin_Stats_Detail.fxml
+      • Giữ nguyên sidebar + toggle menu
+-->
+<BorderPane prefHeight="580.0" prefWidth="900.0"
+            stylesheets="@../../CSS/AdminMenu.css"
+            xmlns="http://javafx.com/javafx/25"
+            xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Dashboard">
+
+    <!-- ═══════ TOP ═══════ -->
+    <top>
+        <HBox maxWidth="1.7976931348623157E308" prefHeight="46.0"
+              styleClass="admin-card" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="5.0" left="5.0" top="5.0"/></padding>
+            <children>
+                <Button fx:id="toggleMenu" mnemonicParsing="false"
+                        onAction="#toggleMenu" prefHeight="36.0" prefWidth="43.0"
+                        stylesheets="@../../CSS/style.css" text="☰">
+                    <font><Font name="Times New Roman" size="18.0"/></font>
+                </Button>
+                <Label text="  HỆ THỐNG ADMIN" style="-fx-font-size:18px; -fx-font-weight:bold;"/>
+                <Region HBox.hgrow="ALWAYS"/>
+                <Label fx:id="lbl_update_time" text=""
+                       style="-fx-font-size:11px; -fx-text-fill:#999; -fx-padding:0 10 0 0;"/>
+            </children>
+        </HBox>
+    </top>
+
+    <!-- ═══════ LEFT Sidebar ═══════ -->
+    <left>
+        <VBox fx:id="sidebar" prefHeight="534.0" prefWidth="210.0" spacing="22.0"
+              styleClass="admin-card" stylesheets="@../../CSS/style.css"
+              BorderPane.alignment="CENTER">
+            <padding><Insets bottom="16.0" left="10.0" right="10.0" top="16.0"/></padding>
+
+            <Label text="ĐIỀU HƯỚNG" wrapText="true">
+                <font><Font name="Times New Roman Bold" size="18.0"/></font>
             </Label>
-            <HBox alignment="TOP_CENTER" prefHeight="285.0" prefWidth="474.0" spacing="20.0" VBox.vgrow="ALWAYS">
-               <children>
-                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="66.0" prefWidth="166.0" text="Tổng số người dùng:" textAlignment="CENTER" wrapText="true">
-                           <font>
-                              <Font name="Times New Roman" size="26.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" wrapText="true" VBox.vgrow="ALWAYS">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số sản phẩm đang chờ duyệt:" textAlignment="CENTER" wrapText="true">
-                           <font>
-                              <Font name="Times New Roman" size="26.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" wrapText="true" VBox.vgrow="ALWAYS">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-                  <VBox alignment="TOP_CENTER" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS">
-                     <children>
-                        <Label alignment="TOP_LEFT" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" text="Số phiên đang active:" textAlignment="CENTER" wrapText="true">
-                           <font>
-                              <Font name="Times New Roman" size="26.0" />
-                           </font>
-                        </Label>
-                        <Label layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" wrapText="true" VBox.vgrow="ALWAYS">
-                           <font>
-                              <Font size="18.0" />
-                           </font>
-                        </Label>
-                     </children>
-                  </VBox>
-               </children>
-            </HBox>
-         </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-         <padding>
-            <Insets bottom="30.0" left="30.0" right="30.0" />
-         </padding>
-      </VBox>
-   </center>
-   <left>
-      <VBox fx:id="sidebar" prefHeight="542.0" prefWidth="250.0" spacing="30.0" styleClass="admin-card" stylesheets="@../../CSS/style.css" BorderPane.alignment="CENTER">
-         <children>
-            <Label prefHeight="32.0" prefWidth="269.0" style="-fx-text-fill: #523902;" text="HỆ THỐNG ADMIN" wrapText="true" VBox.vgrow="ALWAYS">
-               <font>
-                  <Font name="Times New Roman Bold" size="24.0" />
-               </font>
-               <VBox.margin>
-                  <Insets left="10.0" top="5.0" />
-               </VBox.margin>
+            <Separator/>
+
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#Go_to_admin_user_management"
+                    styleClass="admin-button" text="👥  Quản lý người dùng" wrapText="true">
+                <font><Font size="14.0"/></font>
+            </Button>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#Go_to_admin_item_management"
+                    styleClass="admin-button" text="🏷️  Quản lý sản phẩm" wrapText="true">
+                <font><Font size="14.0"/></font>
+            </Button>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#Go_to_admin_financial_auditing"
+                    styleClass="admin-button" text="💰  Quản lý tài chính" wrapText="true">
+                <font><Font size="14.0"/></font>
+            </Button>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#Go_to_admin_stats_detail"
+                    styleClass="admin-button"
+                    text="📊  Thống kê chi tiết" wrapText="true"
+                    style="-fx-background-color:#1976D2; -fx-text-fill:white;">
+                <font><Font size="14.0"/></font>
+            </Button>
+
+            <Region VBox.vgrow="ALWAYS"/>
+
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#Logging_out"
+                    styleClass="admin-button" text="🚪  Đăng xuất" wrapText="true">
+                <font><Font size="14.0"/></font>
+            </Button>
+        </VBox>
+    </left>
+
+    <!-- ═══════ CENTER ═══════ -->
+    <center>
+        <VBox alignment="TOP_CENTER" spacing="16.0"
+              BorderPane.alignment="CENTER">
+            <padding><Insets bottom="20.0" left="16.0" right="16.0" top="16.0"/></padding>
+
+            <Label text="TỔNG QUAN HỆ THỐNG">
+                <font><Font name="Times New Roman Bold" size="26.0"/></font>
             </Label>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" prefWidth="261.0" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Quản lý người dùng" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
+
+            <!-- ── Nhóm 1: NGƯỜI DÙNG ── -->
+            <VBox spacing="8.0" styleClass="stat-card">
+                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0"/></padding>
+                <Label text="👥 Người dùng" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;"/>
+                <Separator/>
+                <GridPane hgap="12.0" vgap="6.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="64.0"/>
+                    </rowConstraints>
+
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
+                        <Label text="Tổng" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_total_users" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
+                        <Label text="Người bán" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_total_sellers" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
+                        <Label text="Người đặt giá" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_total_bidders" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
+                        <Label text="Hoạt động" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_active_users" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#009688;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="4">
+                        <Label text="Bị khóa" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_banned_users" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#F44336;"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- ── Nhóm 2: SẢN PHẨM ── -->
+            <VBox spacing="8.0" styleClass="stat-card">
+                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0"/></padding>
+                <Label text="🏷️ Sản phẩm" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;"/>
+                <Separator/>
+                <GridPane hgap="12.0" vgap="6.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="64.0"/>
+                    </rowConstraints>
+
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
+                        <Label text="Tổng" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_total_items" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
+                        <Label text="Đang đấu giá" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_active_items" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
+                        <Label text="Chờ duyệt" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_pending_items" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#FF9800;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
+                        <Label text="Đã đóng/Hủy" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_closed_cancelled_items" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#607D8B;"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- ── Nhóm 3: GIAO DỊCH ── -->
+            <VBox spacing="8.0" styleClass="stat-card">
+                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0"/></padding>
+                <Label text="💰 Giao dịch" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;"/>
+                <Separator/>
+                <GridPane hgap="12.0" vgap="6.0">
+                    <columnConstraints>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS"/>
+                    </columnConstraints>
+                    <rowConstraints>
+                        <RowConstraints minHeight="64.0"/>
+                    </rowConstraints>
+
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
+                        <Label text="Tổng giao dịch thành công" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_total_transactions" text="…"
+                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                    </VBox>
+                    <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
+                        <Label text="Tổng doanh thu" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
+                        <Label fx:id="lbl_total_revenue" text="…"
+                               style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" wrapText="true"/>
+                    </VBox>
+                </GridPane>
+            </VBox>
+
+            <!-- ── Nút xem thống kê chi tiết ── -->
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
+                    onAction="#Go_to_admin_stats_detail"
+                    text="📊  Xem thống kê chi tiết đầy đủ (Top Sellers, Bidders, Xu hướng...)"
+                    style="-fx-background-color:#1976D2; -fx-text-fill:white;
+                           -fx-font-size:14px; -fx-cursor:hand; -fx-background-radius:6;">
+                <font><Font size="14.0"/></font>
             </Button>
-            <Button layoutX="10.0" layoutY="10.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Quản lý phiên đấu giá" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Button>
-            <Button layoutX="15.0" layoutY="154.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Quản lý tài chính" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-            </Button>
-            <Region minWidth="0.0" prefHeight="151.0" prefWidth="241.0" VBox.vgrow="ALWAYS" />
-            <Button layoutX="10.0" layoutY="36.0" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="Đăng xuất" wrapText="true">
-               <font>
-                  <Font size="18.0" />
-               </font>
-               <VBox.margin>
-                  <Insets />
-               </VBox.margin>
-            </Button>
-         </children>
-         <BorderPane.margin>
-            <Insets />
-         </BorderPane.margin>
-      </VBox>
-   </left>
-   <top>
-      <HBox maxWidth="1.7976931348623157E308" prefHeight="0.0" prefWidth="876.0" styleClass="admin-card" stylesheets="@../../CSS/style.css" BorderPane.alignment="CENTER">
-         <children>
-            <Button fx:id="toggleMenu" maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#toggleMenu" prefHeight="40.0" prefWidth="43.0" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="☰" wrapText="true">
-               <font>
-                  <Font name="Times New Roman" size="18.0" />
-               </font>
-            </Button>
-         </children>
-         <padding>
-            <Insets bottom="5.0" left="5.0" top="5.0" />
-         </padding>
-      </HBox>
-   </top>
+
+        </VBox>
+    </center>
+
 </BorderPane>

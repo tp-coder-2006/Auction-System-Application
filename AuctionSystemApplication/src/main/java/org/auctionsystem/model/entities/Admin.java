@@ -20,7 +20,7 @@ public class Admin extends User {
         super();
     }
 
-    public Admin(String id, String name, String username, String password, double balance, String email, String phone, UserRole role) {
-        super(id, name, username, password, balance, email, phone, role);
+    public Admin(String id, String name, String username, String password, double balance, String email, String phone, UserRole role, boolean active, String avatarUrl) {
+        super(id, name, username, password, balance, email, phone, role, active, avatarUrl);
     }
 }

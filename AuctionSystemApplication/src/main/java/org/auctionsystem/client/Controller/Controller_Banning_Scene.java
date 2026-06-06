@@ -1,4 +1,4 @@
 package org.auctionsystem.client.Controller;
 
-public class Controller_Change_Password {
+public class Controller_Banning_Scene {
 }

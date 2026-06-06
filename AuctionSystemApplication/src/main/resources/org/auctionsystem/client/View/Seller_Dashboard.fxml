@@ -13,11 +13,11 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
+<BorderPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Seller_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="640.0">
          <children>
-            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="169.0" prefWidth="658.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
+            <Label alignment="TOP_CENTER" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="150.0" prefWidth="1000.0" text="Chào mừng đến với hệ thống đấu giá" textAlignment="CENTER" wrapText="true">
                <font>
                   <Font name="Times New Roman Bold" size="48.0" />
                </font>
@@ -43,7 +43,7 @@
                   </VBox>
                </children>
             </HBox>
-            <Region prefHeight="62.0" prefWidth="658.0" />
+            <Region prefHeight="62.0" prefWidth="658.0" VBox.vgrow="ALWAYS" />
             <Label fx:id="lbl_balance" maxHeight="1.7976931348623157E308" maxWidth="1.7976931348623157E308" prefHeight="18.0" prefWidth="422.0" text="Số dư tài khoản của bạn:">
                <font>
                   <Font size="30.0" />

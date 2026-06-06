@@ -6,6 +6,7 @@
 <?import javafx.scene.control.Menu?>
 <?import javafx.scene.control.MenuBar?>
 <?import javafx.scene.control.MenuItem?>
+<?import javafx.scene.control.ScrollPane?>
 <?import javafx.scene.control.SeparatorMenuItem?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
@@ -13,10 +14,8 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 <?import javafx.scene.text.Text?>
-<?import javafx.scene.control.ScrollPane?>
-<?import javafx.scene.control.Separator?>
 
-<BorderPane prefHeight="531.0" prefWidth="657.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
+<BorderPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidder_Dashboard">
    <center>
       <VBox alignment="TOP_CENTER" prefHeight="360.0" prefWidth="580.0" BorderPane.alignment="CENTER">
          <children>
@@ -52,15 +51,14 @@
             <Region prefHeight="16.0" prefWidth="658.0" />
 
             <!-- ── Widget: Đang dẫn đầu ───────────────────────────────── -->
-            <VBox fx:id="widget_leading" styleClass="leading-widget" maxWidth="620.0" spacing="6.0">
-               <padding><Insets top="0" bottom="0" left="0" right="0"/></padding>
+            <VBox fx:id="widget_leading" maxWidth="620.0" prefWidth="601.0" spacing="6.0" styleClass="leading-widget">
+               <padding><Insets bottom="0" left="0" right="0" top="0" /></padding>
                <HBox alignment="CENTER_LEFT" spacing="8.0">
-                  <Label text="🏆 Đang dẫn đầu" styleClass="leading-widget-title" />
+                  <Label styleClass="leading-widget-title" text="🏆 Đang dẫn đầu" />
                   <Region HBox.hgrow="ALWAYS" />
                   <Label fx:id="lbl_leading_count" styleClass="leading-widget-title" text="" />
                </HBox>
-               <ScrollPane fx:id="scroll_leading" fitToWidth="true" prefHeight="110.0"
-                           style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
+               <ScrollPane fx:id="scroll_leading" fitToWidth="true" prefHeight="110.0" style="-fx-background: transparent; -fx-background-color: transparent; -fx-border-color: transparent;">
                   <VBox fx:id="vbox_leading_items" spacing="5.0" style="-fx-background-color: transparent;" />
                </ScrollPane>
             </VBox>

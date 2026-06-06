@@ -35,31 +35,23 @@
         6. Xu hướng Item (6 tháng) — hiển thị từng tháng dạng text/label
         7. Xu hướng Doanh thu (6 tháng) — hiển thị từng tháng dạng text/label
 -->
-<BorderPane
-        prefHeight="680.0" prefWidth="1050.0"
-        stylesheets="@../../CSS/AdminMenu.css"
-        xmlns="http://javafx.com/javafx/25"
-        xmlns:fx="http://javafx.com/fxml/1"
-        fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Stats_Detail">
+
+<BorderPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Stats_Detail">
 
     <!-- ═══════════ TOP ═══════════ -->
     <top>
-        <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="admin-card"
-              BorderPane.alignment="CENTER">
-            <padding><Insets bottom="10.0" left="16.0" right="16.0" top="10.0"/></padding>
+        <HBox alignment="CENTER_LEFT" spacing="12.0" styleClass="admin-card" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="10.0" left="16.0" right="16.0" top="10.0" /></padding>
             <Label text="📊 THỐNG KÊ CHI TIẾT HỆ THỐNG">
-                <font><Font name="Times New Roman Bold" size="26.0"/></font>
+                <font><Font name="Times New Roman Bold" size="26.0" /></font>
             </Label>
-            <Region HBox.hgrow="ALWAYS"/>
-            <Label fx:id="lbl_last_updated" text="Chưa có dữ liệu"
-                   style="-fx-text-fill:#888; -fx-font-size:12px;"/>
-            <Button fx:id="btn_refresh" mnemonicParsing="false"
-                    onAction="#onRefresh" text="🔄 Làm mới">
-                <font><Font size="13.0"/></font>
+            <Region HBox.hgrow="ALWAYS" />
+            <Label fx:id="lbl_last_updated" style="-fx-text-fill:#888; -fx-font-size:12px;" text="Chưa có dữ liệu" />
+            <Button fx:id="btn_refresh" mnemonicParsing="false" onAction="#onRefresh" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="🔄 Làm mới">
+                <font><Font size="13.0" /></font>
             </Button>
-            <Button mnemonicParsing="false"
-                    onAction="#goBack" text="← Quay lại">
-                <font><Font size="13.0"/></font>
+            <Button mnemonicParsing="false" onAction="#goBack" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="← Quay lại">
+                <font><Font size="13.0" /></font>
             </Button>
         </HBox>
     </top>
@@ -67,164 +59,143 @@
     <!-- ═══════════ CENTER ═══════════ -->
     <center>
         <ScrollPane fitToWidth="true" BorderPane.alignment="CENTER">
-            <BorderPane.margin><Insets top="8.0"/></BorderPane.margin>
+            <BorderPane.margin><Insets top="8.0" /></BorderPane.margin>
             <content>
                 <VBox spacing="20.0">
-                    <padding><Insets bottom="20.0" left="16.0" right="16.0" top="10.0"/></padding>
+                    <padding><Insets bottom="20.0" left="16.0" right="16.0" top="10.0" /></padding>
 
                     <!-- ── 1. THỐNG KÊ NGƯỜI DÙNG ── -->
                     <VBox spacing="8.0" styleClass="stat-card">
-                        <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                        <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                         <Label text="👥 THỐNG KÊ NGƯỜI DÙNG">
-                            <font><Font name="Times New Roman Bold" size="18.0"/></font>
+                            <font><Font name="Times New Roman Bold" size="18.0" /></font>
                         </Label>
-                        <Separator/>
+                        <Separator />
                         <GridPane hgap="12.0" vgap="10.0">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0"/>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="150.0" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints minHeight="80.0"/>
+                                <RowConstraints minHeight="80.0" />
                             </rowConstraints>
 
                             <!-- Card: Tổng users -->
-                            <VBox alignment="CENTER" styleClass="mini-stat-card"
-                                  GridPane.columnIndex="0">
-                                <Label text="Tổng người dùng" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_total_users" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                            <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Tổng người dùng" />
+                                <Label fx:id="lbl_total_users" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#2196F3;" text="—" />
                             </VBox>
                             <!-- Card: Sellers -->
-                            <VBox alignment="CENTER" styleClass="mini-stat-card"
-                                  GridPane.columnIndex="1">
-                                <Label text="Người bán" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_total_sellers" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;"/>
+                            <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Người bán" />
+                                <Label fx:id="lbl_total_sellers" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" text="—" />
                             </VBox>
                             <!-- Card: Bidders -->
-                            <VBox alignment="CENTER" styleClass="mini-stat-card"
-                                  GridPane.columnIndex="2">
-                                <Label text="Người đặt giá" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_total_bidders" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;"/>
+                            <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Người đặt giá" />
+                                <Label fx:id="lbl_total_bidders" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;" text="—" />
                             </VBox>
                             <!-- Card: Active users -->
-                            <VBox alignment="CENTER" styleClass="mini-stat-card"
-                                  GridPane.columnIndex="3">
-                                <Label text="Đang hoạt động" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_active_users" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#009688;"/>
+                            <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Đang hoạt động" />
+                                <Label fx:id="lbl_active_users" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#009688;" text="—" />
                             </VBox>
                             <!-- Card: Banned users -->
-                            <VBox alignment="CENTER" styleClass="mini-stat-card"
-                                  GridPane.columnIndex="4">
-                                <Label text="Bị khóa" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_banned_users" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#F44336;"/>
+                            <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="4">
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Bị khóa" />
+                                <Label fx:id="lbl_banned_users" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#F44336;" text="—" />
                             </VBox>
                         </GridPane>
                     </VBox>
 
                     <!-- ── 2. THỐNG KÊ SẢN PHẨM ── -->
                     <VBox spacing="8.0" styleClass="stat-card">
-                        <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                        <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                         <Label text="🏷️ THỐNG KÊ SẢN PHẨM">
-                            <font><Font name="Times New Roman Bold" size="18.0"/></font>
+                            <font><Font name="Times New Roman Bold" size="18.0" /></font>
                         </Label>
-                        <Separator/>
+                        <Separator />
                         <GridPane hgap="12.0" vgap="10.0">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0"/>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="140.0" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints minHeight="80.0"/>
+                                <RowConstraints minHeight="80.0" />
                             </rowConstraints>
 
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
-                                <Label text="Tổng sản phẩm" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_total_items" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Tổng sản phẩm" />
+                                <Label fx:id="lbl_total_items" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#2196F3;" text="—" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
-                                <Label text="Chờ bắt đầu" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_pending_items" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#FF9800;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Chờ bắt đầu" />
+                                <Label fx:id="lbl_pending_items" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#FF9800;" text="—" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
-                                <Label text="Đang đấu giá" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_active_items" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Đang đấu giá" />
+                                <Label fx:id="lbl_active_items" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" text="—" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
-                                <Label text="Đã đóng" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_closed_items" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#607D8B;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Đã đóng" />
+                                <Label fx:id="lbl_closed_items" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#607D8B;" text="—" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="4">
-                                <Label text="Đã hủy" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_cancelled_items" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#F44336;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Đã hủy" />
+                                <Label fx:id="lbl_cancelled_items" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#F44336;" text="—" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="5">
-                                <Label text="Đã ẩn" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_hidden_items" text="—"
-                                       style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#9E9E9E;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Đã ẩn" />
+                                <Label fx:id="lbl_hidden_items" style="-fx-font-size:28px; -fx-font-weight:bold; -fx-text-fill:#9E9E9E;" text="—" />
                             </VBox>
                         </GridPane>
                     </VBox>
 
                     <!-- ── 3. THỐNG KÊ GIAO DỊCH ── -->
                     <VBox spacing="8.0" styleClass="stat-card">
-                        <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                        <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                         <Label text="💰 THỐNG KÊ GIAO DỊCH">
-                            <font><Font name="Times New Roman Bold" size="18.0"/></font>
+                            <font><Font name="Times New Roman Bold" size="18.0" /></font>
                         </Label>
-                        <Separator/>
+                        <Separator />
                         <GridPane hgap="12.0" vgap="10.0">
                             <columnConstraints>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0"/>
-                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0"/>
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" />
+                                <ColumnConstraints hgrow="ALWAYS" minWidth="160.0" />
                             </columnConstraints>
                             <rowConstraints>
-                                <RowConstraints minHeight="90.0"/>
+                                <RowConstraints minHeight="90.0" />
                             </rowConstraints>
 
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
-                                <Label text="Tổng giao dịch" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_total_transactions" text="—"
-                                       style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Tổng giao dịch" />
+                                <Label fx:id="lbl_total_transactions" style="-fx-font-size:26px; -fx-font-weight:bold; -fx-text-fill:#2196F3;" text="—" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
-                                <Label text="Tổng doanh thu" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_total_revenue" text="—"
-                                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" wrapText="true"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Tổng doanh thu" />
+                                <Label fx:id="lbl_total_revenue" style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" text="—" wrapText="true" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
-                                <Label text="Giá TB mỗi GD" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_avg_price" text="—"
-                                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;" wrapText="true"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Giá TB mỗi GD" />
+                                <Label fx:id="lbl_avg_price" style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;" text="—" wrapText="true" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
-                                <Label text="Giá cao nhất" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_max_price" text="—"
-                                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#FF5722;" wrapText="true"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Giá cao nhất" />
+                                <Label fx:id="lbl_max_price" style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#FF5722;" text="—" wrapText="true" />
                             </VBox>
                             <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="4">
-                                <Label text="Giá thấp nhất" style="-fx-font-size:12px; -fx-text-fill:#666;"/>
-                                <Label fx:id="lbl_min_price" text="—"
-                                       style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#009688;" wrapText="true"/>
+                                <Label style="-fx-font-size:12px; -fx-text-fill:#666;" text="Giá thấp nhất" />
+                                <Label fx:id="lbl_min_price" style="-fx-font-size:16px; -fx-font-weight:bold; -fx-text-fill:#009688;" text="—" wrapText="true" />
                             </VBox>
                         </GridPane>
                     </VBox>
@@ -233,52 +204,48 @@
                     <HBox spacing="14.0">
                         <!-- Top Sellers -->
                         <VBox spacing="8.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                             <Label text="🏆 TOP 5 NGƯỜI BÁN">
-                                <font><Font name="Times New Roman Bold" size="16.0"/></font>
+                                <font><Font name="Times New Roman Bold" size="16.0" /></font>
                             </Label>
-                            <Separator/>
-                            <TableView fx:id="tbl_top_sellers" prefHeight="200.0"
-                                       VBox.vgrow="ALWAYS"
-                                       stylesheets="@../../CSS/TableView.css">
+                            <Separator />
+                            <TableView fx:id="tbl_top_sellers" prefHeight="200.0" stylesheets="@../../CSS/TableView.css" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="col_seller_rank"    text="#"          prefWidth="35.0"/>
-                                    <TableColumn fx:id="col_seller_name"    text="Tên"        prefWidth="130.0"/>
-                                    <TableColumn fx:id="col_seller_sold"    text="Đã bán"     prefWidth="70.0"/>
-                                    <TableColumn fx:id="col_seller_revenue" text="Doanh thu"  prefWidth="130.0"/>
-                                    <TableColumn fx:id="col_seller_rating"  text="⭐ Rating"   prefWidth="75.0"/>
+                                    <TableColumn fx:id="col_seller_rank" prefWidth="35.0" text="#" />
+                                    <TableColumn fx:id="col_seller_name" prefWidth="130.0" text="Tên" />
+                                    <TableColumn fx:id="col_seller_sold" prefWidth="70.0" text="Đã bán" />
+                                    <TableColumn fx:id="col_seller_revenue" prefWidth="130.0" text="Doanh thu" />
+                                    <TableColumn fx:id="col_seller_rating" prefWidth="75.0" text="⭐ Rating" />
                                 </columns>
                                 <columnResizePolicy>
-                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                 </columnResizePolicy>
                                 <placeholder>
-                                    <Label text="Chưa có dữ liệu" style="-fx-text-fill:#888;"/>
+                                    <Label style="-fx-text-fill:#888;" text="Chưa có dữ liệu" />
                                 </placeholder>
                             </TableView>
                         </VBox>
 
                         <!-- Top Bidders -->
                         <VBox spacing="8.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                             <Label text="🎯 TOP 5 NGƯỜI ĐẶT GIÁ">
-                                <font><Font name="Times New Roman Bold" size="16.0"/></font>
+                                <font><Font name="Times New Roman Bold" size="16.0" /></font>
                             </Label>
-                            <Separator/>
-                            <TableView fx:id="tbl_top_bidders" prefHeight="200.0"
-                                       VBox.vgrow="ALWAYS"
-                                       stylesheets="@../../CSS/TableView.css">
+                            <Separator />
+                            <TableView fx:id="tbl_top_bidders" prefHeight="200.0" stylesheets="@../../CSS/TableView.css" VBox.vgrow="ALWAYS">
                                 <columns>
-                                    <TableColumn fx:id="col_bidder_rank"      text="#"          prefWidth="35.0"/>
-                                    <TableColumn fx:id="col_bidder_name"      text="Tên"        prefWidth="140.0"/>
-                                    <TableColumn fx:id="col_bidder_total_bids" text="Tổng bid"  prefWidth="80.0"/>
-                                    <TableColumn fx:id="col_bidder_wins"      text="Thắng"      prefWidth="70.0"/>
-                                    <TableColumn fx:id="col_bidder_winrate"   text="Win%"       prefWidth="65.0"/>
+                                    <TableColumn fx:id="col_bidder_rank" prefWidth="35.0" text="#" />
+                                    <TableColumn fx:id="col_bidder_name" prefWidth="140.0" text="Tên" />
+                                    <TableColumn fx:id="col_bidder_total_bids" prefWidth="80.0" text="Tổng bid" />
+                                    <TableColumn fx:id="col_bidder_wins" prefWidth="70.0" text="Thắng" />
+                                    <TableColumn fx:id="col_bidder_winrate" prefWidth="65.0" text="Win%" />
                                 </columns>
                                 <columnResizePolicy>
-                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY"/>
+                                    <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                                 </columnResizePolicy>
                                 <placeholder>
-                                    <Label text="Chưa có dữ liệu" style="-fx-text-fill:#888;"/>
+                                    <Label style="-fx-text-fill:#888;" text="Chưa có dữ liệu" />
                                 </placeholder>
                             </TableView>
                         </VBox>
@@ -289,37 +256,33 @@
 
                         <!-- Item Trend -->
                         <VBox spacing="8.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                             <Label text="📈 XU HƯỚNG ĐĂNG SẢN PHẨM (6 tháng gần nhất)">
-                                <font><Font name="Times New Roman Bold" size="15.0"/></font>
+                                <font><Font name="Times New Roman Bold" size="15.0" /></font>
                             </Label>
-                            <Separator/>
+                            <Separator />
                             <!-- Bar chart thủ công bằng HBox + VBox -->
-                            <HBox fx:id="hbox_item_trend" alignment="BOTTOM_CENTER" spacing="8.0"
-                                  prefHeight="140.0" style="-fx-border-color:#ddd; -fx-border-radius:4;
-                                  -fx-padding:8; -fx-background-color:#fafafa; -fx-background-radius:4;">
-                                <Label text="Đang tải..." style="-fx-text-fill:#aaa;"/>
+                            <HBox fx:id="hbox_item_trend" alignment="BOTTOM_CENTER" prefHeight="140.0" spacing="8.0" style="-fx-border-color:#ddd; -fx-border-radius:4;                                   -fx-padding:8; -fx-background-color:#fafafa; -fx-background-radius:4;">
+                                <Label style="-fx-text-fill:#aaa;" text="Đang tải..." />
                             </HBox>
                             <!-- Labels tháng -->
-                            <HBox fx:id="hbox_item_month_labels" spacing="8.0" alignment="CENTER">
-                                <Label text="..." style="-fx-font-size:10px; -fx-text-fill:#888;"/>
+                            <HBox fx:id="hbox_item_month_labels" alignment="CENTER" spacing="8.0">
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#888;" text="..." />
                             </HBox>
                         </VBox>
 
                         <!-- Revenue Trend -->
                         <VBox spacing="8.0" styleClass="stat-card" HBox.hgrow="ALWAYS">
-                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0"/></padding>
+                            <padding><Insets bottom="14.0" left="14.0" right="14.0" top="14.0" /></padding>
                             <Label text="💵 XU HƯỚNG DOANH THU (6 tháng gần nhất)">
-                                <font><Font name="Times New Roman Bold" size="15.0"/></font>
+                                <font><Font name="Times New Roman Bold" size="15.0" /></font>
                             </Label>
-                            <Separator/>
-                            <HBox fx:id="hbox_revenue_trend" alignment="BOTTOM_CENTER" spacing="8.0"
-                                  prefHeight="140.0" style="-fx-border-color:#ddd; -fx-border-radius:4;
-                                  -fx-padding:8; -fx-background-color:#fafafa; -fx-background-radius:4;">
-                                <Label text="Đang tải..." style="-fx-text-fill:#aaa;"/>
+                            <Separator />
+                            <HBox fx:id="hbox_revenue_trend" alignment="BOTTOM_CENTER" prefHeight="140.0" spacing="8.0" style="-fx-border-color:#ddd; -fx-border-radius:4;                                   -fx-padding:8; -fx-background-color:#fafafa; -fx-background-radius:4;">
+                                <Label style="-fx-text-fill:#aaa;" text="Đang tải..." />
                             </HBox>
-                            <HBox fx:id="hbox_revenue_month_labels" spacing="8.0" alignment="CENTER">
-                                <Label text="..." style="-fx-font-size:10px; -fx-text-fill:#888;"/>
+                            <HBox fx:id="hbox_revenue_month_labels" alignment="CENTER" spacing="8.0">
+                                <Label style="-fx-font-size:10px; -fx-text-fill:#888;" text="..." />
                             </HBox>
                         </VBox>
                     </HBox>

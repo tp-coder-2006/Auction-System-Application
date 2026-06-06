@@ -9,16 +9,6 @@
     -fx-text-fill: #5a3e28;
 }
 
-/* Danh sách người tham gia */
-.bidding-participants-header {
-    -fx-background-color: #8b2020;
-    -fx-text-fill: white;
-    -fx-font-weight: bold;
-    -fx-font-size: 13px;
-    -fx-alignment: CENTER;
-    -fx-padding: 8;
-}
-
 /* ── TextField nhập số tiền ── */
 .bidding-input {
     -fx-background-color: white;
@@ -35,9 +25,31 @@
     -fx-border-color: #8b2020;
     -fx-effect: dropshadow(three-pass-box, rgba(139,32,32,0.25), 6, 0, 0, 0);
 }
-.floating-card-in-bidding-room {
-    -fx-background-color: rgba(250, 238, 215, 0.8);
-    -fx-background-radius: 12;
-    -fx-padding: 40;
-    -fx-effect: dropshadow(three-pass-box, rgba(250,250,250,0.4), 20, 0, 0, 8);
+.bid-buttons-pane {
+    -fx-background-color: #F8E8A0;
+    -fx-border-width: 1;
+}
+.bid-history-tabpane {
+    -fx-tab-min-height: 35;
+}
+.bid-history-tabpane .tab {
+    -fx-background-color: #DDD;
+}
+
+.bid-history-tabpane .tab:selected {
+    -fx-background-color: #5A4500;
+}
+
+.bid-history-tabpane .tab:selected .tab-label {
+    -fx-text-fill: white;
+}
+
+.bid-history-tabpane .tab-header-background {
+    -fx-background-color: transparent;
+}
+.bid-history-tabpane .tab {
+    -fx-background-color: #f2c33f;
+}
+.custom-separator .line {
+    -fx-border-color: #b88e04;
 }

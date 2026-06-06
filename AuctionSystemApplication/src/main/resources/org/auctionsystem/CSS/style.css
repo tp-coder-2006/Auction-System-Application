@@ -1,5 +1,5 @@
 .root {
-    -fx-background-color: linear-gradient(to bottom, #fcfcfc, #fcfaf2);
+    -fx-background-color: linear-gradient(to bottom, #fcfcfc, #f7ecc1);
     -fx-background-size: cover;
     -fx-background-position: center;
     -fx-font-family: "Segoe UI";
@@ -53,4 +53,34 @@
     -fx-border-color: #4d3902;
     -fx-border-radius: 8;
     -fx-background-radius: 5px 5px 0px 0px;
+}
+.leading-widget {
+    -fx-background-color: white;
+    -fx-background-radius: 5;
+    -fx-border-radius: 5;
+
+    -fx-padding: 10;
+
+    -fx-border-color: #e6dab1;
+    -fx-border-width: 1.5;
+
+    -fx-effect: dropshadow(gaussian, rgba(0,0,0,0.1), 10, 0.25, 0, 6);
+}
+.leading-widget .scroll-pane {
+    -fx-background-color: transparent;
+    -fx-background-insets: 0;
+}
+.leading-widget .scroll-pane > .viewport {
+    -fx-background-color: transparent;
+}
+.leading-widget .scroll-bar:vertical {
+    -fx-background-color: transparent;
+}
+
+.leading-widget .scroll-bar:vertical .thumb {
+    -fx-background-color: #BFA75A;
+    -fx-background-radius: 10;
+}
+.leading-widget .scroll-bar:vertical .thumb:hover {
+    -fx-background-color: #8A6A00;
 }

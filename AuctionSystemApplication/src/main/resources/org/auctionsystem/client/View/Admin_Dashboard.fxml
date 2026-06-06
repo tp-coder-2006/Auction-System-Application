@@ -24,204 +24,170 @@
       • Thêm nút "📊 Thống kê chi tiết" điều hướng đến Admin_Stats_Detail.fxml
       • Giữ nguyên sidebar + toggle menu
 -->
-<BorderPane prefHeight="580.0" prefWidth="900.0"
-            stylesheets="@../../CSS/AdminMenu.css"
-            xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Dashboard">
+
+<BorderPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Dashboard">
 
     <!-- ═══════ TOP ═══════ -->
     <top>
-        <HBox maxWidth="1.7976931348623157E308" prefHeight="46.0"
-              styleClass="admin-card" BorderPane.alignment="CENTER">
-            <padding><Insets bottom="5.0" left="5.0" top="5.0"/></padding>
+        <HBox maxWidth="1.7976931348623157E308" prefHeight="46.0" styleClass="admin-card" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="5.0" left="5.0" top="5.0" /></padding>
             <children>
-                <Button fx:id="toggleMenu" mnemonicParsing="false"
-                        onAction="#toggleMenu" prefHeight="36.0" prefWidth="43.0"
-                        stylesheets="@../../CSS/style.css" text="☰">
-                    <font><Font name="Times New Roman" size="18.0"/></font>
+                <Button fx:id="toggleMenu" mnemonicParsing="false" onAction="#toggleMenu" style="-fx-text-fill: white;" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="☰">
+                    <font><Font name="Times New Roman" size="18.0" /></font>
                 </Button>
-                <Label text="  HỆ THỐNG ADMIN" style="-fx-font-size:18px; -fx-font-weight:bold;"/>
-                <Region HBox.hgrow="ALWAYS"/>
-                <Label fx:id="lbl_update_time" text=""
-                       style="-fx-font-size:11px; -fx-text-fill:#999; -fx-padding:0 10 0 0;"/>
+                <Label style="-fx-font-weight: bold;" text="  HỆ THỐNG ADMIN">
+               <font>
+                  <Font size="24.0" />
+               </font></Label>
+                <Region HBox.hgrow="ALWAYS" />
+                <Label fx:id="lbl_update_time" style="-fx-font-size:11px; -fx-text-fill:#999; -fx-padding:0 10 0 0;" text="" />
             </children>
         </HBox>
     </top>
 
     <!-- ═══════ LEFT Sidebar ═══════ -->
     <left>
-        <VBox fx:id="sidebar" prefHeight="534.0" prefWidth="210.0" spacing="22.0"
-              styleClass="admin-card" stylesheets="@../../CSS/style.css"
-              BorderPane.alignment="CENTER">
-            <padding><Insets bottom="16.0" left="10.0" right="10.0" top="16.0"/></padding>
+        <VBox fx:id="sidebar" prefHeight="704.0" prefWidth="222.0" spacing="22.0" styleClass="admin-card" stylesheets="@../../CSS/style.css" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="16.0" left="10.0" right="10.0" top="16.0" /></padding>
 
             <Label text="ĐIỀU HƯỚNG" wrapText="true">
-                <font><Font name="Times New Roman Bold" size="18.0"/></font>
+                <font><Font name="Times New Roman Bold" size="24.0" /></font>
             </Label>
-            <Separator/>
+            <Separator styleClass="custom-separator" stylesheets="@../../CSS/BiddingBackground.css" />
 
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#Go_to_admin_user_management"
-                    styleClass="admin-button" text="👥  Quản lý người dùng" wrapText="true">
-                <font><Font size="14.0"/></font>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_user_management" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="👥  Quản lý người dùng" wrapText="true">
+                <font><Font size="16.0" /></font>
             </Button>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#Go_to_admin_item_management"
-                    styleClass="admin-button" text="🏷️  Quản lý sản phẩm" wrapText="true">
-                <font><Font size="14.0"/></font>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_item_management" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="🏷️  Quản lý sản phẩm" wrapText="true">
+                <font><Font size="16.0" /></font>
             </Button>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#Go_to_admin_financial_auditing"
-                    styleClass="admin-button" text="💰  Quản lý tài chính" wrapText="true">
-                <font><Font size="14.0"/></font>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_financial_auditing" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="💰  Quản lý tài chính" wrapText="true">
+                <font><Font size="16.0" /></font>
             </Button>
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#Go_to_admin_stats_detail"
-                    styleClass="admin-button"
-                    text="📊  Thống kê chi tiết" wrapText="true"
-                    style="-fx-background-color:#1976D2; -fx-text-fill:white;">
-                <font><Font size="14.0"/></font>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_stats_detail" style="-fx-background-color:#1976D2; -fx-text-fill:white;" styleClass="admin-button" text="📊  Thống kê chi tiết" wrapText="true">
+                <font><Font size="16.0" /></font>
             </Button>
 
-            <Region VBox.vgrow="ALWAYS"/>
+            <Region VBox.vgrow="ALWAYS" />
 
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#Logging_out"
-                    styleClass="admin-button" text="🚪  Đăng xuất" wrapText="true">
-                <font><Font size="14.0"/></font>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Logging_out" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="🚪  Đăng xuất" wrapText="true">
+                <font><Font size="16.0" /></font>
             </Button>
         </VBox>
     </left>
 
     <!-- ═══════ CENTER ═══════ -->
     <center>
-        <VBox alignment="TOP_CENTER" spacing="16.0"
-              BorderPane.alignment="CENTER">
-            <padding><Insets bottom="20.0" left="16.0" right="16.0" top="16.0"/></padding>
+        <VBox alignment="TOP_CENTER" spacing="16.0" BorderPane.alignment="CENTER">
+            <padding><Insets bottom="20.0" left="16.0" right="16.0" top="16.0" /></padding>
 
             <Label text="TỔNG QUAN HỆ THỐNG">
-                <font><Font name="Times New Roman Bold" size="26.0"/></font>
+                <font><Font name="Times New Roman Bold" size="30.0" /></font>
             </Label>
 
             <!-- ── Nhóm 1: NGƯỜI DÙNG ── -->
             <VBox spacing="8.0" styleClass="stat-card">
-                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0"/></padding>
-                <Label text="👥 Người dùng" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;"/>
-                <Separator/>
+                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0" /></padding>
+                <Label style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;" text="👥 Người dùng" />
+                <Separator />
                 <GridPane hgap="12.0" vgap="6.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="64.0"/>
+                        <RowConstraints minHeight="64.0" />
                     </rowConstraints>
 
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
-                        <Label text="Tổng" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_total_users" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Tổng" />
+                        <Label fx:id="lbl_total_users" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
-                        <Label text="Người bán" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_total_sellers" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Người bán" />
+                        <Label fx:id="lbl_total_sellers" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
-                        <Label text="Người đặt giá" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_total_bidders" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Người đặt giá" />
+                        <Label fx:id="lbl_total_bidders" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#9C27B0;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
-                        <Label text="Hoạt động" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_active_users" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#009688;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Hoạt động" />
+                        <Label fx:id="lbl_active_users" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#009688;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="4">
-                        <Label text="Bị khóa" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_banned_users" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#F44336;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Bị khóa" />
+                        <Label fx:id="lbl_banned_users" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#F44336;" text="…" />
                     </VBox>
                 </GridPane>
             </VBox>
 
             <!-- ── Nhóm 2: SẢN PHẨM ── -->
             <VBox spacing="8.0" styleClass="stat-card">
-                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0"/></padding>
-                <Label text="🏷️ Sản phẩm" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;"/>
-                <Separator/>
+                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0" /></padding>
+                <Label style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;" text="🏷️ Sản phẩm" />
+                <Separator />
                 <GridPane hgap="12.0" vgap="6.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="64.0"/>
+                        <RowConstraints minHeight="64.0" />
                     </rowConstraints>
 
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
-                        <Label text="Tổng" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_total_items" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Tổng" />
+                        <Label fx:id="lbl_total_items" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
-                        <Label text="Đang đấu giá" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_active_items" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Đang đấu giá" />
+                        <Label fx:id="lbl_active_items" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="2">
-                        <Label text="Chờ duyệt" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_pending_items" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#FF9800;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Chờ duyệt" />
+                        <Label fx:id="lbl_pending_items" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#FF9800;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="3">
-                        <Label text="Đã đóng/Hủy" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_closed_cancelled_items" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#607D8B;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Đã đóng/Hủy" />
+                        <Label fx:id="lbl_closed_cancelled_items" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#607D8B;" text="…" />
                     </VBox>
                 </GridPane>
             </VBox>
 
             <!-- ── Nhóm 3: GIAO DỊCH ── -->
-            <VBox spacing="8.0" styleClass="stat-card">
-                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0"/></padding>
-                <Label text="💰 Giao dịch" style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;"/>
-                <Separator/>
+            <VBox prefWidth="758.0" spacing="8.0" styleClass="stat-card">
+                <padding><Insets bottom="12.0" left="14.0" right="14.0" top="12.0" /></padding>
+                <Label style="-fx-font-size:14px; -fx-font-weight:bold; -fx-text-fill:#555;" text="💰 Giao dịch" />
+                <Separator />
                 <GridPane hgap="12.0" vgap="6.0">
                     <columnConstraints>
-                        <ColumnConstraints hgrow="ALWAYS"/>
-                        <ColumnConstraints hgrow="ALWAYS"/>
+                        <ColumnConstraints hgrow="ALWAYS" />
+                        <ColumnConstraints hgrow="ALWAYS" />
                     </columnConstraints>
                     <rowConstraints>
-                        <RowConstraints minHeight="64.0"/>
+                        <RowConstraints minHeight="64.0" />
                     </rowConstraints>
 
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="0">
-                        <Label text="Tổng giao dịch thành công" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_total_transactions" text="…"
-                               style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Tổng giao dịch thành công" />
+                        <Label fx:id="lbl_total_transactions" style="-fx-font-size:24px; -fx-font-weight:bold; -fx-text-fill:#2196F3;" text="…" />
                     </VBox>
                     <VBox alignment="CENTER" styleClass="mini-stat-card" GridPane.columnIndex="1">
-                        <Label text="Tổng doanh thu" style="-fx-font-size:11px; -fx-text-fill:#888;"/>
-                        <Label fx:id="lbl_total_revenue" text="…"
-                               style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" wrapText="true"/>
+                        <Label style="-fx-font-size:11px; -fx-text-fill:#888;" text="Tổng doanh thu" />
+                        <Label fx:id="lbl_total_revenue" style="-fx-font-size:18px; -fx-font-weight:bold; -fx-text-fill:#4CAF50;" text="…" wrapText="true" />
                     </VBox>
                 </GridPane>
             </VBox>
 
             <!-- ── Nút xem thống kê chi tiết ── -->
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false"
-                    onAction="#Go_to_admin_stats_detail"
-                    text="📊  Xem thống kê chi tiết đầy đủ (Top Sellers, Bidders, Xu hướng...)"
-                    style="-fx-background-color:#1976D2; -fx-text-fill:white;
-                           -fx-font-size:14px; -fx-cursor:hand; -fx-background-radius:6;">
-                <font><Font size="14.0"/></font>
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#Go_to_admin_stats_detail" style="-fx-background-color:#1976D2; -fx-text-fill:white;                            -fx-font-size:14px; -fx-cursor:hand; -fx-background-radius:6;" text="📊  Xem thống kê chi tiết đầy đủ (Top Sellers, Bidders, Xu hướng...)">
+                <font><Font size="14.0" /></font>
             </Button>
 
         </VBox>

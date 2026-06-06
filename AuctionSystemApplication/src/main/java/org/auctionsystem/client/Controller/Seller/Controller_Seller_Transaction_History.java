@@ -12,6 +12,9 @@ import javafx.scene.control.*;
 import javafx.scene.control.cell.PropertyValueFactory;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.BalanceWatcher;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -28,6 +31,8 @@ import java.util.Locale;
  * FXML: Seller_Transaction_History.fxml
  */
 public class Controller_Seller_Transaction_History {
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ── FXML ──────────────────────────────────────────────────────────────────
     @FXML private ComboBox<String>                   combo_filter;
@@ -54,6 +59,9 @@ public class Controller_Seller_Transaction_History {
         previousView = fxmlPath;
     }
 
+    // Filter hiện tại — để biết có nên hiện row mới khi nhận event không
+    private String currentFilter = null;  // null = Tất cả
+
     // ── Khởi tạo ──────────────────────────────────────────────────────────────
     @FXML
     public void initialize() {
@@ -78,6 +86,15 @@ public class Controller_Seller_Transaction_History {
                 + formatMoney(UserSession.getInstance().getBalance()) + " ₫");
 
         loadTransactions(null);
+
+        // Đăng ký BalanceWatcher để cập nhật label số dư realtime
+        BalanceWatcher.registerListener(handlerKey, balance ->
+                lbl_balance.setText("Số dư: " + formatMoney(balance) + " ₫"));
+
+        // Đăng ký real-time events để thêm row mới vào bảng
+        EventDispatcher.registerGlobal(EventType.BID_CREDIT, handlerKey, this::onTransactionEvent);
+        EventDispatcher.registerGlobal(EventType.BID_DEDUCT, handlerKey, this::onTransactionEvent);
+        EventDispatcher.registerGlobal(EventType.BALANCE_UPDATED, handlerKey, this::onTransactionEvent);
     }
 
     // ── Filter ────────────────────────────────────────────────────────────────
@@ -85,14 +102,14 @@ public class Controller_Seller_Transaction_History {
     public void on_filter(ActionEvent event) {
         String selected = combo_filter.getValue();
         if (selected == null) return;
-        String typeCode = switch (selected) {
+        currentFilter = switch (selected) {
             case "Nhận tiền bán hàng (BID_CREDIT)" -> "BID_CREDIT";
             case "Rút tiền (WITHDRAW)"              -> "WITHDRAW";
             case "Nạp tiền (DEPOSIT)"               -> "DEPOSIT";
             case "Trừ tiền đấu giá (BID_DEDUCT)"    -> "BID_DEDUCT";
             default                                 -> null;
         };
-        loadTransactions(typeCode);
+        loadTransactions(currentFilter);
     }
 
     // ── Load dữ liệu ──────────────────────────────────────────────────────────
@@ -163,9 +180,67 @@ public class Controller_Seller_Transaction_History {
         }, "SellerTransactionHistory-Load").start();
     }
 
+    // ── Real-time: nhận BID_CREDIT, BID_DEDUCT hoặc BALANCE_UPDATED → thêm row mới lên đầu bảng ──
+    private void onTransactionEvent(com.google.gson.JsonObject payload) {
+        String eventType = payload.has("event") ? payload.get("event").getAsString() : "";
+
+        String typeCode;
+        switch (eventType) {
+            case EventType.BID_CREDIT      -> typeCode = "BID_CREDIT";
+            case EventType.BID_DEDUCT      -> typeCode = "BID_DEDUCT";
+            case EventType.BALANCE_UPDATED -> {
+                typeCode = payload.has("tx_type") && !payload.get("tx_type").isJsonNull()
+                        ? payload.get("tx_type").getAsString()
+                        : "DEPOSIT";
+            }
+            default -> { return; }
+        }
+
+        // Nếu đang filter theo loại khác thì bỏ qua
+        if (currentFilter != null && !currentFilter.equals(typeCode)) return;
+
+        double amount  = getDblSafe(payload, "amount");
+        double balance = getDblSafe(payload, "balance");
+
+        String note;
+        if (typeCode.equals("BID_CREDIT") || typeCode.equals("BID_DEDUCT")) {
+            note = payload.has("item_name") && !payload.get("item_name").isJsonNull()
+                    ? (typeCode.equals("BID_CREDIT") ? "Nhận tiền bán hàng " : "Thanh toán đấu giá ")
+                    + payload.get("item_name").getAsString()
+                    : typeCode;
+        } else {
+            note = payload.has("note") && !payload.get("note").isJsonNull()
+                    ? payload.get("note").getAsString() : "";
+        }
+
+        boolean isDeduct = typeCode.equals("BID_DEDUCT") || typeCode.equals("WITHDRAW");
+        double balBefore = isDeduct ? balance + amount : balance - amount;
+
+        String now = java.time.LocalDateTime.now()
+                .format(java.time.format.DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm"));
+
+        TransactionRow row = new TransactionRow(
+                now,
+                typeLabel(typeCode),
+                formatMoney(amount) + " ₫",
+                formatMoney(balBefore) + " ₫",
+                formatMoney(balance) + " ₫",
+                note
+        );
+
+        ObservableList<TransactionRow> items = table_transactions.getItems();
+        if (items == null) items = FXCollections.observableArrayList();
+        items.add(0, row);
+        table_transactions.setItems(items);
+    }
+
     // ── Quay lại ──────────────────────────────────────────────────────────────
     @FXML
     public void on_back(ActionEvent event) {
+        BalanceWatcher.unregisterListener(handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BID_CREDIT, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BID_DEDUCT, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BALANCE_UPDATED, handlerKey);
         try {
             Scene_Utils.Change_Scene(event, previousView);
         } catch (IOException e) {

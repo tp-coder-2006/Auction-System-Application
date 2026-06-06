@@ -32,6 +32,9 @@ import java.time.LocalDate;
  *   - Tra cứu chi tiết theo username từ server (ADMIN_GET_USER_BY_USERNAME → ADMIN_GET_TRANSACTIONS_BY_USER)
  */
 public class Controller_Admin_Financial_Auditing {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ─── FXML fields ──────────────────────────────────────────────────────────
     @FXML private ComboBox<String>                    ComboBox_TransactionType;
@@ -86,7 +89,7 @@ public class Controller_Admin_Financial_Auditing {
         loadAllTransactions();
 
         // Tự động reload khi có giao dịch mới — chỉ reload nếu admin chưa đang filter theo user cụ thể
-        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, payload -> {
+        EventDispatcher.registerGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey, payload -> {
             String currentSearch = (field_search_user != null) ? field_search_user.getText().trim() : "";
             if (currentSearch.isEmpty()) {
                 loadAllTransactions();
@@ -261,7 +264,7 @@ public class Controller_Admin_Financial_Auditing {
     // ─── Quay lại ─────────────────────────────────────────────────────────────
     @FXML
     public void back_to_admin_dashboard(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         try { Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Admin_Dashboard.fxml"); }
         catch (IOException e) { throw new RuntimeException(e); }
     }

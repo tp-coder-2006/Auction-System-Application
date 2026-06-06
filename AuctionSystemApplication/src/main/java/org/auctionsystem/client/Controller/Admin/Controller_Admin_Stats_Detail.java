@@ -49,6 +49,9 @@ import java.util.Locale;
  * }
  */
 public class Controller_Admin_Stats_Detail {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ─── Labels: User Stats ───────────────────────────────────────────────────
     @FXML private Label lbl_total_users;
@@ -115,7 +118,7 @@ public class Controller_Admin_Stats_Detail {
         setupTables();
 
         // Đăng ký nhận event real-time từ AdminStatsScheduler
-        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, this::onStatsUpdate);
+        EventDispatcher.registerGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey, this::onStatsUpdate);
 
         // Chủ động tải ngay khi mở màn hình
         loadAllStats();
@@ -463,7 +466,7 @@ public class Controller_Admin_Stats_Detail {
 
     @FXML
     private void goBack(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         try {
             Scene_Utils.Change_Scene(event, ADMIN_DASHBOARD_VIEW);
         } catch (IOException e) {

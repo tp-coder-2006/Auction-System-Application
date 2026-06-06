@@ -30,6 +30,9 @@ import java.util.Optional;
  *     Transactions tài chính được giữ lại (related_item_id → NULL).
  */
 public class Controller_Admin_Item_Management {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ─── FXML fields ──────────────────────────────────────────────────────────
     @FXML private TableView<ItemRow>           tableItems;
@@ -66,7 +69,7 @@ public class Controller_Admin_Item_Management {
         }
 
         // Tự động reload khi có item đổi trạng thái, thêm/sửa/xóa từ bất kỳ client nào
-        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, payload -> loadItems());
+        EventDispatcher.registerGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey, payload -> loadItems());
     }
 
     // ─── Cột hành động: nút Xóa vĩnh viễn ────────────────────────────────────
@@ -245,7 +248,7 @@ public class Controller_Admin_Item_Management {
     // ─── Quay lại dashboard ───────────────────────────────────────────────────
     @FXML
     public void back_to_admin_dashboard(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         try {
             Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Admin_Dashboard.fxml");
         } catch (IOException e) {

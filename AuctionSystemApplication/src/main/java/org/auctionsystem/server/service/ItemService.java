@@ -64,6 +64,7 @@ public class ItemService {
             } else {
                 response.addProperty("status", "success");
                 response.add("message", gson.toJsonTree(item));
+                response.addProperty("increment", Math.ceil(item.getStartingPrice() * 0.02));
             }
         } catch (Exception e) {
             response.addProperty("status", "error");
@@ -341,6 +342,7 @@ public class ItemService {
             }
             response.addProperty("status", "success");
             response.addProperty("message", "Đã tái khởi động phiên đấu giá thành công!");
+            response.addProperty("increment", Math.ceil(newStartingPrice * 0.02));
 
             // Broadcast ITEM_RELISTED đến tất cả client để cập nhật bảng ngay lập tức
             JsonObject event = new JsonObject();
@@ -517,6 +519,7 @@ public class ItemService {
             response.addProperty("status", "success");
             response.addProperty("message", "Thêm sản phẩm thành công!");
             response.addProperty("item_id", itemId);
+            response.addProperty("increment", Math.ceil(startingPrice * 0.02));
             if (finalImageUrl != null) {
                 response.addProperty("image_url", finalImageUrl);
             }
@@ -639,6 +642,7 @@ public class ItemService {
             if (itemDAO.updateItem(itemId, name, description, startingPrice, startTime, endTime, sellerId, finalImageUrl)) {
                 response.addProperty("status", "success");
                 response.addProperty("message", "Cập nhật sản phẩm thành công!");
+                response.addProperty("increment", Math.ceil(startingPrice * 0.02));
                 if (finalImageUrl != null) {
                     response.addProperty("image_url", finalImageUrl);
                 }
@@ -649,7 +653,7 @@ public class ItemService {
                 event.addProperty("item_id",        itemId);
                 event.addProperty("name",           name);
                 event.addProperty("starting_price",       startingPrice);
-                event.addProperty("current_highest_price", startingPrice);
+                event.add("current_highest_price", com.google.gson.JsonNull.INSTANCE);
                 event.addProperty("start_time",     startTime);
                 event.addProperty("end_time",       endTime);
                 if (finalImageUrl != null) event.addProperty("image_url", finalImageUrl);

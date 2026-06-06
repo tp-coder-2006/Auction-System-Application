@@ -52,6 +52,9 @@ import java.util.Locale;
  *   payload.data.revenue_trend
  */
 public class Controller_Admin_Dashboard {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ─── FXML: Sidebar ───────────────────────────────────────────────────────
     @FXML private VBox  sidebar;
@@ -96,7 +99,7 @@ public class Controller_Admin_Dashboard {
     @FXML
     public void initialize() {
         // Đăng ký nhận event real-time từ AdminStatsScheduler (push mỗi 30s + event-driven)
-        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, this::onStatsUpdate);
+        EventDispatcher.registerGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey, this::onStatsUpdate);
 
         // Chủ động tải ngay khi mở dashboard (không chờ push đầu tiên)
         requestStatsFromServer();
@@ -253,25 +256,25 @@ public class Controller_Admin_Dashboard {
 
     @FXML
     public void Go_to_admin_user_management(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         switch_scene(event, Admin_User_Management_View);
     }
 
     @FXML
     public void Go_to_admin_financial_auditing(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         switch_scene(event, Admin_Financial_Auditing_View);
     }
 
     @FXML
     public void Go_to_admin_item_management(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         switch_scene(event, Admin_Item_Management_View);
     }
 
     @FXML
     public void Go_to_admin_stats_detail(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         switch_scene(event, Admin_Stats_Detail_View);
     }
 

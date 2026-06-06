@@ -12,6 +12,8 @@ import javafx.fxml.FXML;
 import javafx.scene.control.*;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -25,6 +27,9 @@ public class Controller_Bidding_History {
 
     private final ObservableList<JsonObject> masterList = FXCollections.observableArrayList();
 
+    // UUID duy nhất cho instance này — tránh đụng handler của màn hình khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
     // ─────────────────────────────────────────────────────────────────────────
     //  Khởi tạo
     // ─────────────────────────────────────────────────────────────────────────
@@ -33,8 +38,44 @@ public class Controller_Bidding_History {
     public void initialize() {
         setupColumns();
         loadData();
+        registerEvents();
+    }
 
-        // Real-time auto-refresh bảng đã được xóa. Dữ liệu load 1 lần khi vào màn hình.
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Real-time — lắng nghe BID_PLACED
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void registerEvents() {
+        EventDispatcher.registerGlobal(EventType.BID_PLACED, handlerKey, this::onBidPlaced);
+    }
+
+    private void unregisterEvents() {
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED, handlerKey);
+    }
+
+    /**
+     * Khi có bid mới được đặt thành công, server broadcast BID_PLACED.
+     * Nếu bidder_id trùng user hiện tại → thêm dòng vào đầu bảng ngay lập tức.
+     *
+     * Payload: item_id, item_name, bidder_id, bid_amount, bid_time
+     */
+    private void onBidPlaced(JsonObject payload) {
+        String myId     = UserSession.getInstance().getUserId();
+        String bidderId = getStr(payload, "bidder_id");
+
+        // Chỉ xử lý bid của chính mình
+        if (!myId.equals(bidderId)) return;
+
+        // Xây dựng JsonObject theo cùng cấu trúc trả về bởi GET_BIDS_BY_BIDDER
+        JsonObject row = new JsonObject();
+        row.addProperty("itemId",     getStr(payload, "item_id"));
+        row.addProperty("itemName",   getStr(payload, "item_name"));
+        row.addProperty("bidAmount",  payload.has("bid_amount")
+                ? payload.get("bid_amount").getAsDouble() : 0.0);
+        row.addProperty("bidTime",    getStr(payload, "bid_time"));
+
+        // Thêm vào đầu danh sách (bid mới nhất hiện lên trên)
+        masterList.add(0, row);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -97,6 +138,7 @@ public class Controller_Bidding_History {
 
     @FXML
     public void back_to_bidding_dashboard(ActionEvent event) {
+        unregisterEvents();
         try {
             Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Bidder_Dashboard.fxml");
         } catch (IOException e) {
@@ -109,7 +151,7 @@ public class Controller_Bidding_History {
     // ─────────────────────────────────────────────────────────────────────────
 
     private static String getStr(JsonObject obj, String key) {
-        if (obj == null || !obj.has(key) || obj.get(key).isJsonNull()) return null;
+        if (obj == null || !obj.has(key) || obj.get(key).isJsonNull()) return "";
         return obj.get(key).getAsString();
     }
 

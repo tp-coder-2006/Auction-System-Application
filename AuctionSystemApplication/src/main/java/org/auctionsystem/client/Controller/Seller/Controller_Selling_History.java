@@ -13,6 +13,8 @@ import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import org.auctionsystem.client.Connectivity.ServerConnection;
 import org.auctionsystem.client.Controller.Scene_Utils;
+import org.auctionsystem.client.event.EventDispatcher;
+import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.client.session.UserSession;
 
 import java.io.IOException;
@@ -30,6 +32,9 @@ public class Controller_Selling_History {
 
     private final ObservableList<JsonObject> historyList = FXCollections.observableArrayList();
 
+    // UUID duy nhất cho instance này
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
     private static final DateTimeFormatter DT_FMT     = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DT_DISPLAY = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm");
 
@@ -41,8 +46,49 @@ public class Controller_Selling_History {
     public void initialize() {
         setupColumns();
         loadHistory();
+        registerEvents();
+    }
 
-        // Real-time auto-refresh bảng đã được xóa. Dữ liệu load 1 lần khi vào màn hình.
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Real-time — lắng nghe AUCTION_SETTLED
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private void registerEvents() {
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED, handlerKey, this::onAuctionSettled);
+    }
+
+    private void unregisterEvents() {
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED, handlerKey);
+    }
+
+    /**
+     * Khi phiên đấu giá kết thúc, server broadcast AUCTION_SETTLED.
+     * Nếu seller_id trùng user hiện tại → thêm dòng vào đầu bảng ngay lập tức.
+     *
+     * Payload: item_id, item_name, seller_id, bidder_id, amount
+     */
+    private void onAuctionSettled(JsonObject payload) {
+        String myId    = UserSession.getInstance().getUserId();
+        String sellerId = getStr(payload, "seller_id");
+
+        // Chỉ xử lý phiên đấu giá của chính mình
+        if (!myId.equals(sellerId)) return;
+
+        // Xây dựng JsonObject theo cùng cấu trúc trả về bởi GET_HISTORY_BY_SELLER
+        JsonObject row = new JsonObject();
+        row.addProperty("itemId",    getStr(payload, "item_id"));
+        row.addProperty("itemName",  getStr(payload, "item_name"));
+        row.addProperty("sellerId",  sellerId);
+        row.addProperty("buyerId",   getStr(payload, "bidder_id"));
+        // bidder_name không có trong payload AUCTION_SETTLED — để trống, fallback về buyerId
+        row.addProperty("buyerName", "");
+        row.addProperty("soldPrice", payload.has("amount")
+                ? payload.get("amount").getAsDouble() : 0.0);
+        row.addProperty("soldTime",
+                LocalDateTime.now().format(DT_FMT));
+
+        // Thêm vào đầu danh sách (phiên mới nhất hiện lên trên)
+        historyList.add(0, row);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -122,10 +168,20 @@ public class Controller_Selling_History {
 
     @FXML
     public void back_to_seller_dashboard(ActionEvent event) {
+        unregisterEvents();
         try {
             Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Seller_Dashboard.fxml");
         } catch (IOException e) {
             e.printStackTrace();
         }
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Helpers
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private static String getStr(JsonObject obj, String key) {
+        if (obj == null || !obj.has(key) || obj.get(key).isJsonNull()) return "";
+        return obj.get(key).getAsString();
     }
 }

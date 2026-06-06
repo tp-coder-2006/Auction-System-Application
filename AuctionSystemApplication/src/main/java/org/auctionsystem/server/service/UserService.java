@@ -6,6 +6,7 @@ import org.auctionsystem.server.util.GsonConfig;
 import com.google.gson.JsonObject;
 import org.apache.commons.validator.routines.EmailValidator;
 import org.auctionsystem.model.entities.Seller;
+import org.auctionsystem.server.ConnectedClientRegistry;
 import org.auctionsystem.server.session.SessionManager;
 import org.auctionsystem.server.session.UserSession;
 import org.auctionsystem.model.entities.User;
@@ -198,6 +199,21 @@ public class UserService {
                     return response;
                 }
                 if (BCrypt.checkpw(password, loggedInUser.getPassword())){
+                    // [FIX] Kick session cũ nếu user đang đăng nhập ở nơi khác
+                    String existingSessionId = SessionManager.findSessionIdByUserId(
+                            String.valueOf(loggedInUser.getId()));
+                    if (existingSessionId != null) {
+                        com.google.gson.JsonObject kickEvent = new com.google.gson.JsonObject();
+                        kickEvent.addProperty("event", "BANNED");
+                        kickEvent.addProperty("message",
+                                "Tài khoản của bạn vừa đăng nhập ở nơi khác. Phiên này đã bị kết thúc.");
+                        ConnectedClientRegistry.sendTo(existingSessionId, kickEvent);
+                        ConnectedClientRegistry.unregister(existingSessionId);
+                        SessionManager.removeSession(existingSessionId);
+                        System.out.println("[loginUser] Đã kick session cũ: " + existingSessionId
+                                + " của user: " + loggedInUser.getUsername());
+                    }
+
                     String sessionId= UUID.randomUUID().toString();
 
                     String phone = loggedInUser.getPhone();
@@ -269,6 +285,7 @@ public class UserService {
                     if (session != null) {
                         session.setBalance(user.getBalance());
                         session.setPhone(user.getPhone());
+                        session.setAvatarUrl(user.getAvatarUrl());
                         if (user instanceof Seller seller) {
                             session.setRating(seller.getRating());
                             session.setRatingCount(seller.getRatingCount());

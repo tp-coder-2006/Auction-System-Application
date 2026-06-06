@@ -27,6 +27,9 @@ import java.util.Locale;
  * FXML: Wallet_Transaction.fxml
  */
 public class Controller_Wallet_Transaction {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ── FXML bindings ─────────────────────────────────────────────────────────
 
@@ -70,7 +73,7 @@ public class Controller_Wallet_Transaction {
     @FXML
     public void initialize() {
         refreshBalanceLabel();
-        BalanceWatcher.registerListener("WalletTransaction", balance ->
+        BalanceWatcher.registerListener(handlerKey, balance ->
                 Platform.runLater(this::refreshBalanceLabel));
     }
 
@@ -131,22 +134,22 @@ public class Controller_Wallet_Transaction {
     // Nút nạp nhanh
     @FXML
     private void onDepositQuick50(ActionEvent e) {
-        field_deposit_amount.setText("50000");
+        addToAmountField(field_deposit_amount, 50_000);
     }
 
     @FXML
     private void onDepositQuick100(ActionEvent e) {
-        field_deposit_amount.setText("100000");
+        addToAmountField(field_deposit_amount, 100_000);
     }
 
     @FXML
     private void onDepositQuick500(ActionEvent e) {
-        field_deposit_amount.setText("500000");
+        addToAmountField(field_deposit_amount, 500_000);
     }
 
     @FXML
     private void onDepositQuick1M(ActionEvent e) {
-        field_deposit_amount.setText("1000000");
+        addToAmountField(field_deposit_amount, 1_000_000);
     }
 
     private void setDepositEnabled(boolean enabled) {
@@ -212,17 +215,17 @@ public class Controller_Wallet_Transaction {
     // Nút rút nhanh
     @FXML
     private void onWithdrawQuick50(ActionEvent e) {
-        field_withdraw_amount.setText("50000");
+        addToAmountField(field_withdraw_amount, 50_000);
     }
 
     @FXML
     private void onWithdrawQuick100(ActionEvent e) {
-        field_withdraw_amount.setText("100000");
+        addToAmountField(field_withdraw_amount, 100_000);
     }
 
     @FXML
     private void onWithdrawQuick500(ActionEvent e) {
-        field_withdraw_amount.setText("500000");
+        addToAmountField(field_withdraw_amount, 500_000);
     }
 
     /**
@@ -254,9 +257,9 @@ public class Controller_Wallet_Transaction {
     @FXML
     private void onViewHistory(ActionEvent event) {
         try {
-            BalanceWatcher.unregisterListener("WalletTransaction");
+            BalanceWatcher.unregisterListener(handlerKey);
             // Set màn hình quay lại là Wallet_Transaction để nút "Quay lại" hoạt động
-            org.auctionsystem.client.Controller.Controller_Transaction_History
+            org.auctionsystem.client.Controller.Bidder.Controller_Transaction_History
                     .setPreviousView("/org/auctionsystem/client/View/Wallet_Transaction.fxml");
             Scene_Utils.Change_Scene(event,
                     "/org/auctionsystem/client/View/Transaction_History.fxml");
@@ -269,7 +272,7 @@ public class Controller_Wallet_Transaction {
     @FXML
     private void onBack(ActionEvent event) {
         try {
-            BalanceWatcher.unregisterListener("WalletTransaction");
+            BalanceWatcher.unregisterListener(handlerKey);
             Scene_Utils.Change_Scene(event,
                     "/org/auctionsystem/client/View/Bidder_Dashboard.fxml");
         } catch (IOException e) {
@@ -283,6 +286,14 @@ public class Controller_Wallet_Transaction {
      * Parse số tiền từ TextField. Hỗ trợ cả định dạng "50000" và "50,000".
      * Trả về -1 nếu không hợp lệ.
      */
+    private void addToAmountField(TextField field, long delta) {
+        if (field == null) return;
+        String cur = field.getText().trim().replace(",", "").replace(".", "");
+        long base = 0;
+        try { base = Long.parseLong(cur); } catch (NumberFormatException ignored) {}
+        field.setText(String.valueOf(base + delta));
+    }
+
     private double parseAmount(TextField field) {
         try {
             String text = field.getText().trim().replace(",", "").replace(".", "");

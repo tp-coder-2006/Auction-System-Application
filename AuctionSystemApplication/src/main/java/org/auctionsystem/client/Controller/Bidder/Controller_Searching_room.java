@@ -48,6 +48,9 @@ import java.util.concurrent.TimeUnit;
  *     (đảm bảo đồng bộ khi bỏ lỡ event hoặc có thay đổi khác)
  */
 public class Controller_Searching_room {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     @FXML private TextField                       field_search;
     @FXML private Button                          btn_search;
@@ -85,27 +88,27 @@ public class Controller_Searching_room {
     // ─────────────────────────────────────────────────────────────────────────
 
     private void registerEvents() {
-        EventDispatcher.register(EventType.BID_PLACED,        this::onBidPlaced);
-        EventDispatcher.register(EventType.END_TIME_EXTENDED, this::onEndTimeExtended);
-        EventDispatcher.register(EventType.ITEM_STARTED,      this::onItemStarted);
-        EventDispatcher.register(EventType.AUCTION_SETTLED,   this::onAuctionSettled);
-        EventDispatcher.register(EventType.ITEM_CANCELLED,    this::onItemCancelled);
-        EventDispatcher.register(EventType.ITEM_RELISTED,     this::onItemRelisted);
-        EventDispatcher.register(EventType.ITEM_DELETED,      this::onItemDeleted);
-        EventDispatcher.register(EventType.ITEM_ADDED,        this::onItemAdded);
-        EventDispatcher.register(EventType.ITEM_UPDATED,      this::onItemUpdated);
+        EventDispatcher.registerGlobal(EventType.BID_PLACED, handlerKey, this::onBidPlaced);
+        EventDispatcher.registerGlobal(EventType.END_TIME_EXTENDED, handlerKey, this::onEndTimeExtended);
+        EventDispatcher.registerGlobal(EventType.ITEM_STARTED, handlerKey, this::onItemStarted);
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED, handlerKey, this::onAuctionSettled);
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED, handlerKey, this::onItemCancelled);
+        EventDispatcher.registerGlobal(EventType.ITEM_RELISTED, handlerKey, this::onItemRelisted);
+        EventDispatcher.registerGlobal(EventType.ITEM_DELETED, handlerKey, this::onItemDeleted);
+        EventDispatcher.registerGlobal(EventType.ITEM_ADDED, handlerKey, this::onItemAdded);
+        EventDispatcher.registerGlobal(EventType.ITEM_UPDATED, handlerKey, this::onItemUpdated);
     }
 
     private void unregisterEvents() {
-        EventDispatcher.unregister(EventType.BID_PLACED);
-        EventDispatcher.unregister(EventType.END_TIME_EXTENDED);
-        EventDispatcher.unregister(EventType.ITEM_STARTED);
-        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
-        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
-        EventDispatcher.unregister(EventType.ITEM_RELISTED);
-        EventDispatcher.unregister(EventType.ITEM_DELETED);
-        EventDispatcher.unregister(EventType.ITEM_ADDED);
-        EventDispatcher.unregister(EventType.ITEM_UPDATED);
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.END_TIME_EXTENDED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_STARTED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_RELISTED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_DELETED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_ADDED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_UPDATED, handlerKey);
     }
 
     /** BID_PLACED → cập nhật giá cao nhất tức thì */
@@ -178,9 +181,9 @@ public class Controller_Searching_room {
         item.addProperty("name",                 str(payload, "name"));
         item.addProperty("status",               "PENDING");
         item.addProperty("startingPrice",       payload.get("starting_price").getAsDouble());
-        item.addProperty("currentHighestPrice", payload.has("current_highest_price") && !payload.get("current_highest_price").isJsonNull()
-                ? payload.get("current_highest_price").getAsDouble()
-                : payload.get("starting_price").getAsDouble());
+        if (payload.has("current_highest_price") && !payload.get("current_highest_price").isJsonNull()) {
+            item.addProperty("currentHighestPrice", payload.get("current_highest_price").getAsDouble());
+        }
         item.addProperty("startTime",            str(payload, "start_time"));
         item.addProperty("endTime",              str(payload, "end_time"));
         item.addProperty("sellerId",             str(payload, "seller_id"));
@@ -318,12 +321,28 @@ public class Controller_Searching_room {
         col_name.setCellValueFactory(data ->
                 new SimpleStringProperty(str(data.getValue(), "name")));
 
-        col_current_price.setCellValueFactory(data -> {
-            JsonObject item = data.getValue();
-            double price = item.has("currentHighestPrice") && !item.get("currentHighestPrice").isJsonNull()
-                    ? item.get("currentHighestPrice").getAsDouble()
-                    : (item.has("startingPrice") ? item.get("startingPrice").getAsDouble() : 0);
-            return new SimpleStringProperty(String.format("%,.0f ₫", price));
+        col_current_price.setCellValueFactory(data -> new SimpleStringProperty(""));
+        col_current_price.setCellFactory(col -> new TableCell<>() {
+            @Override
+            protected void updateItem(String ignored, boolean empty) {
+                super.updateItem(ignored, empty);
+                if (empty || getTableRow() == null || getTableRow().getItem() == null) {
+                    setText(null);
+                    return;
+                }
+                JsonObject item = (JsonObject) getTableRow().getItem();
+                String status = str(item, "status").toUpperCase();
+                if ("PENDING".equals(status)) {
+                    double startingPrice = item.has("startingPrice") ? item.get("startingPrice").getAsDouble() : 0;
+                    setText(String.format("%,.0f ₫", startingPrice));
+                } else {
+                    if (item.has("currentHighestPrice") && !item.get("currentHighestPrice").isJsonNull()) {
+                        setText(String.format("%,.0f ₫", item.get("currentHighestPrice").getAsDouble()));
+                    } else {
+                        setText("_");
+                    }
+                }
+            }
         });
 
         // Dùng setCellFactory để cell tính lại mỗi khi tableItems.refresh() được gọi

@@ -11,6 +11,9 @@
 <?import javafx.scene.control.TableView?>
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.FlowPane?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.Region?>
@@ -118,6 +121,13 @@
                   <font><Font name="System Bold" size="15.0" /></font>
                </Label>
 
+               <!-- Bước giá tối thiểu -->
+               <Label fx:id="lbl_increment"
+                      styleClass="heading" stylesheets="@../../CSS/Label.css"
+                      text="Bước giá tối thiểu: —">
+                  <font><Font size="13.0" /></font>
+               </Label>
+
                <!-- Nút tăng nhanh -->
                <FlowPane hgap="6.0" vgap="6.0" alignment="CENTER_LEFT">
                   <Button text="+10k"  onAction="#onQuickBid10k"  prefWidth="56.0"  styleClass="product-card" />
@@ -152,17 +162,62 @@
                </Label>
 
                <Separator />
+
+               <!-- ═══ AUTO BID ═══ -->
+               <Label text="🤖 Đặt giá tự động" styleClass="heading"
+                      stylesheets="@../../CSS/Label.css">
+                  <font><Font name="System Bold" size="15.0" /></font>
+               </Label>
+
+               <!-- Container bo tròn -->
+               <VBox spacing="8.0"
+                     style="-fx-background-color: rgba(255,255,255,0.05); -fx-background-radius: 8; -fx-border-color: rgba(255,255,255,0.12); -fx-border-radius: 8; -fx-padding: 12;">
+
+                  <Label text="Giá trần tối đa" styleClass="heading"
+                         stylesheets="@../../CSS/Label.css">
+                     <font><Font size="12.0" /></font>
+                  </Label>
+
+                  <TextField fx:id="field_auto_max_price"
+                             prefHeight="34.0"
+                             promptText="Giá tôi đã bạn sẵn sàng trả">
+                     <font><Font size="14.0" /></font>
+                  </TextField>
+
+                  <Label fx:id="lbl_auto_increment_hint"
+                         styleClass="heading" stylesheets="@../../CSS/Label.css"
+                         text="ℹ Mỗi lần tự động tăng 1 bước tối thiểu (—)">
+                     <font><Font size="11.0" /></font>
+                  </Label>
+
+                  <Button fx:id="btn_auto_bid"
+                          text="🤖 Kích hoạt Auto Bid"
+                          onAction="#onToggleAutoBid"
+                          prefHeight="36.0" maxWidth="1.7976931348623157E308">
+                     <font><Font size="13.0" /></font>
+                  </Button>
+
+                  <Label fx:id="lbl_auto_bid_status"
+                         styleClass="heading" stylesheets="@../../CSS/Label.css"
+                         text="" visible="false" managed="false" wrapText="true"
+                         maxWidth="1.7976931348623157E308">
+                     <font><Font size="12.0" /></font>
+                  </Label>
+
+               </VBox>
+
+               <Separator />
             </VBox>
 
-            <!-- ═══ BẢNG LỊCH SỬ BID (2 tab) ═══ -->
+            <!-- ═══ BẢNG LỊCH SỬ BID + BIỂU ĐỒ GIÁ ═══ -->
             <VBox VBox.vgrow="ALWAYS" spacing="0.0">
                <TabPane tabClosingPolicy="UNAVAILABLE"
-                        VBox.vgrow="ALWAYS" minHeight="240.0">
+                        VBox.vgrow="ALWAYS" minHeight="280.0">
 
                   <Tab text="📋 Phiên này">
                      <TableView fx:id="tableBidHistory"
                                 stylesheets="@../../CSS/TableView.css"
-                                VBox.vgrow="ALWAYS" minHeight="200.0">
+                                VBox.vgrow="ALWAYS" minHeight="240.0">
                         <columns>
                            <TableColumn fx:id="col_bid_bidder" text="Người đặt"   prefWidth="160.0" />
                            <TableColumn fx:id="col_bid_amount" text="Giá đặt (₫)" prefWidth="150.0" />
@@ -177,7 +232,7 @@
                   <Tab text="📂 Toàn bộ lịch sử">
                      <TableView fx:id="tableAllBidHistory"
                                 stylesheets="@../../CSS/TableView.css"
-                                VBox.vgrow="ALWAYS" minHeight="200.0">
+                                VBox.vgrow="ALWAYS" minHeight="240.0">
                         <columns>
                            <TableColumn fx:id="col_all_bidder" text="Người đặt"   prefWidth="160.0" />
                            <TableColumn fx:id="col_all_amount" text="Giá đặt (₫)" prefWidth="150.0" />
@@ -187,6 +242,21 @@
                            <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
                         </columnResizePolicy>
                      </TableView>
+                  </Tab>
+
+                  <Tab text="📈 Biến động giá">
+                     <VBox style="-fx-background-color: transparent; -fx-padding: 4px;">
+                        <LineChart fx:id="bidPriceChart" VBox.vgrow="ALWAYS" minHeight="320.0"
+                                   animated="false" legendVisible="false" createSymbols="true"
+                                   style="-fx-background-color: transparent;">
+                           <xAxis>
+                              <CategoryAxis label="Thời gian" tickLabelRotation="-45" />
+                           </xAxis>
+                           <yAxis>
+                              <NumberAxis label="Giá (₫)" forceZeroInRange="false" />
+                           </yAxis>
+                        </LineChart>
+                     </VBox>
                   </Tab>
 
                </TabPane>

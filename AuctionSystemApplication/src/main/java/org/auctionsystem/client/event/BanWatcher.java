@@ -44,6 +44,7 @@ public final class BanWatcher {
 
     /** Trạng thái: đã kích hoạt chưa (tránh đăng ký trùng). */
     private static volatile boolean active = false;
+    private static final String HANDLER_KEY = java.util.UUID.randomUUID().toString();
 
     // ─────────────────────────────────────────────────────────────────────────
     //  API công khai
@@ -57,7 +58,7 @@ public final class BanWatcher {
     public static synchronized void activate() {
         if (active) return; // Đã đăng ký rồi, không đăng ký lại
         active = true;
-        EventDispatcher.register(EventType.BANNED, BanWatcher::handleBanned);
+        EventDispatcher.registerGlobal(EventType.BANNED, HANDLER_KEY, BanWatcher::handleBanned);
         System.out.println("[BanWatcher] Đã kích hoạt — đang lắng nghe sự kiện BANNED.");
     }
 
@@ -68,7 +69,7 @@ public final class BanWatcher {
     public static synchronized void deactivate() {
         if (!active) return;
         active = false;
-        EventDispatcher.unregister(EventType.BANNED);
+        EventDispatcher.unregisterGlobal(EventType.BANNED, HANDLER_KEY);
         System.out.println("[BanWatcher] Đã hủy kích hoạt.");
     }
 
@@ -83,7 +84,7 @@ public final class BanWatcher {
     private static void handleBanned(JsonObject payload) {
         // Hủy handler ngay lập tức để tránh kích hoạt nhiều lần
         active = false;
-        EventDispatcher.unregister(EventType.BANNED);
+        EventDispatcher.unregisterGlobal(EventType.BANNED, HANDLER_KEY);
 
         // Trích xuất lý do ban từ payload (nếu có)
         String reason = "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
@@ -119,7 +120,7 @@ public final class BanWatcher {
         // 1. Hủy tất cả event handlers còn lại
         NotificationManager.deactivate();
         BalanceWatcher.deactivate();
-        EventDispatcher.unregisterAll();
+        EventDispatcher.unregisterAllGlobal();
 
         // 2. Clear dữ liệu phiên phía client
         UserSession.getInstance().clear();

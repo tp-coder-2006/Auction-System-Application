@@ -27,6 +27,9 @@ import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 
 public class Controller_My_Items {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // fx:id khớp My_Items.fxml
     @FXML private TableView<JsonObject>           tableMyItems;
@@ -59,7 +62,7 @@ public class Controller_My_Items {
             btn_back.setOnAction(this::back_to_dashboard);
 
         // Xóa item khỏi bảng ngay lập tức khi admin hard delete
-        EventDispatcher.register(EventType.ITEM_DELETED, payload -> {
+        EventDispatcher.registerGlobal(EventType.ITEM_DELETED, handlerKey, payload -> {
             String itemId = payload.has("item_id") ? payload.get("item_id").getAsString() : "";
             if (!itemId.isEmpty()) {
                 Platform.runLater(() -> itemList.removeIf(item ->

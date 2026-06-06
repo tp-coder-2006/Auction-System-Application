@@ -3,7 +3,6 @@ package org.auctionsystem.server;
 import org.junit.jupiter.api.*;
 
 import java.lang.reflect.Field;
-import java.util.concurrent.atomic.AtomicBoolean;
 
 import static org.junit.jupiter.api.Assertions.*;
 
@@ -12,9 +11,8 @@ import static org.junit.jupiter.api.Assertions.*;
  *
  * Không cần DB — kiểm tra:
  *  1. Lifecycle: start() / stop() / idempotent start
- *  2. wakeUpActivate() — thread safety, flag reset
- *  3. stop() dừng đúng cả 2 thread
- *  4. Không throw khi gọi stop() trước start()
+ *  2. stop() dừng đúng cả 2 thread
+ *  3. Không throw khi gọi stop() trước start()
  */
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 class AuctionSchedulerTest {
@@ -37,12 +35,6 @@ class AuctionSchedulerTest {
         Field f = AuctionScheduler.class.getDeclaredField("settleThread");
         f.setAccessible(true);
         return (Thread) f.get(null);
-    }
-
-    private static AtomicBoolean getWakeUpOnly() throws Exception {
-        Field f = AuctionScheduler.class.getDeclaredField("wakeUpOnly");
-        f.setAccessible(true);
-        return (AtomicBoolean) f.get(null);
     }
 
     @AfterEach
@@ -129,76 +121,6 @@ class AuctionSchedulerTest {
         assertFalse(settle.isAlive(),   "settleThread phải đã kết thúc sau stop()");
     }
 
-    // ═══════════════════════════════════════════════════════
-    // 2. wakeUpActivate — flag và interrupt
-    // ═══════════════════════════════════════════════════════
-
-    @Test @Order(10)
-    void wakeUpActivate_beforeStart_doesNotThrow() {
-        // activateThread = null → không được NPE
-        assertDoesNotThrow(AuctionScheduler::wakeUpActivate,
-                "wakeUpActivate() khi chưa start() không được throw");
-    }
-
-    @Test @Order(11)
-    void wakeUpActivate_setsWakeUpFlagAndResetsAfterHandled() throws Exception {
-        AuctionScheduler.start();
-        AtomicBoolean flag = getWakeUpOnly();
-
-        // Trước khi gọi: flag phải là false (ban đầu)
-        assertFalse(flag.get(), "wakeUpOnly phải là false khi chưa wake");
-
-        // Gọi wakeUp — flag được set true rồi thread xử lý reset về false
-        AuctionScheduler.wakeUpActivate();
-
-        // Cho thread một chút thời gian xử lý interrupt và reset flag
-        Thread.sleep(500);
-
-        assertFalse(flag.get(),
-                "wakeUpOnly phải được reset về false sau khi activateThread xử lý interrupt");
-    }
-
-    @Test @Order(12)
-    void wakeUpActivate_concurrentCalls_noException() throws Exception {
-        AuctionScheduler.start();
-
-        // 10 thread đồng thời gọi wakeUpActivate() — không được throw
-        Thread[] callers = new Thread[10];
-        for (int i = 0; i < callers.length; i++) {
-            callers[i] = new Thread(AuctionScheduler::wakeUpActivate);
-        }
-        for (Thread t : callers) t.start();
-        for (Thread t : callers) t.join(1_000);
-
-        // Sau tất cả các interrupt, scheduler vẫn phải đang chạy
-        assertTrue(getRunning(), "Scheduler phải vẫn running sau concurrent wakeUp");
-        assertTrue(getActivateThread().isAlive(), "activateThread phải vẫn alive");
-    }
-
-    @Test @Order(13)
-    void wakeUpActivate_afterStop_doesNotThrow() throws Exception {
-        AuctionScheduler.start();
-        AuctionScheduler.stop();
-
-        // Thread đã chết, nhưng wakeUp không được throw
-        assertDoesNotThrow(AuctionScheduler::wakeUpActivate);
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // 3. stop() — wakeUpOnly flag reset
-    // ═══════════════════════════════════════════════════════
-
-    @Test @Order(20)
-    void stop_resetsWakeUpFlag() throws Exception {
-        AuctionScheduler.start();
-        AtomicBoolean flag = getWakeUpOnly();
-        flag.set(true); // giả lập flag còn true
-
-        AuctionScheduler.stop();
-
-        assertFalse(flag.get(), "stop() phải reset wakeUpOnly về false");
-    }
-
     @Test @Order(21)
     void stop_calledTwice_doesNotThrow() throws Exception {
         AuctionScheduler.start();
@@ -236,19 +158,6 @@ class AuctionSchedulerTest {
                 "Sau restart phải có thread settle mới");
         assertTrue(secondActivate.isAlive(), "Thread activate mới phải đang chạy");
         assertTrue(secondSettle.isAlive(),   "Thread settle mới phải đang chạy");
-    }
-
-    @Test @Order(31)
-    void restartCycle_wakeUpFlagIsClearAfterRestart() throws Exception {
-        // Flag wakeUpOnly phải là false sau khi restart (stop() đã reset)
-        AuctionScheduler.start();
-        AuctionScheduler.wakeUpActivate(); // set flag
-        AuctionScheduler.stop();
-        Thread.sleep(200);
-
-        AuctionScheduler.start();
-        assertFalse(getWakeUpOnly().get(),
-                "wakeUpOnly phải là false sau khi restart");
     }
 
     // ═══════════════════════════════════════════════════════
@@ -332,67 +241,6 @@ class AuctionSchedulerTest {
         assertFalse(activate.isAlive(), "activateThread phải dừng sau stop()");
         assertFalse(settle.isAlive(),   "settleThread phải dừng sau stop()");
     }
-
-    // ═══════════════════════════════════════════════════════
-    // 7. wakeUpActivate — flag reset khi DB lỗi (không có DB)
-    // ═══════════════════════════════════════════════════════
-
-    @Test @Order(60)
-    void wakeUpActivate_flagResetEvenWhenDbUnavailable() throws Exception {
-        // Kịch bản: không có DB thật → thread rơi vào catch(Exception) + sleep(5000)
-        // wakeUpActivate() interrupt thread trong lúc sleep(5000) → flag phải được reset
-        AuctionScheduler.start();
-        AtomicBoolean flag = getWakeUpOnly();
-
-        // Chờ thread ổn định vào trạng thái sleep sau lỗi DB
-        Thread.sleep(300);
-
-        AuctionScheduler.wakeUpActivate();
-        Thread.sleep(600); // đủ để thread xử lý interrupt + reset flag
-
-        assertFalse(flag.get(),
-                "wakeUpOnly phải được reset về false dù DB không có");
-    }
-
-    @Test @Order(61)
-    void wakeUpActivate_multipleRapidCalls_flagAlwaysResetsToFalse() throws Exception {
-        AuctionScheduler.start();
-        AtomicBoolean flag = getWakeUpOnly();
-
-        Thread.sleep(200);
-
-        // Gọi wakeUp nhiều lần liên tiếp nhanh
-        for (int i = 0; i < 5; i++) {
-            AuctionScheduler.wakeUpActivate();
-            Thread.sleep(50);
-        }
-
-        // Sau khi tất cả đã xử lý, flag phải về false
-        Thread.sleep(800);
-        assertFalse(flag.get(),
-                "Sau nhiều lần wakeUp liên tiếp, flag cuối cùng phải về false");
-    }
-
-    @Test @Order(62)
-    void wakeUpActivate_flagIsFalseAtStartOfEachCycle() throws Exception {
-        // Kiểm tra fix: wakeUpOnly.set(false) ở đầu vòng lặp
-        // Sau khi wakeUp + xử lý + 1 vòng lặp mới → flag phải false
-        AuctionScheduler.start();
-        AtomicBoolean flag = getWakeUpOnly();
-
-        Thread.sleep(200);
-        AuctionScheduler.wakeUpActivate();
-
-        // Chờ qua 1 vòng lặp đầy đủ (DB lỗi → 5s, hoặc wakeUp xử lý xong)
-        Thread.sleep(700);
-
-        assertFalse(flag.get(),
-                "Flag phải false sau khi vòng lặp mới bắt đầu");
-    }
-
-    // ═══════════════════════════════════════════════════════
-    // 8. stop() — idempotent và an toàn
-    // ═══════════════════════════════════════════════════════
 
     @Test @Order(70)
     void stop_idempotent_calledManyTimes_doesNotThrow() {

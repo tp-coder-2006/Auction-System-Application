@@ -27,6 +27,8 @@ class SessionManagerTest {
                 "BIDDER",
                 1000.0,
                 null,
+                null,
+                0,
                 null
         );
     }
@@ -77,18 +79,23 @@ class SessionManagerTest {
     }
 
     // ═══════════════════════════════════════════════════════════
-    // cleanExpiredSessions
+    // findSessionIdByUserId
     // ═══════════════════════════════════════════════════════════
     @Nested
-    @DisplayName("cleanExpiredSessions()")
-    class CleanExpiredTests {
+    @DisplayName("findSessionIdByUserId()")
+    class FindSessionTests {
 
         @Test
-        @DisplayName("Session chưa hết hạn — không bị xóa")
-        void cleanExpired_doesNotRemoveActiveSession() {
+        @DisplayName("Tìm được sessionId theo userId đang online")
+        void findSessionIdByUserId_existingUser_returnsSessionId() {
             SessionManager.addSession(session);
-            SessionManager.cleanExpiredSessions();
-            assertNotNull(SessionManager.getSession("test-session-001"));
+            assertEquals("test-session-001", SessionManager.findSessionIdByUserId("user-001"));
+        }
+
+        @Test
+        @DisplayName("User không online trả null")
+        void findSessionIdByUserId_missingUser_returnsNull() {
+            assertNull(SessionManager.findSessionIdByUserId("user-khong-ton-tai"));
         }
     }
 

@@ -5,12 +5,8 @@ import org.auctionsystem.server.session.SessionManager;
 import org.auctionsystem.server.session.UserSession;
 import org.junit.jupiter.api.*;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import java.util.concurrent.*;
-import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.concurrent.atomic.AtomicInteger;
 
 import static org.junit.jupiter.api.Assertions.*;
@@ -18,7 +14,7 @@ import static org.junit.jupiter.api.Assertions.*;
 /**
  * Concurrency tests cho:
  *  1. ConnectedClientRegistry — register/unregister/broadcast đồng thời
- *  2. AuctionScheduler.wakeUpActivate() — gọi từ nhiều thread cùng lúc
+ *  2. AuctionScheduler — stop idempotent khi gọi đồng thời
  *  3. SessionManager — thêm/xóa session đồng thời
  *  4. AdminStatsScheduler.notifyStatsChanged() — gọi đồng thời không crash
  */
@@ -156,13 +152,12 @@ class ConcurrencyTest {
     }
 
     // ═══════════════════════════════════════════════════════
-    // 2. AuctionScheduler.wakeUpActivate() — gọi đồng thời
+    // 2. AuctionScheduler — stop idempotent khi gọi đồng thời
     // ═══════════════════════════════════════════════════════
 
     @Test @Order(20)
-    void wakeUpActivate_concurrentCalls_noException() throws Exception {
+    void scheduler_concurrentStopCalls_noException() throws Exception {
         AuctionScheduler.start();
-        Thread.sleep(100); // chờ thread khởi động
 
         int threadCount = 20;
         CountDownLatch start = new CountDownLatch(1);
@@ -173,7 +168,7 @@ class ConcurrencyTest {
             new Thread(() -> {
                 try {
                     start.await();
-                    AuctionScheduler.wakeUpActivate();
+                    AuctionScheduler.stop();
                 } catch (Exception e) {
                     errors.add(e);
                 } finally {
@@ -184,60 +179,25 @@ class ConcurrencyTest {
 
         start.countDown();
         assertTrue(done.await(3, TimeUnit.SECONDS));
-        assertTrue(errors.isEmpty(), "wakeUpActivate() đồng thời không được throw: " + errors);
+        assertTrue(errors.isEmpty(), "stop() đồng thời không được throw: " + errors);
     }
 
     @Test @Order(21)
-    void wakeUpActivate_afterStop_noException() throws Exception {
-        AuctionScheduler.start();
-        AuctionScheduler.stop();
-        Thread.sleep(100);
-
-        // Gọi sau khi stop — không được crash
+    void scheduler_repeatedStartStopSequential_noException() {
         assertDoesNotThrow(() -> {
-            for (int i = 0; i < 5; i++) AuctionScheduler.wakeUpActivate();
-        }, "wakeUpActivate() sau stop() không được throw");
+            for (int i = 0; i < 5; i++) {
+                AuctionScheduler.start();
+                AuctionScheduler.stop();
+            }
+        }, "start()/stop() tuần tự nhiều lần không được throw");
     }
 
     @Test @Order(22)
-    void wakeUpOnly_flag_resetAfterStop() throws Exception {
+    void scheduler_stopAfterStart_noException() {
         AuctionScheduler.start();
-
-        // Gọi wakeUpActivate để set flag true
-        AuctionScheduler.wakeUpActivate();
-        AuctionScheduler.stop();
-
-        // Đọc wakeUpOnly qua reflection
-        Field f = AuctionScheduler.class.getDeclaredField("wakeUpOnly");
-        f.setAccessible(true);
-        AtomicBoolean wakeUpOnly = (AtomicBoolean) f.get(null);
-
-        // stop() đã set false
-        assertFalse(wakeUpOnly.get(), "wakeUpOnly phải là false sau stop()");
-    }
-
-    @Test @Order(23)
-    void scheduler_startStop_concurrentCalls_noDeadlock() throws Exception {
-        int rounds = 5;
-        CountDownLatch done = new CountDownLatch(rounds * 2);
-        List<Exception> errors = new CopyOnWriteArrayList<>();
-
-        for (int i = 0; i < rounds; i++) {
-            new Thread(() -> {
-                try { AuctionScheduler.start(); }
-                catch (Exception e) { errors.add(e); }
-                finally { done.countDown(); }
-            }).start();
-
-            new Thread(() -> {
-                try { AuctionScheduler.stop(); }
-                catch (Exception e) { errors.add(e); }
-                finally { done.countDown(); }
-            }).start();
-        }
-
-        assertTrue(done.await(5, TimeUnit.SECONDS), "start()/stop() đồng thời không được deadlock");
-        assertTrue(errors.isEmpty(), "Không được có exception: " + errors);
+        assertDoesNotThrow(() -> {
+            for (int i = 0; i < 5; i++) AuctionScheduler.stop();
+        }, "stop() sau start() không được throw");
     }
 
     // ═══════════════════════════════════════════════════════
@@ -406,7 +366,7 @@ class ConcurrencyTest {
                 try {
                     start.await();
                     switch (idx % 5) {
-                        case 0 -> AuctionScheduler.wakeUpActivate();
+                        case 0 -> AuctionScheduler.stop();
                         case 1 -> AdminStatsScheduler.notifyStatsChanged();
                         case 2 -> {
                             String sid = "all-session-" + idx;
@@ -424,7 +384,7 @@ class ConcurrencyTest {
                             event.addProperty("event", "TEST_CONCURRENT");
                             ConnectedClientRegistry.broadcastAll(event);
                         }
-                        case 4 -> AuctionScheduler.wakeUpActivate();
+                        case 4 -> AdminStatsScheduler.notifyStatsChanged();
                     }
                     ops.incrementAndGet();
                 } catch (Exception e) {

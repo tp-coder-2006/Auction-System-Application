@@ -23,6 +23,8 @@ class UserSessionServerTest {
                 "BIDDER",
                 1000.0,
                 "0901234567",
+                null,
+                0,
                 null
         );
     }
@@ -43,6 +45,8 @@ class UserSessionServerTest {
         @Test @DisplayName("getBalance()")   void balance()    { assertEquals(1000.0,           session.getBalance()); }
         @Test @DisplayName("getPhone()")     void phone()      { assertEquals("0901234567",     session.getPhone()); }
         @Test @DisplayName("getRating() null khi không phải Seller") void rating() { assertNull(session.getRating()); }
+        @Test @DisplayName("getRatingCount()") void ratingCount() { assertEquals(0, session.getRatingCount()); }
+        @Test @DisplayName("getAvatarUrl()") void avatarUrl() { assertNull(session.getAvatarUrl()); }
     }
 
     // ═══════════════════════════════════════════════════════════
@@ -57,35 +61,7 @@ class UserSessionServerTest {
         @Test @DisplayName("setRating()")  void rating()  { session.setRating(4.5); assertEquals(4.5, session.getRating()); }
         @Test @DisplayName("setName()")    void name()    { session.setName("New Name"); assertEquals("New Name", session.getName()); }
         @Test @DisplayName("setEmail()")   void email()   { session.setEmail("new@email.com"); assertEquals("new@email.com", session.getEmail()); }
-    }
-
-    // ═══════════════════════════════════════════════════════════
-    // isExpired() và resetLastActiveTime()
-    // ═══════════════════════════════════════════════════════════
-    @Nested
-    @DisplayName("isExpired() và resetLastActiveTime()")
-    class ExpiryTests {
-
-        @Test
-        @DisplayName("Session mới tạo chưa hết hạn")
-        void newSession_notExpired() {
-            assertFalse(session.isExpired());
-        }
-
-        @Test
-        @DisplayName("lastActiveTime được cập nhật sau resetLastActiveTime()")
-        void resetLastActiveTime_updatesTime() throws InterruptedException {
-            long before = session.getLastActiveTime();
-            Thread.sleep(10); // đảm bảo thời gian thay đổi
-            session.resetLastActiveTime();
-            assertTrue(session.getLastActiveTime() > before);
-        }
-
-        @Test
-        @DisplayName("Session vẫn chưa hết hạn sau reset")
-        void afterReset_stillNotExpired() {
-            session.resetLastActiveTime();
-            assertFalse(session.isExpired());
-        }
+        @Test @DisplayName("setRatingCount()") void ratingCount() { session.setRatingCount(12); assertEquals(12, session.getRatingCount()); }
+        @Test @DisplayName("setAvatarUrl()") void avatarUrl() { session.setAvatarUrl("/avatars/user.png"); assertEquals("/avatars/user.png", session.getAvatarUrl()); }
     }
 }

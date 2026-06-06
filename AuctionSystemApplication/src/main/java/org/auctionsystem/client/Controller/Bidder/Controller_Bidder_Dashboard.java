@@ -29,6 +29,9 @@ import java.time.format.DateTimeFormatter;
 import java.time.temporal.ChronoUnit;
 
 public class Controller_Bidder_Dashboard {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     @FXML private Label     lbl_balance;
     @FXML private VBox      widget_leading;
@@ -58,13 +61,13 @@ public class Controller_Bidder_Dashboard {
         updateBalanceLabel(UserSession.getInstance().getBalance());
 
         // Đăng ký nhận balance updates qua BalanceWatcher (global singleton)
-        BalanceWatcher.registerListener("BidderDashboard", balance -> updateBalanceLabel(balance));
+        BalanceWatcher.registerListener(handlerKey, balance -> updateBalanceLabel(balance));
 
         // Đăng ký events real-time
-        EventDispatcher.register(EventType.ITEM_DELETED,     this::onItemDeleted);
-        EventDispatcher.register(EventType.BID_PLACED,       this::onBidPlaced);
-        EventDispatcher.register(EventType.AUCTION_SETTLED,  this::onAuctionSettled);
-        EventDispatcher.register(EventType.ITEM_CANCELLED,   this::onItemCancelled);
+        EventDispatcher.registerGlobal(EventType.ITEM_DELETED, handlerKey, this::onItemDeleted);
+        EventDispatcher.registerGlobal(EventType.BID_PLACED, handlerKey, this::onBidPlaced);
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED, handlerKey, this::onAuctionSettled);
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED, handlerKey, this::onItemCancelled);
 
         // Load widget lần đầu
         loadLeadingBids();
@@ -355,11 +358,16 @@ public class Controller_Bidder_Dashboard {
             if (response != null && "success".equals(response.get("status").getAsString())) {
                 JsonObject info = response.get("information").getAsJsonObject();
                 UserSession s = UserSession.getInstance();
+                s.setName(info.has("name") ? info.get("name").getAsString() : s.getName());
                 s.setBalance(info.get("balance").getAsDouble());
                 s.setPhone(info.has("phone") && !info.get("phone").isJsonNull()
                         ? info.get("phone").getAsString() : null);
                 s.setRating(info.has("rating") && !info.get("rating").isJsonNull()
                         ? info.get("rating").getAsDouble() : null);
+                s.setRatingCount(info.has("ratingCount")
+                        ? info.get("ratingCount").getAsInt() : 0);
+                s.setAvatarUrl(info.has("avatarUrl") && !info.get("avatarUrl").isJsonNull()
+                        ? info.get("avatarUrl").getAsString() : null);
             }
             Platform.runLater(() -> switch_scene(event, Bidder_Profile_View));
         }, "Nav-BidderProfile").start();
@@ -374,11 +382,11 @@ public class Controller_Bidder_Dashboard {
     @FXML public void Go_to_my_items(ActionEvent event)            { unregisterAll(); switch_scene(event, My_Items_Bidder_View); }
 
     private void unregisterAll() {
-        BalanceWatcher.unregisterListener("BidderDashboard");
-        EventDispatcher.unregister(EventType.BID_PLACED);
-        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
-        EventDispatcher.unregister(EventType.ITEM_DELETED);
-        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
+        BalanceWatcher.unregisterListener(handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_DELETED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED, handlerKey);
     }
 
     @FXML
@@ -395,7 +403,7 @@ public class Controller_Bidder_Dashboard {
                 BanWatcher.deactivate();
                 NotificationManager.deactivate();
                 BalanceWatcher.deactivate();
-                EventDispatcher.unregisterAll();
+                EventDispatcher.unregisterAllGlobal();
                 UserSession.getInstance().clear();
                 ServerConnection.disconnect();
                 switch_scene(event, Login_View);

@@ -26,6 +26,9 @@ import java.io.IOException;
  *   - Khóa / mở khóa tài khoản (ADMIN_BAN_USER / ADMIN_UNBAN_USER)
  */
 public class Controller_Admin_User_Management {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ─── FXML fields ──────────────────────────────────────────────────────────
     @FXML private TableView<UserRow>           tableUsers;
@@ -61,7 +64,7 @@ public class Controller_Admin_User_Management {
         }
 
         // Tự động reload khi có thay đổi user (ban/unban từ client khác, user mới đăng ký, v.v.)
-        EventDispatcher.register(EventType.ADMIN_STATS_UPDATE, payload -> loadUsers());
+        EventDispatcher.registerGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey, payload -> loadUsers());
     }
 
     // ─── Cột hành động (Khóa / Mở khóa) ──────────────────────────────────────
@@ -197,7 +200,7 @@ public class Controller_Admin_User_Management {
     // ─── Quay lại ─────────────────────────────────────────────────────────────
     @FXML
     public void back_to_admin_dashboard(ActionEvent event) {
-        EventDispatcher.unregister(EventType.ADMIN_STATS_UPDATE);
+        EventDispatcher.unregisterGlobal(EventType.ADMIN_STATS_UPDATE, handlerKey);
         try { Scene_Utils.Change_Scene(event, "/org/auctionsystem/client/View/Admin_Dashboard.fxml"); }
         catch (IOException e) { throw new RuntimeException(e); }
     }

@@ -20,6 +20,9 @@ import org.auctionsystem.client.session.UserSession;
 import java.io.IOException;
 
 public class Controller_Seller_Dashboard {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     @FXML private Label  lbl_balance;
     @FXML private Button btn_add_item;
@@ -45,7 +48,7 @@ public class Controller_Seller_Dashboard {
             btn_add_item.setOnAction(this::Go_to_add_item);
 
         // Real-time: cập nhật số dư khi nạp/rút/bid
-        BalanceWatcher.registerListener("SellerDashboard", balance ->
+        BalanceWatcher.registerListener(handlerKey, balance ->
                 updateBalanceLabel(balance));
     }
 
@@ -64,7 +67,7 @@ public class Controller_Seller_Dashboard {
     }
 
     private void unregister() {
-        BalanceWatcher.unregisterListener("SellerDashboard");
+        BalanceWatcher.unregisterListener(handlerKey);
     }
 
     @FXML
@@ -86,6 +89,10 @@ public class Controller_Seller_Dashboard {
                         ? info.get("phone").getAsString() : null);
                 s.setRating(info.has("rating") && !info.get("rating").isJsonNull()
                         ? info.get("rating").getAsDouble() : null);
+                s.setRatingCount(info.has("ratingCount")
+                        ? info.get("ratingCount").getAsInt() : 0);
+                s.setAvatarUrl(info.has("avatarUrl") && !info.get("avatarUrl").isJsonNull()
+                        ? info.get("avatarUrl").getAsString() : null);
             }
             Platform.runLater(() -> switch_scene(event, Profile_View));
         }, "Nav-SellerProfile").start();
@@ -136,7 +143,7 @@ public class Controller_Seller_Dashboard {
                 BanWatcher.deactivate();
                 NotificationManager.deactivate();
                 BalanceWatcher.deactivate();
-                EventDispatcher.unregisterAll();
+                EventDispatcher.unregisterAllGlobal();
                 UserSession.getInstance().clear();
                 ServerConnection.disconnect();
                 switch_scene(event, Login_View);

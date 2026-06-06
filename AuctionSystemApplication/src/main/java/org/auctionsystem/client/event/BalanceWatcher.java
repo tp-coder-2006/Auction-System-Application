@@ -47,6 +47,7 @@ public final class BalanceWatcher {
     private BalanceWatcher() {}
 
     private static volatile boolean active = false;
+    private static final String HANDLER_KEY = java.util.UUID.randomUUID().toString();
 
     /**
      * Map các UI-listener: key = tên screen định danh, value = callback nhận balance mới.
@@ -67,9 +68,9 @@ public final class BalanceWatcher {
         if (active) return;
         active = true;
 
-        EventDispatcher.registerGlobal(EventType.BALANCE_UPDATED, "BalanceWatcher", BalanceWatcher::onBalanceEvent);
-        EventDispatcher.registerGlobal(EventType.BID_DEDUCT,      "BalanceWatcher", BalanceWatcher::onBalanceEvent);
-        EventDispatcher.registerGlobal(EventType.BID_CREDIT,      "BalanceWatcher", BalanceWatcher::onBalanceEvent);
+        EventDispatcher.registerGlobal(EventType.BALANCE_UPDATED, HANDLER_KEY, BalanceWatcher::onBalanceEvent);
+        EventDispatcher.registerGlobal(EventType.BID_DEDUCT,      HANDLER_KEY, BalanceWatcher::onBalanceEvent);
+        EventDispatcher.registerGlobal(EventType.BID_CREDIT,      HANDLER_KEY, BalanceWatcher::onBalanceEvent);
 
         System.out.println("[BalanceWatcher] Đã kích hoạt — lắng nghe BALANCE_UPDATED, BID_DEDUCT, BID_CREDIT.");
     }
@@ -82,9 +83,9 @@ public final class BalanceWatcher {
         if (!active) return;
         active = false;
 
-        EventDispatcher.unregisterGlobal(EventType.BALANCE_UPDATED, "BalanceWatcher");
-        EventDispatcher.unregisterGlobal(EventType.BID_DEDUCT,      "BalanceWatcher");
-        EventDispatcher.unregisterGlobal(EventType.BID_CREDIT,      "BalanceWatcher");
+        EventDispatcher.unregisterGlobal(EventType.BALANCE_UPDATED, HANDLER_KEY);
+        EventDispatcher.unregisterGlobal(EventType.BID_DEDUCT,      HANDLER_KEY);
+        EventDispatcher.unregisterGlobal(EventType.BID_CREDIT,      HANDLER_KEY);
 
         listeners.clear();
 

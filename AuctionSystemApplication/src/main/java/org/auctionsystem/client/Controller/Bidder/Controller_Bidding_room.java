@@ -8,6 +8,7 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Alert;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
@@ -18,6 +19,7 @@ import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
 import javafx.scene.layout.VBox;
 import org.auctionsystem.client.Connectivity.ServerConnection;
+import org.auctionsystem.client.Controller.BidPriceChartBuilder;
 import org.auctionsystem.client.Controller.Scene_Utils;
 import org.auctionsystem.client.event.BalanceWatcher;
 import org.auctionsystem.client.event.EventDispatcher;
@@ -53,6 +55,7 @@ public class Controller_Bidding_room {
     @FXML private Label     lbl_time_remaining;
     @FXML private Label     lbl_starting_price;
     @FXML private Label     lbl_current_price;
+    @FXML private Label     lbl_increment;
     @FXML private Label     lbl_balance;
     @FXML private Label     lbl_bid_error;
     @FXML private Label     lbl_status_message;
@@ -60,6 +63,12 @@ public class Controller_Bidding_room {
     @FXML private TextField field_bid_amount;
     @FXML private Button    btn_bid;
     @FXML private ImageView productImageView;
+
+    // Auto Bid
+    @FXML private TextField field_auto_max_price;
+    @FXML private Label     lbl_auto_increment_hint;
+    @FXML private Button    btn_auto_bid;
+    @FXML private Label     lbl_auto_bid_status;
 
     @FXML private TableView<JsonObject>           tableBidHistory;
     @FXML private TableColumn<JsonObject, String> col_bid_bidder;
@@ -71,17 +80,24 @@ public class Controller_Bidding_room {
     @FXML private TableColumn<JsonObject, String> col_all_amount;
     @FXML private TableColumn<JsonObject, String> col_all_time;
 
+    @FXML private LineChart<String, Number> bidPriceChart;
+
     // ── State ─────────────────────────────────────────────────────────────────
 
     private static JsonObject currentItem;
     private String itemId;
     private String sellerId;
+    private double increment = 0; // bước giá tối thiểu = 2% starting price
 
     private final ObservableList<JsonObject> bidHistoryList    = FXCollections.observableArrayList();
     private final ObservableList<JsonObject> allBidHistoryList = FXCollections.observableArrayList();
 
     private ScheduledExecutorService countdownTimer;
     private LocalDateTime            endTime;
+
+    // Auto Bid state
+    private volatile boolean autoBidEnabled  = false;
+    private volatile double  autoBidMaxPrice = 0;
 
     private static final DateTimeFormatter DT_FMT          = DateTimeFormatter.ofPattern("yyyy-MM-dd HH:mm:ss");
     private static final DateTimeFormatter DT_DISPLAY       = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
@@ -90,6 +106,9 @@ public class Controller_Bidding_room {
             .optionalStart().appendPattern(".SSSSSSSSS").optionalEnd().toFormatter();
     private static final String           ITEM_DETAIL_VIEW  = "/org/auctionsystem/client/View/Item_Detail.fxml";
     private static final String           SEARCHING_ROOM_VIEW = "/org/auctionsystem/client/View/Searching_room.fxml";
+
+    // UUID duy nhất cho mỗi instance — đảm bảo không bao giờ ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
 
     // ── Static setter ────────────────────────────────────────────────────────
 
@@ -112,6 +131,7 @@ public class Controller_Bidding_room {
         setupBidHistoryTable();
         setupAllBidHistoryTable();
         populateStaticInfo();
+        loadIncrement();
 
         if (isSeller) {
             // Seller xem phòng đấu giá nhưng không tự đặt giá
@@ -125,16 +145,26 @@ public class Controller_Bidding_room {
         startCountdown();
         loadProductImage();
 
-        // Realtime events
-        EventDispatcher.register(EventType.BID_PLACED,        this::onBidPlaced);
-        EventDispatcher.register(EventType.END_TIME_EXTENDED,  this::onEndTimeExtended);
-        EventDispatcher.register(EventType.AUCTION_SETTLED,    this::onAuctionSettled);
-        EventDispatcher.register(EventType.ITEM_CANCELLED,     this::onItemCancelled);
-        BalanceWatcher.registerListener("BiddingRoom", balance ->
+        // Realtime events — dùng registerGlobal + UUID để nhiều cửa sổ không ghi đè nhau
+        EventDispatcher.registerGlobal(EventType.BID_PLACED,        handlerKey, this::onBidPlaced);
+        EventDispatcher.registerGlobal(EventType.END_TIME_EXTENDED,  handlerKey, this::onEndTimeExtended);
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED,    handlerKey, this::onAuctionSettled);
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED,     handlerKey, this::onItemCancelled);
+        BalanceWatcher.registerListener(handlerKey, balance ->
                 updateBalanceLabel(balance));
     }
 
     // ── Setup bảng lịch sử bid phiên ─────────────────────────────────────────
+
+    private static final java.util.Comparator<JsonObject> BY_TIME_PRICE_DESC = (a, b) -> {
+        String ta = a.has("bidTime") ? a.get("bidTime").getAsString() : "";
+        String tb = b.has("bidTime") ? b.get("bidTime").getAsString() : "";
+        int cmp = tb.compareTo(ta);
+        if (cmp != 0) return cmp;
+        double pa = a.has("bidAmount") ? a.get("bidAmount").getAsDouble() : 0;
+        double pb = b.has("bidAmount") ? b.get("bidAmount").getAsDouble() : 0;
+        return Double.compare(pb, pa);
+    };
 
     private void setupBidHistoryTable() {
         col_bid_bidder.setCellValueFactory(data -> {
@@ -212,6 +242,38 @@ public class Controller_Bidding_room {
         tableAllBidHistory.setItems(allBidHistoryList);
     }
 
+    // ── Load bước giá ────────────────────────────────────────────────────────
+
+    private void loadIncrement() {
+        // Tính từ startingPrice local trước (instant display)
+        double startingPrice = getDouble(currentItem, "startingPrice");
+        if (startingPrice > 0) {
+            increment = Math.ceil(startingPrice * 0.02);
+            updateIncrementLabel();
+        }
+        // Đồng bộ từ server để chắc chắn (GET_ITEM trả về increment field)
+        new Thread(() -> {
+            JsonObject req = new JsonObject();
+            req.addProperty("action",  "GET_ITEM");
+            req.addProperty("item_id", itemId);
+            JsonObject res = ServerConnection.sendAuthRequest(req);
+            if (res != null && "success".equals(res.get("status").getAsString())
+                    && res.has("increment") && !res.get("increment").isJsonNull()) {
+                double serverIncrement = res.get("increment").getAsDouble();
+                Platform.runLater(() -> {
+                    increment = serverIncrement;
+                    updateIncrementLabel();
+                });
+            }
+        }, "BiddingRoom-LoadIncrement").start();
+    }
+
+    private void updateIncrementLabel() {
+        if (lbl_increment == null) return;
+        lbl_increment.setText(String.format("Bước giá tối thiểu: %,.0f ₫", increment));
+        updateAutoBidHintLabel();
+    }
+
     // ── Điền thông tin tĩnh ──────────────────────────────────────────────────
 
     private void populateStaticInfo() {
@@ -236,11 +298,7 @@ public class Controller_Bidding_room {
                     res.get("message").getAsJsonArray()
                             .forEach(el -> sorted.add(el.getAsJsonObject()));
                     // Sort giảm dần theo bidTime (mới nhất lên đầu)
-                    sorted.sort((a, b) -> {
-                        String ta = a.has("bidTime") ? a.get("bidTime").getAsString() : "";
-                        String tb = b.has("bidTime") ? b.get("bidTime").getAsString() : "";
-                        return tb.compareTo(ta);
-                    });
+                    sorted.sort(BY_TIME_PRICE_DESC);
                     bidHistoryList.setAll(sorted);
                 }
             });
@@ -260,13 +318,11 @@ public class Controller_Bidding_room {
                     res.get("message").getAsJsonArray()
                             .forEach(el -> sorted.add(el.getAsJsonObject()));
                     // Sort giảm dần theo bidTime (mới nhất lên đầu)
-                    sorted.sort((a, b) -> {
-                        String ta = a.has("bidTime") ? a.get("bidTime").getAsString() : "";
-                        String tb = b.has("bidTime") ? b.get("bidTime").getAsString() : "";
-                        return tb.compareTo(ta);
-                    });
+                    sorted.sort(BY_TIME_PRICE_DESC);
                     allBidHistoryList.setAll(sorted);
                 }
+                BidPriceChartBuilder.refresh(bidPriceChart, allBidHistoryList,
+                        getDouble(currentItem, "startingPrice"));
             });
         }, "BiddingRoom-LoadAllBidHistory").start();
     }
@@ -446,12 +502,21 @@ public class Controller_Bidding_room {
 
         Platform.runLater(() -> {
             updateCurrentPriceLabel();
-            // "Phiên này": mới nhất lên đầu
             bidHistoryList.add(0, entry);
-            // "Toàn bộ lịch sử": thêm lên đầu để giữ thứ tự giảm dần (mới nhất lên đầu)
             allBidHistoryList.add(0, entry);
+
+            // Sort lại theo bidTime giảm dần sau mỗi lần thêm
+            // (đảm bảo thứ tự đúng khi nhiều event đến gần nhau)
+            bidHistoryList.sort(BY_TIME_PRICE_DESC);
+            allBidHistoryList.sort(BY_TIME_PRICE_DESC);
+
             clearError();
+            BidPriceChartBuilder.refresh(bidPriceChart, allBidHistoryList,
+                    getDouble(currentItem, "startingPrice"));
         });
+
+        // Auto Bid — chạy trên thread riêng, không block FX thread
+        checkAndTriggerAutoBid(payload);
     }
 
     private void onEndTimeExtended(JsonObject payload) {
@@ -469,6 +534,7 @@ public class Controller_Bidding_room {
     private void onAuctionSettled(JsonObject payload) {
         if (!isSameItem(payload)) return;
         stopCountdown();
+        autoBidEnabled = false;
         if (btn_bid != null) Platform.runLater(() -> btn_bid.setDisable(true));
         hide(bid_panel);
         setText(lbl_status_message, "🏁 Phiên đấu giá đã kết thúc.");
@@ -484,6 +550,7 @@ public class Controller_Bidding_room {
     private void onItemCancelled(JsonObject payload) {
         if (!isSameItem(payload)) return;
         stopCountdown();
+        autoBidEnabled = false;
         Platform.runLater(() -> {
             hide(bid_panel);
             setText(lbl_status_message, "❌ Sản phẩm này đã bị hủy.");
@@ -494,6 +561,202 @@ public class Controller_Bidding_room {
                 "Sản phẩm này đã bị hủy bởi người bán hoặc quản trị viên.");
     }
 
+    // ── Auto Bid ─────────────────────────────────────────────────────────────
+
+    private void updateAutoBidHintLabel() {
+        if (lbl_auto_increment_hint == null) return;
+        if (increment > 0) {
+            lbl_auto_increment_hint.setText(
+                    String.format("ℹ Mỗi lần tự động tăng 1 bước tối thiểu (%,.0f ₫)", increment));
+        } else {
+            lbl_auto_increment_hint.setText("ℹ Mỗi lần tự động tăng 1 bước tối thiểu");
+        }
+    }
+
+    @FXML
+    public void onToggleAutoBid(ActionEvent event) {
+        if (autoBidEnabled) {
+            // Hủy Auto Bid
+            disableAutoBid();
+        } else {
+            // Validate giá trần
+            String maxStr = field_auto_max_price == null ? "" : field_auto_max_price.getText().trim();
+            if (maxStr.isEmpty()) {
+                setError("Vui lòng nhập giá trần tối đa để bật Auto Bid.");
+                return;
+            }
+            double maxPrice;
+            try {
+                maxPrice = Double.parseDouble(maxStr);
+            } catch (NumberFormatException e) {
+                setError("Giá trần không hợp lệ.");
+                return;
+            }
+            if (maxPrice <= 0) {
+                setError("Giá trần phải lớn hơn 0.");
+                return;
+            }
+            autoBidMaxPrice = maxPrice;
+            autoBidEnabled  = true;
+            clearError();
+            setAutoBidUI(true, null);
+            // Kiểm tra & bid ngay nếu chưa dẫn đầu
+            onActivateAutoBid();
+        }
+    }
+
+    /**
+     * Ngay khi kích hoạt Auto Bid: nếu user chưa dẫn đầu thì bid ngay,
+     * không chờ BID_PLACED event tiếp theo.
+     * currentHighest = 0 (chưa có bid nào) thì dùng startingPrice làm baseline.
+     */
+    private void onActivateAutoBid() {
+        String myId = UserSession.getInstance().getUserId();
+
+        // Lấy người đang dẫn đầu từ bidHistoryList (index 0 = mới nhất)
+        String currentLeaderId = "";
+        if (!bidHistoryList.isEmpty()) {
+            JsonObject topBid = bidHistoryList.get(0);
+            currentLeaderId = topBid.has("bidderId")
+                    ? topBid.get("bidderId").getAsString() : "";
+        }
+
+        boolean iAmLeading = myId.equals(currentLeaderId);
+        if (iAmLeading) {
+            // Đang dẫn đầu → chờ BID_PLACED event bình thường
+            return;
+        }
+
+        // Chưa dẫn đầu → bid ngay
+        double currentHighest = getDouble(currentItem, "currentHighestPrice");
+        // Nếu chưa có bid nào, dùng startingPrice làm baseline
+        if (currentHighest <= 0) {
+            currentHighest = getDouble(currentItem, "startingPrice");
+        }
+        double nextBid = currentHighest + increment;
+
+        if (nextBid > autoBidMaxPrice) {
+            // Giá trần quá thấp — tắt ngay
+            autoBidEnabled = false;
+            Platform.runLater(() -> setAutoBidUI(false, "🚫 Giá trần thấp hơn giá cần đặt — Auto Bid dừng"));
+            return;
+        }
+
+        final double bidToPlace = nextBid;
+        new Thread(() -> {
+            JsonObject req = new JsonObject();
+            req.addProperty("action",     "PLACE_BID");
+            req.addProperty("item_id",    itemId);
+            req.addProperty("bid_amount", bidToPlace);
+            JsonObject res = ServerConnection.sendAuthRequest(req);
+
+            if (res == null) {
+                autoBidEnabled = false;
+                Platform.runLater(() -> setAutoBidUI(false, "⚠ Mất kết nối — Auto Bid dừng."));
+                return;
+            }
+            if (!"success".equals(res.get("status").getAsString())) {
+                String msg = res.has("message") ? res.get("message").getAsString() : "";
+                // Race condition: bid too low hoặc đang dẫn đầu
+                // → KHÔNG tắt, BID_PLACED event sắp broadcast sẽ trigger lại
+                if (msg.contains("Giá đặt phải ít nhất") || msg.contains("Bạn đang dẫn đầu")) {
+                    return;
+                }
+                // Các failure vĩnh viễn → tắt auto bid
+                autoBidEnabled = false;
+                Platform.runLater(() -> setAutoBidUI(false, "⚠ " + msg));
+            }
+            // Nếu thành công, BID_PLACED event sẽ cập nhật UI bình thường
+        }, "AutoBid-InitialBid").start();
+    }
+
+    /**
+     * Gọi từ onBidPlaced — chạy trên background thread, không được dùng showAndWait.
+     * Mọi cập nhật UI wrap trong Platform.runLater().
+     */
+    private void checkAndTriggerAutoBid(JsonObject bidPayload) {
+        if (!autoBidEnabled) return;
+
+        String bidderId = bidPayload.has("bidder_id") ? bidPayload.get("bidder_id").getAsString() : "";
+        String myId     = UserSession.getInstance().getUserId();
+        if (myId.equals(bidderId)) return; // Không tự bid lại chính mình
+
+        double newPrice    = bidPayload.has("bid_amount") ? bidPayload.get("bid_amount").getAsDouble() : 0;
+        double nextBid     = newPrice + increment;
+
+        if (nextBid > autoBidMaxPrice) {
+            // Đã vượt trần
+            autoBidEnabled = false;
+            Platform.runLater(() -> {
+                setAutoBidUI(false, "🚫 Đã đạt giá trần — Auto Bid dừng");
+            });
+            return;
+        }
+
+        // Gửi bid bình thường
+        new Thread(() -> {
+            JsonObject req = new JsonObject();
+            req.addProperty("action",     "PLACE_BID");
+            req.addProperty("item_id",    itemId);
+            req.addProperty("bid_amount", nextBid);
+            JsonObject res = ServerConnection.sendAuthRequest(req);
+
+            if (res == null) {
+                // Mất kết nối — tắt hẳn
+                autoBidEnabled = false;
+                Platform.runLater(() -> setAutoBidUI(false, "⚠ Mất kết nối — Auto Bid dừng."));
+                return;
+            }
+            if (!"success".equals(res.get("status").getAsString())) {
+                String msg = res.has("message") ? res.get("message").getAsString() : "";
+                // Race condition: bid too low hoặc đang dẫn đầu
+                // → KHÔNG tắt, BID_PLACED event sắp broadcast sẽ trigger lại
+                if (msg.contains("Giá đặt phải ít nhất") || msg.contains("Bạn đang dẫn đầu")) {
+                    return;
+                }
+                // Các failure vĩnh viễn → tắt auto bid
+                autoBidEnabled = false;
+                Platform.runLater(() -> setAutoBidUI(false, "⚠ " + msg));
+            }
+            // Nếu thành công, UI sẽ cập nhật qua BID_PLACED event bình thường
+        }, "BiddingRoom-AutoBid").start();
+    }
+
+    private void disableAutoBid() {
+        autoBidEnabled = false;
+        Platform.runLater(() -> setAutoBidUI(false, null));
+    }
+
+    /** Cập nhật UI trạng thái Auto Bid — phải gọi từ FX thread. */
+    private void setAutoBidUI(boolean running, String statusMsg) {
+        if (field_auto_max_price != null) {
+            field_auto_max_price.setDisable(running);
+        }
+        if (btn_auto_bid != null) {
+            if (running) {
+                btn_auto_bid.setText("🟥 Hủy Auto Bid");
+                btn_auto_bid.setStyle("-fx-background-color: #c0392b; -fx-text-fill: white;");
+            } else {
+                btn_auto_bid.setText("🤖 Kích hoạt Auto Bid");
+                btn_auto_bid.setStyle("");
+            }
+        }
+        if (lbl_auto_bid_status != null) {
+            if (statusMsg != null && !statusMsg.isBlank()) {
+                lbl_auto_bid_status.setText(statusMsg);
+                show(lbl_auto_bid_status);
+            } else if (running) {
+                double maxP = autoBidMaxPrice;
+                lbl_auto_bid_status.setText(
+                        String.format("⚡ Đang tự động — Trần: %,.0f ₫", maxP));
+                show(lbl_auto_bid_status);
+            } else {
+                lbl_auto_bid_status.setText("");
+                hide(lbl_auto_bid_status);
+            }
+        }
+    }
+
     // ── Helpers ──────────────────────────────────────────────────────────────
 
     private boolean isSameItem(JsonObject payload) {
@@ -502,11 +765,12 @@ public class Controller_Bidding_room {
 
     private void updateCurrentPriceLabel() {
         if (lbl_current_price == null || currentItem == null) return;
-        double price = currentItem.has("currentHighestPrice")
-                && !currentItem.get("currentHighestPrice").isJsonNull()
-                ? currentItem.get("currentHighestPrice").getAsDouble()
-                : getDouble(currentItem, "startingPrice");
-        setText(lbl_current_price, String.format("%,.0f ₫", price));
+        if (currentItem.has("currentHighestPrice") && !currentItem.get("currentHighestPrice").isJsonNull()) {
+            double price = currentItem.get("currentHighestPrice").getAsDouble();
+            setText(lbl_current_price, String.format("%,.0f ₫", price));
+        } else {
+            setText(lbl_current_price, "_");
+        }
     }
 
     private void updateBalanceLabel(double balance) {
@@ -514,11 +778,11 @@ public class Controller_Bidding_room {
     }
 
     private void unregisterEvents() {
-        BalanceWatcher.unregisterListener("BiddingRoom");
-        EventDispatcher.unregister(EventType.BID_PLACED);
-        EventDispatcher.unregister(EventType.END_TIME_EXTENDED);
-        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
-        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
+        BalanceWatcher.unregisterListener(handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED,        handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.END_TIME_EXTENDED,  handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED,    handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED,     handlerKey);
     }
 
     private static void setText(Label lbl, String text) {

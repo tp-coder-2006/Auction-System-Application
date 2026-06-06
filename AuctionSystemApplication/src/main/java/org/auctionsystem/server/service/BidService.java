@@ -90,12 +90,25 @@ public class BidService {
                     return response;
                 }
 
-                double threshold = (item.getCurrentHighestPrice() != null) ? item.getCurrentHighestPrice() : item.getStartingPrice();
-                if (bidAmount <= threshold) {
-                    conn.rollback();
-                    response.addProperty("status", "error");
-                    response.addProperty("message", "Giá đặt phải cao hơn giá hiện tại!");
-                    return response;
+                if (item.getCurrentHighestPrice() == null) {
+                    // Chưa có bid nào: cho phép đặt >= starting_price
+                    if (bidAmount < item.getStartingPrice()) {
+                        conn.rollback();
+                        response.addProperty("status", "error");
+                        response.addProperty("message", "Giá đặt phải ít nhất bằng giá khởi điểm!");
+                        return response;
+                    }
+                } else {
+                    // Đã có bid: phải >= currentHighestPrice + increment
+                    double increment = Math.ceil(item.getStartingPrice() * 0.02);
+                    if (bidAmount < item.getCurrentHighestPrice() + increment) {
+                        conn.rollback();
+                        response.addProperty("status", "error");
+                        response.addProperty("message",
+                                String.format("Giá đặt phải ít nhất %,.0f ₫ (giá hiện tại + bước giá %,.0f ₫)!",
+                                        item.getCurrentHighestPrice() + increment, increment));
+                        return response;
+                    }
                 }
 
                 if (bidderId.equals(item.getSellerId())) {

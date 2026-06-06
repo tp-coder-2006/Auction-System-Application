@@ -32,6 +32,9 @@ import java.io.IOException;
  *   • cancelled – phiên bị hủy
  */
 public class Controller_Bidding_Result {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ── TableView ─────────────────────────────────────────────────────────────
     @FXML private TableView<JsonObject>             tableResult;
@@ -72,10 +75,10 @@ public class Controller_Bidding_Result {
         loadData();
 
         // Real-time: lắng nghe các sự kiện server broadcast
-        EventDispatcher.register(EventType.BID_PLACED,      this::onBidPlaced);
-        EventDispatcher.register(EventType.AUCTION_SETTLED, this::onAuctionSettled);
-        EventDispatcher.register(EventType.ITEM_CANCELLED,  this::onItemCancelled);
-        EventDispatcher.register(EventType.ITEM_DELETED,    this::onItemDeleted);
+        EventDispatcher.registerGlobal(EventType.BID_PLACED, handlerKey, this::onBidPlaced);
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED, handlerKey, this::onAuctionSettled);
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED, handlerKey, this::onItemCancelled);
+        EventDispatcher.registerGlobal(EventType.ITEM_DELETED, handlerKey, this::onItemDeleted);
     }
 
     // ─────────────────────────────────────────────────────────────────────────
@@ -370,9 +373,9 @@ public class Controller_Bidding_Result {
     }
 
     private void unregisterEvents() {
-        EventDispatcher.unregister(EventType.BID_PLACED);
-        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
-        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
-        EventDispatcher.unregister(EventType.ITEM_DELETED);
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_DELETED, handlerKey);
     }
 }

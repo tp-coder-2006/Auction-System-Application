@@ -12,6 +12,9 @@
 <?import javafx.scene.control.Tooltip?>
 <?import javafx.scene.image.Image?>
 <?import javafx.scene.image.ImageView?>
+<?import javafx.scene.chart.CategoryAxis?>
+<?import javafx.scene.chart.LineChart?>
+<?import javafx.scene.chart.NumberAxis?>
 <?import javafx.scene.layout.HBox?>
 <?import javafx.scene.layout.StackPane?>
 <?import javafx.scene.layout.VBox?>
@@ -179,20 +182,17 @@
                   <Separator />
                </VBox>
 
-               <!-- ═══ BẢNG LỊCH SỬ BID (2 tab) ═══ -->
-               <VBox fx:id="bid_history_panel" spacing="0.0"
-                     VBox.vgrow="ALWAYS"
-                     visible="false" managed="false">
-
+               <!-- ═══ BẢNG LỊCH SỬ BID + BIỂU ĐỒ GIÁ ═══ -->
+               <VBox VBox.vgrow="ALWAYS" spacing="0.0">
                   <TabPane tabClosingPolicy="UNAVAILABLE"
-                           VBox.vgrow="ALWAYS" minHeight="260.0">
-
+                           VBox.vgrow="ALWAYS" minHeight="280.0">
+   
                      <Tab text="📋 Phiên này">
                         <TableView fx:id="tableBidHistory"
                                    stylesheets="@../../CSS/TableView.css"
-                                   VBox.vgrow="ALWAYS" minHeight="200.0">
+                                   VBox.vgrow="ALWAYS" minHeight="240.0">
                            <columns>
-                              <TableColumn fx:id="col_bid_bidder" text="Người đặt"  prefWidth="160.0" />
+                              <TableColumn fx:id="col_bid_bidder" text="Người đặt"   prefWidth="160.0" />
                               <TableColumn fx:id="col_bid_amount" text="Giá đặt (₫)" prefWidth="150.0" />
                               <TableColumn fx:id="col_bid_time"   text="Thời gian"   prefWidth="170.0" />
                            </columns>
@@ -201,13 +201,13 @@
                            </columnResizePolicy>
                         </TableView>
                      </Tab>
-
+   
                      <Tab text="📂 Toàn bộ lịch sử">
                         <TableView fx:id="tableAllBidHistory"
                                    stylesheets="@../../CSS/TableView.css"
-                                   VBox.vgrow="ALWAYS" minHeight="200.0">
+                                   VBox.vgrow="ALWAYS" minHeight="240.0">
                            <columns>
-                              <TableColumn fx:id="col_all_bidder" text="Người đặt"  prefWidth="160.0" />
+                              <TableColumn fx:id="col_all_bidder" text="Người đặt"   prefWidth="160.0" />
                               <TableColumn fx:id="col_all_amount" text="Giá đặt (₫)" prefWidth="150.0" />
                               <TableColumn fx:id="col_all_time"   text="Thời gian"   prefWidth="170.0" />
                            </columns>
@@ -216,7 +216,22 @@
                            </columnResizePolicy>
                         </TableView>
                      </Tab>
-
+   
+                     <Tab text="📈 Biến động giá">
+                        <VBox style="-fx-background-color: transparent; -fx-padding: 4px;">
+                           <LineChart fx:id="bidPriceChart" VBox.vgrow="ALWAYS" minHeight="320.0"
+                                      animated="false" legendVisible="false" createSymbols="true"
+                                      style="-fx-background-color: transparent;">
+                              <xAxis>
+                                 <CategoryAxis label="Thời gian" tickLabelRotation="-45" />
+                              </xAxis>
+                              <yAxis>
+                                 <NumberAxis label="Giá (₫)" forceZeroInRange="false" />
+                              </yAxis>
+                           </LineChart>
+                        </VBox>
+                     </Tab>
+   
                   </TabPane>
                </VBox>
 

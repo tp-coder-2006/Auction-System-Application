@@ -384,10 +384,10 @@ cd Auction-System-Application/AuctionSystemApplication
 
 ### 2. Tạo database
 
-**Bước 1 — Mở kết nối vào MySQL** (PowerShell):
+**Bước 1 — Mở kết nối vào MySQL:**
 
-```powershell
-& "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p
+```bash
+mysql -u root -p
 ```
 
 **Bước 2 — Sau khi nhập mật khẩu và thấy chữ `mysql>`, gõ lệnh reset database:**

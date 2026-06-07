@@ -14,24 +14,24 @@
 
 ---
 
-## 📋 Mục lục
+## Mục lục
 
-- [Tính năng](#-tính-năng)
-- [Kiến trúc hệ thống](#-kiến-trúc-hệ-thống)
-- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
-- [Cấu trúc dự án](#-cấu-trúc-dự-án)
-- [Cơ sở dữ liệu](#-cơ-sở-dữ-liệu)
-- [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
-- [Cài đặt và cấu hình](#-cài-đặt-và-cấu-hình)
-- [Chạy ứng dụng](#-chạy-ứng-dụng)
-- [Kiểm thử](#-kiểm-thử)
-- [CI/CD](#-cicd)
-- [Lưu ý kỹ thuật](#-lưu-ý-kỹ-thuật)
-- [Đóng góp](#-đóng-góp)
+- [Tính năng](#tính-năng)
+- [Kiến trúc hệ thống](#kiến-trúc-hệ-thống)
+- [Công nghệ sử dụng](#công-nghệ-sử-dụng)
+- [Cấu trúc dự án](#cấu-trúc-dự-án)
+- [Cơ sở dữ liệu](#cơ-sở-dữ-liệu)
+- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
+- [Cài đặt và cấu hình](#cài-đặt-và-cấu-hình)
+- [Chạy ứng dụng](#chạy-ứng-dụng)
+- [Kiểm thử](#kiểm-thử)
+- [CI/CD](#cicd)
+- [Lưu ý kỹ thuật](#lưu-ý-kỹ-thuật)
+- [Đóng góp](#đóng-góp)
 
 ---
 
-## ✨ Tính năng
+## Tính năng
 
 ### 🔨 Bidder — Người đặt giá
 
@@ -68,7 +68,7 @@
 
 ---
 
-## 🏗️ Kiến trúc hệ thống
+## Kiến trúc hệ thống
 
 ```
 ┌─────────────────────────────────────────────────────────────────┐
@@ -136,7 +136,7 @@ Mọi tin nhắn là **JSON phân cách bằng dòng mới** qua kết nối TCP
 
 ---
 
-## 🛠️ Công nghệ sử dụng
+## Công nghệ sử dụng
 
 | Thành phần | Công nghệ | Phiên bản |
 |---|---|---|
@@ -155,7 +155,7 @@ Mọi tin nhắn là **JSON phân cách bằng dòng mới** qua kết nối TCP
 
 ---
 
-## 📂 Cấu trúc dự án
+## Cấu trúc dự án
 
 ```
 Auction-System-Application/
@@ -238,7 +238,7 @@ Auction-System-Application/
 
 ---
 
-## 🗄️ Cơ sở dữ liệu
+## Cơ sở dữ liệu
 
 Tên database: **`mydb`** — gồm 6 bảng chính.
 
@@ -358,7 +358,7 @@ Mỗi cặp `(bidder_id, seller_id)` có duy nhất 1 dòng (UNIQUE KEY); bidder
 
 ---
 
-## ✅ Yêu cầu hệ thống
+## Yêu cầu hệ thống
 
 | Yêu cầu | Phiên bản |
 |---|---|
@@ -371,7 +371,7 @@ Mỗi cặp `(bidder_id, seller_id)` có duy nhất 1 dòng (UNIQUE KEY); bidder
 
 ---
 
-## ⚙️ Cài đặt và cấu hình
+## Cài đặt và cấu hình
 
 ### 1. Clone repository
 
@@ -429,7 +429,7 @@ mvn clean install -DskipTests
 
 ---
 
-## ▶️ Chạy ứng dụng
+## Chạy ứng dụng
 
 > ⚠️ **Quan trọng:** Phải khởi động **Server trước**, sau đó mới chạy Client.
 
@@ -464,7 +464,7 @@ Hoặc chạy `Main.main()` từ IntelliJ. Client kết nối đến `localhost:
 
 ---
 
-## 🧪 Kiểm thử
+## Kiểm thử
 
 Bộ test chia thành **unit test** (không cần DB) và **integration test** (cần MySQL đang chạy, đánh tag `@Tag("integration")`).
 
@@ -513,7 +513,7 @@ Báo cáo kết quả tại `target/surefire-reports/`.
 
 ---
 
-## 🔄 CI/CD
+## CI/CD
 
 GitHub Actions tự động chạy khi push hoặc tạo Pull Request vào nhánh `main` / `master`.
 
@@ -541,7 +541,7 @@ Báo cáo test được upload thành artifact sau mỗi lần chạy.
 
 ---
 
-## 📌 Lưu ý kỹ thuật
+## Lưu ý kỹ thuật
 
 **HikariCP connection pool** (tối đa 20 kết nối) thay cho `DriverManager`, tránh tạo mới kết nối TCP mỗi request và cạn kiệt slot kết nối MySQL khi nhiều client đồng thời.
 
@@ -559,7 +559,7 @@ Báo cáo test được upload thành artifact sau mỗi lần chạy.
 
 ---
 
-## 🤝 Đóng góp
+## Đóng góp
 
 Pull requests luôn được chào đón! Để đóng góp:
 

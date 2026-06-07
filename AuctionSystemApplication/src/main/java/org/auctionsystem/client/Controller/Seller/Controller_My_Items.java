@@ -31,7 +31,6 @@ public class Controller_My_Items {
     private final String handlerKey = java.util.UUID.randomUUID().toString();
 
 
-    // fx:id khớp My_Items.fxml
     @FXML private TableView<JsonObject>           tableMyItems;
     @FXML private TableColumn<JsonObject, String> col_name;
     @FXML private TableColumn<JsonObject, String> col_start_price;
@@ -61,7 +60,6 @@ public class Controller_My_Items {
         if (btn_back != null)
             btn_back.setOnAction(this::back_to_dashboard);
 
-        // Xóa item khỏi bảng ngay lập tức khi admin hard delete
         EventDispatcher.registerGlobal(EventType.ITEM_DELETED, handlerKey, payload -> {
             String itemId = payload.has("item_id") ? payload.get("item_id").getAsString() : "";
             if (!itemId.isEmpty()) {
@@ -79,7 +77,6 @@ public class Controller_My_Items {
         col_name.setCellValueFactory(d ->
                 new SimpleStringProperty(getString(d.getValue(), "name")));
 
-        // Click vào tên item → xem chi tiết (tất cả trạng thái)
         col_name.setCellFactory(tc -> new TableCell<>() {
             @Override
             protected void updateItem(String name, boolean empty) {
@@ -116,33 +113,6 @@ public class Controller_My_Items {
 
         // Cột hành động: nút Sửa + Hủy/Xóa tùy trạng thái
         col_action.setCellFactory(tc -> new TableCell<>() {
-            private final Button btnEdit   = new Button("Sửa");
-            private final Button btnRelist = new Button("Bán lại");
-            private final Button btnAction = new Button(); // Hủy hoặc Xóa
-            private final HBox   box       = new HBox(6, btnEdit, btnAction);
-            private final HBox   boxRelist = new HBox(6, btnRelist, btnAction);
-            private final HBox   boxDelete  = new HBox(6, btnAction);
-
-            {
-                btnEdit.setOnAction(e -> {
-                    JsonObject item = getTableView().getItems().get(getIndex());
-                    openEditItem(item);
-                });
-                btnRelist.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
-                btnRelist.setOnAction(e -> {
-                    JsonObject item = getTableView().getItems().get(getIndex());
-                    openRelistItem(item);
-                });
-                btnAction.setOnAction(e -> {
-                    JsonObject item = getTableView().getItems().get(getIndex());
-                    String status = getString(item, "status").toUpperCase();
-                    if ("ACTIVE".equals(status) || "PENDING".equals(status)) {
-                        confirmCancelItem(item);
-                    } else {
-                        confirmDeleteItem(item);
-                    }
-                });
-            }
 
             @Override
             protected void updateItem(Void v, boolean empty) {
@@ -156,20 +126,35 @@ public class Controller_My_Items {
 
                 switch (status) {
                     case "CANCELLED" -> {
-                        btnAction.setText("Xóa");
-                        btnAction.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
-                        setGraphic(boxRelist);
+                        Button btnRelist = new Button("Bán lại");
+                        btnRelist.setStyle("-fx-background-color: #27ae60; -fx-text-fill: white;");
+                        btnRelist.setOnAction(e -> openRelistItem(item));
+
+                        Button btnXoa = new Button("Xóa");
+                        btnXoa.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                        btnXoa.setOnAction(e -> confirmDeleteItem(item));
+
+                        setGraphic(new HBox(6, btnRelist, btnXoa));
                     }
-                    case "ACTIVE", "PENDING" -> {
-                        btnEdit.setDisable(!"PENDING".equals(status));
-                        btnAction.setText("Hủy");
-                        btnAction.setStyle("-fx-background-color: #e67e22; -fx-text-fill: white;");
-                        setGraphic(box);
+                    case "PENDING" -> {
+                        Button btnEdit = new Button("Sửa");
+                        btnEdit.setOnAction(e -> openEditItem(item));
+
+                        Button btnHuy = new Button("Hủy");
+                        btnHuy.setStyle("-fx-background-color: #e67e22; -fx-text-fill: white;");
+                        btnHuy.setOnAction(e -> confirmCancelItem(item));
+
+                        setGraphic(new HBox(6, btnEdit, btnHuy));
+                    }
+                    case "ACTIVE" -> {
+                        setGraphic(null);
                     }
                     default -> {
-                        btnAction.setText("Xóa");
-                        btnAction.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
-                        setGraphic(boxDelete);
+                        Button btnXoa = new Button("Xóa");
+                        btnXoa.setStyle("-fx-background-color: #e74c3c; -fx-text-fill: white;");
+                        btnXoa.setOnAction(e -> confirmDeleteItem(item));
+
+                        setGraphic(new HBox(6, btnXoa));
                     }
                 }
             }

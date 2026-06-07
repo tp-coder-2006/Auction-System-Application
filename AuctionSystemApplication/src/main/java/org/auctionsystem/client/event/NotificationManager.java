@@ -115,9 +115,6 @@ public final class NotificationManager {
             body  = "Chúc mừng! Bạn đã thắng phiên đấu giá [" + itemName + "]!";
             type  = ToastType.WIN;
         } else {
-            // Kiểm tra xem user có tham gia đặt bid không
-            // Nếu có (BID_DEDUCT event đã xảy ra trước đó) → thất bại
-            // Đơn giản nhất: hiện thông báo kết thúc cho mọi người
             title = "📋 Đấu giá kết thúc";
             body  = "[" + itemName + "] đã có người chiến thắng.";
             type  = ToastType.INFO;
@@ -133,9 +130,17 @@ public final class NotificationManager {
 
     private static void onItemCancelled(JsonObject payload) {
         String itemName = getString(payload, "item_name", getString(payload, "item_id", "sản phẩm"));
+        String reason   = getString(payload, "cancel_reason", "");
+        String detail   = switch (reason) {
+            case "SELLER_CANCELLED"     -> "Người bán đã hủy phiên đấu giá.";
+            case "NO_BIDS"              -> "Phiên kết thúc mà không có lượt đặt giá nào.";
+            case "ACCOUNT_DEACTIVATED"  -> "Phiên bị hủy do tài khoản liên quan bị vô hiệu hóa.";
+            case "INSUFFICIENT_BALANCE" -> "Phiên bị hủy do người thắng không đủ số dư thanh toán.";
+            default                     -> "Phiên đấu giá đã bị hủy.";
+        };
         enqueue(new ToastData(
                 "❌ Phiên đấu giá bị hủy",
-                "[" + itemName + "] đã bị hủy do không có lượt đặt giá hợp lệ.",
+                "[" + itemName + "] — " + detail,
                 ToastType.INFO));
     }
 

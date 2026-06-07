@@ -148,8 +148,9 @@ public class ItemService {
                 // [NEW] Broadcast ITEM_CANCELLED đến tất cả client
                 JsonObject event = new JsonObject();
                 event.addProperty("event", EventType.ITEM_CANCELLED);
-                event.addProperty("item_id",   itemId);
-                event.addProperty("seller_id", sellerId);
+                event.addProperty("item_id",       itemId);
+                event.addProperty("seller_id",     sellerId);
+                event.addProperty("cancel_reason", "SELLER_CANCELLED");
                 if (item != null) {
                     event.addProperty("item_name", item.getName());
                     if (item.getImageUrl() != null) {

@@ -260,7 +260,6 @@ public class AuctionScheduler {
                 }
 
                 if (winnerId == null) {
-                    // Không có bid → UPDATE trực tiếp trên conn đang giữ lock, không mở connection mới
                     try (PreparedStatement ps = conn.prepareStatement(
                             "UPDATE items SET status = 'cancelled' WHERE id = ? AND is_active = 1")) {
                         ps.setString(1, itemId);
@@ -270,16 +269,16 @@ public class AuctionScheduler {
                     System.out.println("[Scheduler-Settle] Hủy item " + itemId + " (không có winner).");
 
                     JsonObject event = new JsonObject();
-                    event.addProperty("event",     EventType.ITEM_CANCELLED);
-                    event.addProperty("item_id",   itemId);
-                    event.addProperty("item_name", itemName);
-                    event.addProperty("seller_id", sellerId);
+                    event.addProperty("event",          EventType.ITEM_CANCELLED);
+                    event.addProperty("item_id",        itemId);
+                    event.addProperty("item_name",      itemName);
+                    event.addProperty("seller_id",      sellerId);
+                    event.addProperty("cancel_reason",  "NO_BIDS");
                     ConnectedClientRegistry.broadcastAll(event);
                     AdminStatsScheduler.notifyStatsChanged();
                     return;
                 }
 
-                // Kiểm tra is_active của winner và seller trước khi settle
                 boolean winnerActive = userDAO.isActiveById(winnerId, conn);
                 boolean sellerActive = userDAO.isActiveById(sellerId, conn);
 
@@ -297,21 +296,20 @@ public class AuctionScheduler {
                     System.out.println("[Scheduler-Settle] Hủy item " + itemId + " (" + reason + ").");
 
                     JsonObject event = new JsonObject();
-                    event.addProperty("event",     EventType.ITEM_CANCELLED);
-                    event.addProperty("item_id",   itemId);
-                    event.addProperty("item_name", itemName);
-                    event.addProperty("seller_id", sellerId);
+                    event.addProperty("event",          EventType.ITEM_CANCELLED);
+                    event.addProperty("item_id",        itemId);
+                    event.addProperty("item_name",      itemName);
+                    event.addProperty("seller_id",      sellerId);
+                    event.addProperty("cancel_reason",  "ACCOUNT_DEACTIVATED");
                     ConnectedClientRegistry.broadcastAll(event);
                     AdminStatsScheduler.notifyStatsChanged();
                     return;
                 }
 
-                // Trừ tiền bidder + cộng tiền seller + ghi 2 transaction — dùng Service
                 double[] balances = transactionService.settleTransfer(
                         conn, winnerId, sellerId, winAmount, itemId, itemName);
 
                 if (balances == null) {
-                    // Số dư không đủ hoặc lỗi → hủy item
                     try (PreparedStatement ps = conn.prepareStatement(
                             "UPDATE items SET status = 'cancelled' WHERE id = ? AND is_active = 1")) {
                         ps.setString(1, itemId);
@@ -322,20 +320,18 @@ public class AuctionScheduler {
                             + " (winner " + winnerId + " không đủ số dư).");
 
                     JsonObject event = new JsonObject();
-                    event.addProperty("event",     EventType.ITEM_CANCELLED);
-                    event.addProperty("item_id",   itemId);
-                    event.addProperty("item_name", itemName);
-                    event.addProperty("seller_id", sellerId);
+                    event.addProperty("event",          EventType.ITEM_CANCELLED);
+                    event.addProperty("item_id",        itemId);
+                    event.addProperty("item_name",      itemName);
+                    event.addProperty("seller_id",      sellerId);
+                    event.addProperty("cancel_reason",  "INSUFFICIENT_BALANCE");
                     ConnectedClientRegistry.broadcastAll(event);
                     AdminStatsScheduler.notifyStatsChanged();
                     return;
                 }
 
-                // Đổi owner, đóng item — dùng ItemDAO.updateOwner(conn, itemId, winnerId)
-                // (method này cũng SET status = 'closed')
                 itemDAO.updateOwner(conn, itemId, winnerId);
 
-                // Cập nhật current_highest_price
                 String updatePriceSql = "UPDATE items SET current_highest_price = ? WHERE id = ?";
                 try (PreparedStatement ps = conn.prepareStatement(updatePriceSql)) {
                     ps.setDouble(1, winAmount);
@@ -343,10 +339,8 @@ public class AuctionScheduler {
                     ps.executeUpdate();
                 }
 
-                // Ghi lịch sử — dùng ItemHistoryDAO.addHistory(conn, ...)
                 itemHistoryDAO.addHistory(conn, itemId, sellerId, winnerId, winAmount);
 
-                // Query username của winner trước commit — trong cùng transaction
                 String winnerName = winnerId;
                 String nameSql = "SELECT username FROM users WHERE id = ?";
                 try (PreparedStatement ps = conn.prepareStatement(nameSql)) {

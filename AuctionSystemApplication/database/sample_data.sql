@@ -1,11 +1,11 @@
 -- =====================================================
--- Auction System - Sample Data v2.7
--- Password các tài khoản (giữ nguyên từ v2.6):
---   admin            : hash $2a$10$oBbVqXYS8Fb2U2SH...
---   seller-001,002,003: hash $2a$10$CpOhgpJmaU...
---   bidder-001..005  : hash $2a$10$SFDBXsAd65m9...
+-- Auction System - Sample Data
+-- Password các tài khoản:
+--   admin (Admin@1234)            : hash $2a$10$Ad3DCTg6qIwV8zyrTBjL3Ob4pRJpamkDxqxbV0OhaTLMESuoP80GS
+--   seller-001,002,003: hash $2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y
+--   bidder-001..005  : hash $2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y
 -- =====================================================
--- Thay đổi so với v2.6:
+-- Thay đổi:
 --   • users.balance khớp với kết quả cuối của chuỗi transaction
 --   • tx-dep-006: tăng 20M → 50M để bidder-001 đủ ký quỹ 68.5M trước BID_DEDUCT
 --   • tx-bd-008: balance_before = 80,000,000 / balance_after = 11,500,000 (không còn âm)
@@ -36,49 +36,49 @@ INSERT INTO `users` (id, name, username, password, balance, is_active, email, ro
 VALUES
 -- Admin
 ('u-admin-001', 'Administrator', 'admin',
- '$2a$10$oBbVqXYS8Fb2U2SH/ZO71Oina9TgNYbEEZEIFUuebNytgHDJ4f6rC',
+ '$2a$10$Ad3DCTg6qIwV8zyrTBjL3Ob4pRJpamkDxqxbV0OhaTLMESuoP80GS',
  0, 1, 'admin@auctionsystem.com', 'admin', NULL, NULL, 0, NULL),
 
 -- Sellers
 -- balance = 68,500,000 (BID_CREDIT item-008) - 5,000,000 (wit-002) - 10,000,000 (wit-004) = 53,500,000
 ('u-seller-001', 'Nguyen Van An', 'nguyenvanan',
- '$2a$10$CpOhgpJmaU/AjsAPCvo6iOYbcHWRcFmSNthT/s/i4KOJNshsu5twS',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  53500000, 1, 'an.nguyen@email.com', 'seller', '0901234561', 4.8, 5, NULL),
 
 -- balance = 17,800,000 (BID_CREDIT item-007) - 3,000,000 (wit-003) - 5,000,000 (wit-005) = 9,800,000
 ('u-seller-002', 'Tran Thi Bich', 'tranthibich',
- '$2a$10$CpOhgpJmaU/AjsAPCvo6iOYbcHWRcFmSNthT/s/i4KOJNshsu5twS',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  9800000, 1, 'bich.tran@email.com', 'seller', '0901234562', 4.2, 5, NULL),
 
 -- balance = 3,200,000 (dep-s03)
 ('u-seller-003', 'Le Hoang Cuong', 'lehoangcuong',
- '$2a$10$CpOhgpJmaU/AjsAPCvo6iOYbcHWRcFmSNthT/s/i4KOJNshsu5twS',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  3200000, 1, 'cuong.le@email.com', 'seller', '0901234563', NULL, 0, NULL),
 
 -- Bidders
 -- balance = 30M + 50M - 68.5M + 50M + 10M = 71,500,000
 ('u-bidder-001', 'Pham Minh Dung', 'phamminhdung',
- '$2a$10$SFDBXsAd65m9pXo8S/Q3MOqZIT282GRw7LfR0DFJe.BOqa8mHc0j2',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  71500000, 1, 'dung.pham@email.com', 'bidder', '0901234564', NULL, 0, NULL),
 
 -- balance = 20M + 5M - 17.8M + 8M = 15,200,000
 ('u-bidder-002', 'Hoang Thi Em', 'hoangthiem',
- '$2a$10$SFDBXsAd65m9pXo8S/Q3MOqZIT282GRw7LfR0DFJe.BOqa8mHc0j2',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  15200000, 1, 'em.hoang@email.com', 'bidder', '0901234565', NULL, 0, NULL),
 
 -- balance = 10M + 5M = 15,000,000
 ('u-bidder-003', 'Vu Quoc Phong', 'vuquocphong',
- '$2a$10$SFDBXsAd65m9pXo8S/Q3MOqZIT282GRw7LfR0DFJe.BOqa8mHc0j2',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  15000000, 1, 'phong.vu@email.com', 'bidder', '0901234566', NULL, 0, NULL),
 
 -- balance = 15M + 10M + 10M = 35,000,000
 ('u-bidder-004', 'Dang Thi Giang', 'dangthigiang',
- '$2a$10$SFDBXsAd65m9pXo8S/Q3MOqZIT282GRw7LfR0DFJe.BOqa8mHc0j2',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  35000000, 1, 'giang.dang@email.com', 'bidder', '0901234567', NULL, 0, NULL),
 
 -- Bidder bị khóa — balance = 3M - 1M = 2,000,000
 ('u-bidder-005', 'Bui Van Hai', 'buivanhai',
- '$2a$10$SFDBXsAd65m9pXo8S/Q3MOqZIT282GRw7LfR0DFJe.BOqa8mHc0j2',
+ '$2a$10$zMWdmmudOguQpMbR2c0qquacJE72/zVZRNcOUgsUP1RIRW94ij2y',
  2000000, 0, 'hai.bui@email.com', 'bidder', NULL, NULL, 0, NULL);
 
 -- =====================================================

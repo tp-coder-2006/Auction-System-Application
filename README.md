@@ -382,12 +382,33 @@ cd Auction-System-Application/AuctionSystemApplication
 
 ### 2. Tạo database
 
-```bash
-mysql -u root -p < database/init_database.sql
+**Bước 1 — Mở kết nối vào MySQL** (PowerShell):
 
-# Tùy chọn: nạp dữ liệu mẫu
-mysql -u root -p mydb < database/sample_data.sql
+```powershell
+& "C:\Program Files\MySQL\MySQL Server 8.0\bin\mysql.exe" -u root -p
 ```
+
+**Bước 2 — Sau khi nhập mật khẩu và thấy chữ `mysql>`, gõ lệnh reset database:**
+
+```sql
+DROP DATABASE IF EXISTS mydb;
+CREATE DATABASE mydb;
+USE mydb;
+```
+
+**Bước 3 — Nạp file cấu hình (init_database):**
+
+```bash
+source <đường-dẫn-tuyệt-đối>/AuctionSystemApplication/database/init_database.sql
+```
+
+**Bước 4 — Nạp dữ liệu mẫu (tùy chọn):**
+
+```bash
+source <đường-dẫn-tuyệt-đối>/AuctionSystemApplication/database/sample_data.sql
+```
+
+> **Lưu ý:** Trong lệnh `source` dùng dấu gạch chéo xuôi `/` và **không** cần để đường dẫn trong dấu ngoặc kép.
 
 ### 3. Cấu hình kết nối database
 

@@ -113,4 +113,13 @@ public final class EventType {
      *   message — lý do / thông báo ban (vd: "Tài khoản của bạn đã bị khóa bởi quản trị viên.")
      */
     public static final String BANNED             = "BANNED";
+
+    /**
+     * Server gửi trực tiếp đến client khi tài khoản đăng nhập ở thiết bị/phiên khác,
+     * khiến phiên hiện tại bị kết thúc cưỡng bức.
+     *
+     * Payload JSON:
+     *   message — thông báo (vd: "Tài khoản của bạn vừa đăng nhập ở nơi khác.")
+     */
+    public static final String KICKED             = "KICKED";
 }

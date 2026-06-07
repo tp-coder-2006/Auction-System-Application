@@ -204,7 +204,7 @@ public class UserService {
                             String.valueOf(loggedInUser.getId()));
                     if (existingSessionId != null) {
                         com.google.gson.JsonObject kickEvent = new com.google.gson.JsonObject();
-                        kickEvent.addProperty("event", "BANNED");
+                        kickEvent.addProperty("event", "KICKED");
                         kickEvent.addProperty("message",
                                 "Tài khoản của bạn vừa đăng nhập ở nơi khác. Phiên này đã bị kết thúc.");
                         ConnectedClientRegistry.sendTo(existingSessionId, kickEvent);
@@ -235,18 +235,18 @@ public class UserService {
                     response.addProperty("role",       loggedInUser.getRole().name());
                     response.addProperty("balance",    loggedInUser.getBalance());
 
-                    String avatarUrl = loggedInUser.getAvatarUrl(); // [MỚI]
+                    String avatarUrl = loggedInUser.getAvatarUrl();
 
                     if (phone     != null) response.addProperty("phone",      phone);
                     if (rating    != null) response.addProperty("rating",     rating);
-                    if (avatarUrl != null) response.addProperty("avatar_url", avatarUrl); // [MỚI]
+                    if (avatarUrl != null) response.addProperty("avatar_url", avatarUrl);
                     response.addProperty("rating_count", ratingCount);
 
                     UserSession userSession = new UserSession(
                             sessionId, loggedInUser.getId(), loggedInUser.getName(),
                             loggedInUser.getUsername(), loggedInUser.getEmail(),
                             loggedInUser.getRole().name(), loggedInUser.getBalance(),
-                            phone, rating, ratingCount, avatarUrl // [MỚI]
+                            phone, rating, ratingCount, avatarUrl
                     );
 
                     SessionManager.addSession(userSession);

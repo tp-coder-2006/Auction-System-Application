@@ -14,121 +14,135 @@ import org.auctionsystem.client.Controller.Scene_Utils;
 import org.auctionsystem.client.session.UserSession;
 
 /**
- * BanWatcher — Lắng nghe sự kiện BANNED từ server và xử lý đăng xuất tức thì.
+ * BanWatcher — Lắng nghe 2 sự kiện cưỡng bức đăng xuất từ server:
  *
- * <p>Luồng hoạt động khi bị ban:
+ * <ul>
+ *   <li>{@link EventType#BANNED}  — Admin khóa tài khoản: hiện lỗi "Tài khoản bị khóa".</li>
+ *   <li>{@link EventType#KICKED}  — Đăng nhập ở nơi khác: hiện cảnh báo "Phiên bị kết thúc".</li>
+ * </ul>
+ *
+ * <p>Luồng hoạt động:
  * <pre>
- *   Server gửi JSON {"event":"BANNED","message":"..."}
+ *   Server gửi JSON {"event":"BANNED"|"KICKED","message":"..."}
  *       ↓
- *   ServerConnection.readerThread nhận → EventDispatcher.dispatch("BANNED", payload)
+ *   ServerConnection.readerThread → EventDispatcher.dispatch(eventType, payload)
  *       ↓
- *   Platform.runLater → BanWatcher.handleBanned(payload)
+ *   Platform.runLater → BanWatcher.handleBanned / handleKicked
  *       ↓
- *   Hiện Alert → user bấm OK
- *       ↓
- *   Clear UserSession → ServerConnection.disconnect() → chuyển về Login
+ *   Hiện Alert → user bấm OK → performForcedLogout()
  * </pre>
- *
- * <p>Stage được lấy từ {@link Scene_Utils#getPrimaryStage()} — đã được set
- * 1 lần duy nhất trong {@code Main.start()}. Không cần truyền Stage qua tham số.
- *
- * <p>Cách dùng trong {@code Controller_Login} sau khi login thành công:
- * <pre>{@code
- *   ServerConnection.connect();
- *   BanWatcher.activate();
- * }</pre>
  */
 public final class BanWatcher {
 
     private BanWatcher() {}
 
-    /** Trạng thái: đã kích hoạt chưa (tránh đăng ký trùng). */
     private static volatile boolean active = false;
-    private static final String HANDLER_KEY = java.util.UUID.randomUUID().toString();
+    private static final String BANNED_KEY = java.util.UUID.randomUUID().toString();
+    private static final String KICKED_KEY = java.util.UUID.randomUUID().toString();
 
     // ─────────────────────────────────────────────────────────────────────────
     //  API công khai
     // ─────────────────────────────────────────────────────────────────────────
 
     /**
-     * Kích hoạt lắng nghe sự kiện BANNED.
-     * Gọi 1 lần ngay sau khi login thành công và {@code ServerConnection.connect()} đã được gọi.
-     * Stage lấy tự động từ {@link Scene_Utils#getPrimaryStage()}.
+     * Kích hoạt lắng nghe cả BANNED và KICKED.
+     * Gọi 1 lần ngay sau khi login thành công.
      */
     public static synchronized void activate() {
-        if (active) return; // Đã đăng ký rồi, không đăng ký lại
+        if (active) return;
         active = true;
-        EventDispatcher.registerGlobal(EventType.BANNED, HANDLER_KEY, BanWatcher::handleBanned);
-        System.out.println("[BanWatcher] Đã kích hoạt — đang lắng nghe sự kiện BANNED.");
+        EventDispatcher.registerGlobal(EventType.BANNED, BANNED_KEY, BanWatcher::handleBanned);
+        EventDispatcher.registerGlobal(EventType.KICKED, KICKED_KEY, BanWatcher::handleKicked);
+        System.out.println("[BanWatcher] Đã kích hoạt — lắng nghe BANNED và KICKED.");
     }
 
     /**
-     * Hủy kích hoạt (gọi khi user tự logout để dọn dẹp handler).
-     * Không cần gọi khi bị ban vì {@code handleBanned} tự hủy đăng ký.
+     * Hủy kích hoạt (gọi khi user tự logout).
      */
     public static synchronized void deactivate() {
         if (!active) return;
         active = false;
-        EventDispatcher.unregisterGlobal(EventType.BANNED, HANDLER_KEY);
+        EventDispatcher.unregisterGlobal(EventType.BANNED, BANNED_KEY);
+        EventDispatcher.unregisterGlobal(EventType.KICKED, KICKED_KEY);
         System.out.println("[BanWatcher] Đã hủy kích hoạt.");
     }
 
     // ─────────────────────────────────────────────────────────────────────────
-    //  Xử lý nội bộ
+    //  Xử lý BANNED — admin khóa tài khoản
     // ─────────────────────────────────────────────────────────────────────────
 
-    /**
-     * Xử lý sự kiện BANNED.
-     * Chạy trên JavaFX Application Thread (do EventDispatcher bọc trong Platform.runLater).
-     */
     private static void handleBanned(JsonObject payload) {
-        // Hủy handler ngay lập tức để tránh kích hoạt nhiều lần
-        active = false;
-        EventDispatcher.unregisterGlobal(EventType.BANNED, HANDLER_KEY);
+        unregisterAll();
 
-        // Trích xuất lý do ban từ payload (nếu có)
-        String reason = "Tài khoản của bạn đã bị khóa bởi quản trị viên.";
-        if (payload != null && payload.has("message") && !payload.get("message").isJsonNull()) {
-            reason = payload.get("message").getAsString();
-        }
+        String message = extractMessage(payload, "Tài khoản của bạn đã bị khóa bởi quản trị viên.");
+        System.out.println("[BanWatcher] Tài khoản bị ban. Lý do: " + message);
 
-        System.out.println("[BanWatcher] Tài khoản bị ban. Lý do: " + reason);
-
-        // Lấy Stage từ Scene_Utils (đã set sẵn từ Main.start())
         Stage primaryStage = Scene_Utils.getPrimaryStage();
 
-        // Hiện hộp thoại thông báo
-        Alert alert = new Alert(Alert.AlertType.ERROR, reason, ButtonType.OK);
+        Alert alert = new Alert(Alert.AlertType.ERROR, message, ButtonType.OK);
         alert.setTitle("Tài khoản bị khóa");
-        alert.setHeaderText("Bạn đã bị khóa khỏi hệ thống!");
+        alert.setHeaderText("Tài khoản của bạn đã bị khóa!");
+        configureAlert(alert, primaryStage);
+        alert.showAndWait();
+
+        performForcedLogout(primaryStage);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Xử lý KICKED — đăng nhập ở nơi khác
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private static void handleKicked(JsonObject payload) {
+        unregisterAll();
+
+        String message = extractMessage(payload, "Tài khoản của bạn vừa đăng nhập ở nơi khác. Phiên này đã bị kết thúc.");
+        System.out.println("[BanWatcher] Bị kick do đăng nhập trùng. Thông báo: " + message);
+
+        Stage primaryStage = Scene_Utils.getPrimaryStage();
+
+        Alert alert = new Alert(Alert.AlertType.WARNING, message, ButtonType.OK);
+        alert.setTitle("Phiên đăng nhập bị kết thúc");
+        alert.setHeaderText("Bạn đã đăng nhập ở thiết bị khác!");
+        configureAlert(alert, primaryStage);
+        alert.showAndWait();
+
+        performForcedLogout(primaryStage);
+    }
+
+    // ─────────────────────────────────────────────────────────────────────────
+    //  Dùng chung
+    // ─────────────────────────────────────────────────────────────────────────
+
+    private static synchronized void unregisterAll() {
+        if (!active) return;
+        active = false;
+        EventDispatcher.unregisterGlobal(EventType.BANNED, BANNED_KEY);
+        EventDispatcher.unregisterGlobal(EventType.KICKED, KICKED_KEY);
+    }
+
+    private static String extractMessage(JsonObject payload, String defaultMsg) {
+        if (payload != null && payload.has("message") && !payload.get("message").isJsonNull()) {
+            return payload.get("message").getAsString();
+        }
+        return defaultMsg;
+    }
+
+    private static void configureAlert(Alert alert, Stage primaryStage) {
         alert.initModality(Modality.APPLICATION_MODAL);
         alert.initStyle(StageStyle.DECORATED);
         if (primaryStage != null) {
             alert.initOwner(primaryStage);
         }
-
-        alert.showAndWait(); // Block cho đến khi user bấm OK
-
-        performForcedLogout(primaryStage);
     }
 
-    /**
-     * Thực hiện logout cưỡng bức:
-     * xóa toàn bộ dữ liệu phiên và chuyển về màn hình Login.
-     */
     private static void performForcedLogout(Stage primaryStage) {
-        // 1. Hủy tất cả event handlers còn lại
         NotificationManager.deactivate();
         BalanceWatcher.deactivate();
         EventDispatcher.unregisterAllGlobal();
 
-        // 2. Clear dữ liệu phiên phía client
         UserSession.getInstance().clear();
-
-        // 3. Ngắt kết nối socket (không gửi LOGOUT vì server đã vô hiệu hóa session rồi)
         ServerConnection.disconnect();
 
-        // 4. Chuyển về màn hình Login
         if (primaryStage == null) {
             System.err.println("[BanWatcher] Không có primaryStage — không thể chuyển màn hình.");
             return;

@@ -229,9 +229,11 @@ public class Controller_Seller_Transaction_History {
         );
 
         ObservableList<TransactionRow> items = table_transactions.getItems();
-        if (items == null) items = FXCollections.observableArrayList();
-        items.add(0, row);
-        table_transactions.setItems(items);
+        ObservableList<TransactionRow> finalItems = (items != null)
+                ? items
+                : FXCollections.observableArrayList();
+        Platform.runLater(() -> finalItems.add(0, row));
+        table_transactions.setItems(finalItems);
     }
 
     // ── Quay lại ──────────────────────────────────────────────────────────────

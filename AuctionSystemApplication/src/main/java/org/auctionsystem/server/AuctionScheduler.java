@@ -5,6 +5,7 @@ import org.auctionsystem.client.event.EventType;
 import org.auctionsystem.server.Connectivity.DatabaseConnection;
 import org.auctionsystem.server.DAO.ItemDAO;
 import org.auctionsystem.server.DAO.ItemHistoryDAO;
+import org.auctionsystem.server.DAO.UserDAO;
 import org.auctionsystem.server.service.TransactionService;
 
 import java.sql.Connection;
@@ -26,6 +27,7 @@ public class AuctionScheduler {
     private static final ItemDAO            itemDAO            = new ItemDAO();
     private static final ItemHistoryDAO     itemHistoryDAO     = new ItemHistoryDAO();
     private static final TransactionService transactionService = new TransactionService();
+    private static final UserDAO            userDAO            = new UserDAO();
 
     // ─────────────────────────────────────────────────────────────────────────
     //  Khởi động / Dừng
@@ -277,6 +279,33 @@ public class AuctionScheduler {
                     return;
                 }
 
+                // Kiểm tra is_active của winner và seller trước khi settle
+                boolean winnerActive = userDAO.isActiveById(winnerId, conn);
+                boolean sellerActive = userDAO.isActiveById(sellerId, conn);
+
+                if (!winnerActive || !sellerActive) {
+                    try (PreparedStatement ps = conn.prepareStatement(
+                            "UPDATE items SET status = 'cancelled' WHERE id = ? AND is_active = 1")) {
+                        ps.setString(1, itemId);
+                        ps.executeUpdate();
+                    }
+                    conn.commit();
+
+                    String reason = !winnerActive
+                            ? "winner " + winnerId + " bị deactivate"
+                            : "seller " + sellerId + " bị deactivate";
+                    System.out.println("[Scheduler-Settle] Hủy item " + itemId + " (" + reason + ").");
+
+                    JsonObject event = new JsonObject();
+                    event.addProperty("event",     EventType.ITEM_CANCELLED);
+                    event.addProperty("item_id",   itemId);
+                    event.addProperty("item_name", itemName);
+                    event.addProperty("seller_id", sellerId);
+                    ConnectedClientRegistry.broadcastAll(event);
+                    AdminStatsScheduler.notifyStatsChanged();
+                    return;
+                }
+
                 // Trừ tiền bidder + cộng tiền seller + ghi 2 transaction — dùng Service
                 double[] balances = transactionService.settleTransfer(
                         conn, winnerId, sellerId, winAmount, itemId, itemName);
@@ -317,18 +346,28 @@ public class AuctionScheduler {
                 // Ghi lịch sử — dùng ItemHistoryDAO.addHistory(conn, ...)
                 itemHistoryDAO.addHistory(conn, itemId, sellerId, winnerId, winAmount);
 
+                // Query username của winner trước commit — trong cùng transaction
+                String winnerName = winnerId;
+                String nameSql = "SELECT username FROM users WHERE id = ?";
+                try (PreparedStatement ps = conn.prepareStatement(nameSql)) {
+                    ps.setString(1, winnerId);
+                    ResultSet rs = ps.executeQuery();
+                    if (rs.next()) winnerName = rs.getString("username");
+                }
+
                 conn.commit();
                 System.out.println("[Scheduler-Settle] Settled item " + itemId
                         + " → winner: " + winnerId + ", amount: " + winAmount);
 
                 // Broadcast AUCTION_SETTLED cho tất cả client
                 JsonObject event = new JsonObject();
-                event.addProperty("event",     EventType.AUCTION_SETTLED);
-                event.addProperty("item_id",   itemId);
-                event.addProperty("item_name", itemName);
-                event.addProperty("seller_id", sellerId);
-                event.addProperty("bidder_id", winnerId);
-                event.addProperty("amount",    winAmount);
+                event.addProperty("event",       EventType.AUCTION_SETTLED);
+                event.addProperty("item_id",     itemId);
+                event.addProperty("item_name",   itemName);
+                event.addProperty("seller_id",   sellerId);
+                event.addProperty("bidder_id",   winnerId);
+                event.addProperty("bidder_name", winnerName);
+                event.addProperty("amount",      winAmount);
                 ConnectedClientRegistry.broadcastAll(event);
 
                 // Broadcast BID_DEDUCT → bidder, BID_CREDIT → seller (real-time transaction history)

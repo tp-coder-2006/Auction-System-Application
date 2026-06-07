@@ -187,6 +187,7 @@ public class Controller_Searching_room {
         item.addProperty("startTime",            str(payload, "start_time"));
         item.addProperty("endTime",              str(payload, "end_time"));
         item.addProperty("sellerId",             str(payload, "seller_id"));
+        item.addProperty("sellerUsername",       str(payload, "seller_name"));
         if (payload.has("image_url") && !payload.get("image_url").isJsonNull()) {
             item.addProperty("imageUrl", str(payload, "image_url"));
         }

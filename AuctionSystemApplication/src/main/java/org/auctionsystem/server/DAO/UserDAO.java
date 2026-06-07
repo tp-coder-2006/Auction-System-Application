@@ -207,6 +207,20 @@ public class UserDAO {
         return results;
     }
 
+    // ─── KIỂM TRA TRẠNG THÁI ──────────────────────────────────────────────────
+
+    public boolean isActiveById(String userId, Connection conn) {
+        String sql = "SELECT is_active FROM users WHERE id = ?";
+        try (PreparedStatement ps = conn.prepareStatement(sql)) {
+            ps.setString(1, userId);
+            ResultSet rs = ps.executeQuery();
+            return rs.next() && rs.getBoolean("is_active");
+        } catch (SQLException e) {
+            System.err.println("[UserDAO.isActiveById] Lỗi: " + e.getMessage());
+            return false;
+        }
+    }
+
     // ─── CẬP NHẬT ─────────────────────────────────────────────────────────────
 
     public boolean updateBalance(String userId, double amount, Connection conn) {

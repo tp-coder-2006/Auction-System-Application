@@ -133,11 +133,12 @@ public class Controller_Transaction_History {
                 note
         );
 
-        // Thêm lên đầu bảng — balance label đã được BalanceWatcher cập nhật tự động
         ObservableList<TransactionRow> items = table_transactions.getItems();
-        if (items == null) items = FXCollections.observableArrayList();
-        items.add(0, row);
-        table_transactions.setItems(items);
+        ObservableList<TransactionRow> finalItems = (items != null)
+                ? items
+                : FXCollections.observableArrayList();
+        Platform.runLater(() -> finalItems.add(0, row));
+        table_transactions.setItems(finalItems);
     }
 
     // ── Load dữ liệu từ server ────────────────────────────────────────────────

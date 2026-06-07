@@ -75,7 +75,7 @@ public class Controller_Bidding_History {
         row.addProperty("bidTime",    getStr(payload, "bid_time"));
 
         // Thêm vào đầu danh sách (bid mới nhất hiện lên trên)
-        masterList.add(0, row);
+        Platform.runLater(() -> masterList.add(0, row));
     }
 
     // ─────────────────────────────────────────────────────────────────────────

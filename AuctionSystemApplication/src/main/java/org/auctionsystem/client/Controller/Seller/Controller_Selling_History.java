@@ -80,15 +80,14 @@ public class Controller_Selling_History {
         row.addProperty("itemName",  getStr(payload, "item_name"));
         row.addProperty("sellerId",  sellerId);
         row.addProperty("buyerId",   getStr(payload, "bidder_id"));
-        // bidder_name không có trong payload AUCTION_SETTLED — để trống, fallback về buyerId
-        row.addProperty("buyerName", "");
+        row.addProperty("buyerName", getStr(payload, "bidder_name"));
         row.addProperty("soldPrice", payload.has("amount")
                 ? payload.get("amount").getAsDouble() : 0.0);
         row.addProperty("soldTime",
                 LocalDateTime.now().format(DT_FMT));
 
         // Thêm vào đầu danh sách (phiên mới nhất hiện lên trên)
-        historyList.add(0, row);
+        Platform.runLater(() -> historyList.add(0, row));
     }
 
     // ─────────────────────────────────────────────────────────────────────────

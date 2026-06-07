@@ -9,6 +9,7 @@ import org.auctionsystem.model.entities.Item;
 import org.auctionsystem.model.enums.ItemStatus;
 import org.auctionsystem.server.DAO.ImageDAO;
 import org.auctionsystem.server.DAO.ItemDAO;
+import org.auctionsystem.server.DAO.UserDAO;
 import org.auctionsystem.server.AuctionScheduler;
 import org.auctionsystem.server.AdminStatsScheduler;
 import org.auctionsystem.server.ConnectedClientRegistry;
@@ -23,6 +24,7 @@ import java.util.UUID;
 public class ItemService {
     private final ItemDAO  itemDAO  = new ItemDAO();
     private final ImageDAO imageDAO = new ImageDAO();
+    private final UserDAO  userDAO  = new UserDAO();
     private final Gson gson = GsonConfig.create();
 
     // 1. GIỮ NGUYÊN
@@ -525,6 +527,12 @@ public class ItemService {
             }
 
             // Broadcast để Searching Room thêm item mới vào bảng ngay lập tức
+            String sellerUsername = sellerId;
+            try {
+                org.auctionsystem.model.entities.User seller = userDAO.getProfileById(sellerId);
+                if (seller != null && seller.getUsername() != null) sellerUsername = seller.getUsername();
+            } catch (Exception ignored) {}
+
             JsonObject event = new JsonObject();
             event.addProperty("event",                "ITEM_ADDED");
             event.addProperty("item_id",              itemId);
@@ -535,6 +543,7 @@ public class ItemService {
             event.addProperty("start_time",           startTime);
             event.addProperty("end_time",             endTime);
             event.addProperty("seller_id",            sellerId);
+            event.addProperty("seller_name",          sellerUsername);
             if (finalImageUrl != null) event.addProperty("image_url", finalImageUrl);
             ConnectedClientRegistry.broadcastAll(event);
             AdminStatsScheduler.notifyStatsChanged();

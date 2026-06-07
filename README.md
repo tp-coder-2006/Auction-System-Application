@@ -1,21 +1,34 @@
 # 🏷️ Auction System Application
 
+<div align="center">
+
+![Java](https://img.shields.io/badge/Java-21-orange?logo=openjdk)
+![JavaFX](https://img.shields.io/badge/JavaFX-25.0.2-blue?logo=java)
+![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql&logoColor=white)
+![Maven](https://img.shields.io/badge/Maven-3.8+-C71A36?logo=apachemaven&logoColor=white)
+![License](https://img.shields.io/badge/License-MIT-green)
+![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
+
+</div>
+
 Ứng dụng đấu giá trực tuyến theo thời gian thực, xây dựng bằng **Java 21**, **JavaFX 25** và **MySQL 8**. Hệ thống sử dụng kiến trúc **client-server qua TCP socket tùy chỉnh**, truyền dữ liệu bằng JSON, hỗ trợ ba vai trò: **Bidder**, **Seller** và **Admin**.
 
 ---
 
 ## 📋 Mục lục
 
-- [Tính năng](#tính-năng)
-- [Kiến trúc hệ thống](#kiến-trúc-hệ-thống)
-- [Công nghệ sử dụng](#công-nghệ-sử-dụng)
-- [Cấu trúc dự án](#cấu-trúc-dự-án)
-- [Cơ sở dữ liệu](#cơ-sở-dữ-liệu)
-- [Yêu cầu hệ thống](#yêu-cầu-hệ-thống)
-- [Cài đặt và cấu hình](#cài-đặt-và-cấu-hình)
-- [Chạy ứng dụng](#chạy-ứng-dụng)
-- [Kiểm thử](#kiểm-thử)
-- [CI/CD](#cicd)
+- [Tính năng](#-tính-năng)
+- [Kiến trúc hệ thống](#-kiến-trúc-hệ-thống)
+- [Công nghệ sử dụng](#-công-nghệ-sử-dụng)
+- [Cấu trúc dự án](#-cấu-trúc-dự-án)
+- [Cơ sở dữ liệu](#-cơ-sở-dữ-liệu)
+- [Yêu cầu hệ thống](#-yêu-cầu-hệ-thống)
+- [Cài đặt và cấu hình](#-cài-đặt-và-cấu-hình)
+- [Chạy ứng dụng](#-chạy-ứng-dụng)
+- [Kiểm thử](#-kiểm-thử)
+- [CI/CD](#-cicd)
+- [Lưu ý kỹ thuật](#-lưu-ý-kỹ-thuật)
+- [Đóng góp](#-đóng-góp)
 
 ---
 
@@ -85,10 +98,10 @@
 
 ### Giao thức truyền thông
 
-Mọi tin nhắn là **JSON phân cách bằng dòng mới** qua kết nối TCP liên tục. Mỗi request có trường `action`; server định tuyến và trả về response cùng `action` cùng `status` (`success` / `error`).
+Mọi tin nhắn là **JSON phân cách bằng dòng mới** qua kết nối TCP liên tục. Mỗi request có trường `action`; server định tuyến và trả về response cùng `action` và `status` (`success` / `error`).
 
 **Request từ client:**
-```text
+```json
 { "action": "PLACE_BID", "request_id": "uuid", "item_id": "...", "bid_amount": 500000 }
 ```
 
@@ -97,8 +110,8 @@ Mọi tin nhắn là **JSON phân cách bằng dòng mới** qua kết nối TCP
 { "action": "PLACE_BID", "request_id": "uuid", "status": "success", "data": { ... } }
 ```
 
-**Sự kiện server đẩy xuống** (không cần request — broadcast đến tất cả client):
-```text
+**Sự kiện server đẩy xuống** (broadcast đến tất cả client, không cần request):
+```json
 { "event": "BID_PLACED", "item_id": "...", "bid_amount": 500000, "bidder_id": "..." }
 ```
 
@@ -112,9 +125,8 @@ Mọi tin nhắn là **JSON phân cách bằng dòng mới** qua kết nối TCP
 | `ITEM_CANCELLED` | Vật phẩm bị hủy (hết giờ không có bid, hoặc hủy thủ công) |
 | `END_TIME_EXTENDED` | Anti-sniping: gia hạn thêm 30 giây |
 | `ITEM_UPDATED` | Seller cập nhật thông tin vật phẩm |
-| `ITEM_TIME_UPDATED` | Seller cập nhật thời gian bắt đầu / kết thúc |
 | `ITEM_ADDED` | Vật phẩm mới được đăng |
-| `ITEM_DELETED` | Vật phẩm bị xóa (cứng hoặc mềm) |
+| `ITEM_DELETED` | Vật phẩm bị xóa — admin luôn hard delete; seller hard delete nếu chưa có bid, soft delete nếu đã có bid |
 | `ITEM_RELISTED` | Vật phẩm đã hủy được đăng lại |
 | `BALANCE_UPDATED` | Số dư tài khoản thay đổi |
 | `BID_DEDUCT` | Trừ tiền người thắng đấu giá |
@@ -178,7 +190,7 @@ Auction-System-Application/
         │   │   └── enums/
         │   │       ├── UserRole.java      # BIDDER, SELLER, ADMIN
         │   │       ├── ItemStatus.java    # PENDING, ACTIVE, CLOSED, CANCELLED
-        │   │       └── TransactionType.java # DEPOSIT, WITHDRAW, BID_DEDUCT, BID_CREDIT
+        │   │       └── TransactionType.java
         │   │
         │   ├── client/
         │   │   ├── Main.java              # Entry point JavaFX
@@ -198,111 +210,38 @@ Auction-System-Application/
         │   │       ├── Controller_Register.java
         │   │       ├── Scene_Utils.java        # Tiện ích chuyển màn hình
         │   │       ├── BidPriceChartBuilder.java
-        │   │       ├── Admin/
-        │   │       │   ├── Controller_Admin_Dashboard.java
-        │   │       │   ├── Controller_Admin_User_Management.java
-        │   │       │   ├── Controller_Admin_Item_Management.java
-        │   │       │   ├── Controller_Admin_Financial_Management.java
-        │   │       │   └── Controller_Admin_Stats_Detail.java
-        │   │       ├── Bidder/
-        │   │       │   ├── Controller_Bidder_Dashboard.java
-        │   │       │   ├── Controller_Searching_room.java
-        │   │       │   ├── Controller_Item_Detail.java
-        │   │       │   ├── Controller_Bidding_room.java
-        │   │       │   ├── Controller_Bidding_Result.java
-        │   │       │   ├── Controller_Bidding_History.java
-        │   │       │   ├── Controller_My_Items_Bidder.java
-        │   │       │   ├── Controller_Wallet_Transaction.java
-        │   │       │   ├── Controller_Transaction_History.java
-        │   │       │   ├── Controller_Bidder_Profile.java
-        │   │       │   ├── Controller_Search_User.java
-        │   │       │   └── Controller_View_Other_Profile.java
-        │   │       └── Seller/
-        │   │           ├── Controller_Seller_Dashboard.java
-        │   │           ├── Controller_My_Items.java
-        │   │           ├── Controller_Add_Item.java
-        │   │           ├── Controller_Edit_Item.java
-        │   │           ├── Controller_Seller_Item_Detail.java
-        │   │           ├── Controller_Selling_History.java
-        │   │           ├── Controller_Seller_Wallet.java
-        │   │           ├── Controller_Seller_Transaction_History.java
-        │   │           ├── Controller_Seller_Profile.java
-        │   │           └── Controller_Search_User_Seller.java
+        │   │       ├── Admin/                  # 5 controller cho Admin
+        │   │       ├── Bidder/                 # 12 controller cho Bidder
+        │   │       └── Seller/                 # 10 controller cho Seller
         │   │
         │   └── server/
         │       ├── AuctionServer.java          # Entry point server (cổng 8888)
         │       ├── ClientHandler.java          # Thread mỗi client, định tuyến action
-        │       ├── ConnectedClientRegistry.java# Theo dõi toàn bộ ClientHandler đang kết nối
-        │       ├── AuctionScheduler.java       # Poll 200ms: PENDING→ACTIVE, ACTIVE→CLOSED
+        │       ├── ConnectedClientRegistry.java
+        │       ├── AuctionScheduler.java       # Poll 200ms: PENDING→ACTIVE→CLOSED
         │       ├── AdminStatsScheduler.java    # Push 30s: thống kê đến admin online
         │       ├── Connectivity/
         │       │   └── DatabaseConnection.java # Singleton HikariCP (pool max 20)
         │       ├── session/
-        │       │   ├── SessionManager.java     # Registry phiên phía server
-        │       │   └── UserSession.java        # Model phiên phía server
         │       ├── util/
-        │       │   └── GsonConfig.java         # Cấu hình Gson dùng chung
-        │       ├── DAO/
-        │       │   ├── UserDAO.java
-        │       │   ├── ItemDAO.java
-        │       │   ├── BidDAO.java
-        │       │   ├── TransactionDAO.java
-        │       │   ├── AdminDAO.java
-        │       │   ├── ImageDAO.java
-        │       │   ├── ItemHistoryDAO.java
-        │       │   └── RatingDAO.java
-        │       ├── handler/
-        │       │   ├── UserHandler.java
-        │       │   ├── ItemHandler.java
-        │       │   ├── BidHandler.java
-        │       │   ├── TransactionHandler.java
-        │       │   ├── AdminHandler.java
-        │       │   ├── HistoryHandler.java
-        │       │   ├── RatingHandler.java
-        │       │   └── ImageHandler.java
-        │       └── service/
-        │           ├── UserService.java
-        │           ├── ItemService.java
-        │           ├── BidService.java
-        │           ├── TransactionService.java
-        │           ├── AdminService.java
-        │           ├── ImageService.java
-        │           ├── ItemHistoryService.java
-        │           └── RatingService.java
+        │       ├── DAO/                        # 8 DAO classes
+        │       ├── handler/                    # 8 handler classes
+        │       └── service/                    # 8 service classes
         │
         ├── main/resources/org/auctionsystem/
-        │   ├── CSS/                           # Stylesheet JavaFX (15 file)
-        │   ├── Icon/                          # Ảnh mặc định, icon sao đánh giá
-        │   └── client/View/                   # FXML layout tất cả màn hình (29 file)
+        │   ├── CSS/                           # 15 stylesheet JavaFX
+        │   ├── Icon/                          # Ảnh mặc định, icon sao
+        │   └── client/View/                   # 29 file FXML layout
         │
         └── test/java/org/auctionsystem/
-            ├── client/session/
-            │   └── UserSessionClientTest.java
-            └── server/
-                ├── AuctionSchedulerTest.java
-                ├── AdminStatsSchedulerTest.java
-                ├── ClientHandlerRouteTest.java
-                ├── ConcurrencyTest.java
-                ├── session/
-                │   ├── SessionManagerTest.java
-                │   └── UserSessionServerTest.java
-                └── service/
-                    ├── UserServiceTest.java
-                    ├── ItemServiceTest.java
-                    ├── BidServiceTest.java
-                    ├── TransactionServiceTest.java
-                    ├── AdminServiceTest.java
-                    ├── ImageServiceTest.java
-                    ├── ItemHistoryServiceTest.java
-                    ├── SessionAndModelTest.java
-                    └── AuctionIntegrationTest.java  # @Tag("integration") — cần MySQL
+            └── server/service/                # Unit + integration tests
 ```
 
 ---
 
 ## 🗄️ Cơ sở dữ liệu
 
-Tên database: **`mydb`** — gồm 6 bảng.
+Tên database: **`mydb`** — gồm 6 bảng chính.
 
 ```
 users
@@ -321,7 +260,7 @@ PENDING ──(đến start_time)──► ACTIVE ──(đến end_time, có bi
    │                             │
    │                             └──(hết giờ, không có bid)──► CANCELLED
    │
-   └──(seller/admin hủy thủ công)──► CANCELLED ──(đăng lại)──► PENDING
+   └──(seller hủy thủ công)──► CANCELLED ──(đăng lại)──► PENDING
 ```
 
 ### Chi tiết các bảng
@@ -331,34 +270,92 @@ PENDING ──(đến start_time)──► ACTIVE ──(đến end_time, có bi
 | Cột | Kiểu | Mô tả |
 |---|---|---|
 | `id` | VARCHAR(36) | UUID |
+| `name` | VARCHAR(45) | Họ tên hiển thị |
 | `username` | VARCHAR(45) | Duy nhất |
 | `password` | VARCHAR(255) | Mã hóa bcrypt |
+| `email` | VARCHAR(100) | Duy nhất |
+| `phone` | VARCHAR(20) | Số điện thoại (nullable) |
 | `balance` | DOUBLE | Số dư ví |
 | `is_active` | TINYINT(1) | 0 = bị khóa |
 | `role` | ENUM | `bidder`, `seller`, `admin` |
-| `rating` | DOUBLE | Điểm trung bình (chỉ seller) |
+| `rating` | DOUBLE | Điểm trung bình (chỉ seller, nullable) |
 | `rating_count` | INT | Số lần được đánh giá |
-| `avatar_url` | VARCHAR(255) | Đường dẫn ảnh đại diện |
+| `avatar_url` | VARCHAR(255) | Đường dẫn ảnh đại diện (nullable) |
 
 **`items`** — Vật phẩm đấu giá
 
 | Cột | Kiểu | Mô tả |
 |---|---|---|
+| `id` | VARCHAR(36) | UUID |
+| `name` | VARCHAR(255) | Tên vật phẩm |
+| `description` | TEXT | Mô tả (nullable) |
+| `starting_price` | DOUBLE | Giá khởi điểm |
+| `current_highest_price` | DOUBLE | Giá cao nhất hiện tại, NULL nếu chưa có bid |
+| `start_time` | DATETIME | Thời điểm bắt đầu phiên đấu giá |
+| `end_time` | DATETIME | Thời điểm kết thúc (có thể bị gia hạn bởi anti-sniping) |
 | `status` | ENUM | `pending`, `active`, `closed`, `cancelled` |
-| `is_active` | TINYINT(1) | 0 = soft delete (chỉ áp dụng khi cancelled) |
-| `owner_id` | VARCHAR(36) | Ban đầu = seller, sau khi closed = buyer |
-| `current_highest_price` | DOUBLE | NULL nếu chưa có bid |
+| `is_active` | TINYINT(1) | 0 = soft delete bởi seller (chỉ khi đã có bid và status không phải `active`) |
+| `seller_id` | VARCHAR(36) | FK → `users.id`, người đăng bán |
+| `owner_id` | VARCHAR(36) | FK → `users.id`, ban đầu = seller, sau khi closed = buyer |
+| `image_url` | VARCHAR(255) | Đường dẫn ảnh tương đối (nullable) |
 
-**`transactions`** — Lịch sử giao dịch
+**`bids`** — Lịch sử các lần đặt giá
 
-| Loại | Mô tả |
-|---|---|
-| `DEPOSIT` | Nạp tiền vào ví |
-| `WITHDRAW` | Rút tiền từ ví |
-| `BID_DEDUCT` | Trừ tiền người thắng đấu giá |
-| `BID_CREDIT` | Cộng tiền seller khi bán được hàng |
+| Cột | Kiểu | Mô tả |
+|---|---|---|
+| `id` | VARCHAR(36) | UUID |
+| `bid_amount` | DOUBLE | Số tiền đặt giá |
+| `bid_time` | DATETIME | Thời điểm đặt giá |
+| `bidder_id` | VARCHAR(36) | FK → `users.id` |
+| `item_id` | VARCHAR(36) | FK → `items.id` |
 
-**`seller_ratings`** — Mỗi cặp `(bidder_id, seller_id)` tối đa 1 dòng; bidder có thể cập nhật điểm bất cứ lúc nào.
+**`item_ownership_history`** — Lịch sử mua bán vật phẩm
+
+| Cột | Kiểu | Mô tả |
+|---|---|---|
+| `id` | VARCHAR(36) | UUID |
+| `item_id` | VARCHAR(36) | FK → `items.id` |
+| `seller_id` | VARCHAR(36) | FK → `users.id` |
+| `buyer_id` | VARCHAR(36) | FK → `users.id` |
+| `sold_price` | DOUBLE | Giá bán thực tế |
+| `sold_time` | DATETIME | Thời điểm chốt giao dịch |
+
+**`transactions`** — Lịch sử biến động số dư
+
+| Cột | Kiểu | Mô tả |
+|---|---|---|
+| `id` | VARCHAR(36) | UUID |
+| `user_id` | VARCHAR(36) | FK → `users.id` |
+| `type` | ENUM | `DEPOSIT`, `WITHDRAW`, `BID_DEDUCT`, `BID_CREDIT` |
+| `amount` | DOUBLE | Số tiền (luôn dương, chiều +/- suy từ `type`) |
+| `balance_before` | DOUBLE | Số dư trước giao dịch |
+| `balance_after` | DOUBLE | Số dư sau giao dịch |
+| `related_item_id` | VARCHAR(36) | FK → `items.id`, NULL nếu không liên quan đấu giá |
+| `note` | VARCHAR(255) | Ghi chú (nullable) |
+| `created_at` | DATETIME | Thời điểm tạo |
+
+**`images`** — Metadata file ảnh trên disk
+
+| Cột | Kiểu | Mô tả |
+|---|---|---|
+| `id` | VARCHAR(36) | UUID |
+| `file_path` | VARCHAR(255) | Đường dẫn tương đối, duy nhất (vd: `avatars/uuid.jpg`) |
+| `owner_type` | ENUM | `avatar` (owner_id là user_id) hoặc `item` (owner_id là item_id) |
+| `owner_id` | VARCHAR(36) | ID của user hoặc item sở hữu ảnh |
+| `created_at` | DATETIME | Thời điểm upload |
+
+**`seller_ratings`** — Đánh giá seller sau giao dịch
+
+| Cột | Kiểu | Mô tả |
+|---|---|---|
+| `id` | VARCHAR(36) | UUID |
+| `bidder_id` | VARCHAR(36) | FK → `users.id` |
+| `seller_id` | VARCHAR(36) | FK → `users.id` |
+| `rating_score` | TINYINT | Điểm 1–5 |
+| `rated_at` | DATETIME | Thời điểm đánh giá lần đầu |
+| `updated_at` | DATETIME | Thời điểm cập nhật điểm gần nhất |
+
+Mỗi cặp `(bidder_id, seller_id)` có duy nhất 1 dòng (UNIQUE KEY); bidder có thể cập nhật điểm bất cứ lúc nào.
 
 ---
 
@@ -380,7 +377,7 @@ PENDING ──(đến start_time)──► ACTIVE ──(đến end_time, có bi
 ### 1. Clone repository
 
 ```bash
-git clone https://github.com/<your-org>/Auction-System-Application.git
+git clone -b main https://github.com/tp-coder-2006/Auction-System-Application.git
 cd Auction-System-Application/AuctionSystemApplication
 ```
 
@@ -400,8 +397,8 @@ Mở file `src/main/java/org/auctionsystem/server/Connectivity/DatabaseConnectio
 ```java
 private static final String URL      = "jdbc:mysql://localhost:3306/mydb"
         + "?useSSL=false&serverTimezone=Asia%2FHo_Chi_Minh&allowPublicKeyRetrieval=true";
-private static final String USER     = "root";      // ← đổi thành username của bạn
-private static final String PASSWORD = "root";      // ← đổi thành password của bạn
+private static final String USER     = "root";        // ← đổi thành username của bạn
+private static final String PASSWORD = "12345678";    // ← đổi thành password của bạn
 ```
 
 ### 4. Build dự án
@@ -414,7 +411,7 @@ mvn clean install -DskipTests
 
 ## ▶️ Chạy ứng dụng
 
-> **Quan trọng:** Phải khởi động **Server trước**, sau đó mới chạy Client.
+> ⚠️ **Quan trọng:** Phải khởi động **Server trước**, sau đó mới chạy Client.
 
 ### Khởi động Server
 
@@ -427,10 +424,13 @@ Hoặc chạy `AuctionServer.main()` trực tiếp từ IntelliJ. Server lắng 
 Output mong đợi:
 
 ```
-✅ HikariCP pool khởi tạo thành công (max=20).
-🚀 AuctionServer đang lắng nghe cổng 8888...
 [AuctionScheduler] Đã khởi động real-time.
+[AdminStatsScheduler] Đã khởi động...
+🚀 AuctionServer đang lắng nghe cổng 8888...
+✅ HikariCP pool khởi tạo thành công (max=20).
 ```
+
+> `AuctionScheduler` và `AdminStatsScheduler` khởi động trước, sau đó server mở cổng 8888. HikariCP pool in thông báo khi lần đầu tiên có kết nối DB được thiết lập (do `DatabaseConnection` là singleton lazy-init).
 
 ### Khởi động Client
 
@@ -440,7 +440,7 @@ mvn javafx:run
 
 Hoặc chạy `Main.main()` từ IntelliJ. Client kết nối đến `localhost:8888` theo mặc định.
 
-> **Chạy nhiều client cùng lúc:** Tạo thêm Run Configuration trong IntelliJ để mô phỏng nhiều người đặt giá đồng thời.
+> 💡 **Chạy nhiều client cùng lúc:** Tạo thêm Run Configuration trong IntelliJ để mô phỏng nhiều người đặt giá đồng thời.
 
 ---
 
@@ -487,8 +487,9 @@ Báo cáo kết quả tại `target/surefire-reports/`.
 | `ClientHandlerRouteTest` | Định tuyến action đúng handler |
 | `ConcurrencyTest` | Race condition khi nhiều bid đồng thời |
 | `SessionManagerTest` | Server-side session registry |
+| `UserSessionServerTest` | Server-side session model |
 | `UserSessionClientTest` | Client-side session singleton |
-| `AuctionIntegrationTest` | End-to-end với MySQL thật |
+| `AuctionIntegrationTest` | End-to-end với MySQL thật (`@Tag("integration")`) |
 
 ---
 
@@ -500,7 +501,7 @@ GitHub Actions tự động chạy khi push hoặc tạo Pull Request vào nhán
 
 Chạy song song trên **3 hệ điều hành** (Ubuntu, Windows, macOS):
 
-```
+```bash
 mvn clean package -DskipTests
 mvn test -Dgroups="!integration"
 ```
@@ -511,7 +512,7 @@ Cấu hình `fail-fast: false` — 1 OS thất bại không dừng 2 OS còn l�
 
 Chỉ chạy trên **Ubuntu** sau khi Job 1 pass trên cả 3 OS, với MySQL 8.0 chạy trong service container:
 
-```
+```bash
 mysql < database/init_database.sql
 mvn test -Dgroups="integration"
 ```
@@ -522,7 +523,7 @@ Báo cáo test được upload thành artifact sau mỗi lần chạy.
 
 ## 📌 Lưu ý kỹ thuật
 
-**HikariCP connection pool** (tối đa 20 kết nối) thay cho `DriverManager`, tránh tình trạng tạo mới kết nối TCP mỗi request và cạn kiệt slot kết nối MySQL khi nhiều client đồng thời.
+**HikariCP connection pool** (tối đa 20 kết nối) thay cho `DriverManager`, tránh tạo mới kết nối TCP mỗi request và cạn kiệt slot kết nối MySQL khi nhiều client đồng thời.
 
 **`SELECT ... FOR UPDATE`** trong `AuctionScheduler` ngăn race condition khi nhiều thread cùng xử lý một vật phẩm. Bước cancel và activate dùng transaction riêng biệt để tránh rollback chéo.
 
@@ -535,3 +536,21 @@ Báo cáo test được upload thành artifact sau mỗi lần chạy.
 **Anti-sniping** — bid trong 10 giây cuối tự động kéo dài `end_time` thêm 30 giây và broadcast `END_TIME_EXTENDED` đến toàn bộ client.
 
 **Cột TableView động** — cột có giá trị tính toán theo thời gian (đếm ngược) phải dùng `setCellFactory` với `updateItem()` thay vì `setCellValueFactory`, vì `SimpleStringProperty` bị cache và không tự cập nhật.
+
+---
+
+## 🤝 Đóng góp
+
+Pull requests luôn được chào đón! Để đóng góp:
+
+1. Fork repository
+2. Tạo nhánh tính năng (`git checkout -b feature/ten-tinh-nang`)
+3. Commit thay đổi (`git commit -m 'feat: thêm tính năng X'`)
+4. Push lên nhánh (`git push origin feature/ten-tinh-nang`)
+5. Mở Pull Request
+
+Vui lòng đảm bảo tất cả unit test đều pass trước khi tạo PR:
+
+```bash
+mvn test -Dgroups="!integration"
+```

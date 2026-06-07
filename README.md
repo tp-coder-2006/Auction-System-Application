@@ -6,7 +6,6 @@
 ![JavaFX](https://img.shields.io/badge/JavaFX-25.0.2-blue?logo=java)
 ![MySQL](https://img.shields.io/badge/MySQL-8.x-4479A1?logo=mysql&logoColor=white)
 ![Maven](https://img.shields.io/badge/Maven-3.8+-C71A36?logo=apachemaven&logoColor=white)
-![License](https://img.shields.io/badge/License-MIT-green)
 ![CI](https://img.shields.io/badge/CI-GitHub%20Actions-2088FF?logo=githubactions&logoColor=white)
 
 </div>

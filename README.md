@@ -387,8 +387,10 @@ cd Auction-System-Application/AuctionSystemApplication
 **Bước 1 — Mở kết nối vào MySQL:**
 
 ```bash
-mysql -u root -p
+mysql -u <username> -p
 ```
+
+> Thay `<username>` bằng tên người dùng MySQL của bạn (thường là `root`).
 
 **Bước 2 — Sau khi nhập mật khẩu và thấy chữ `mysql>`, gõ lệnh reset database:**
 

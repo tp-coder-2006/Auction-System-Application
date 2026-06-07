@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="580.0" prefWidth="905.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_My_Items">
+<VBox prefHeight="750.0" prefWidth="1000.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_My_Items">
    <children>
       <Label stylesheets="@../../CSS/Label.css" text="SẢN PHẨM CỦA TÔI">
          <font>
@@ -33,9 +33,9 @@
       <HBox alignment="BOTTOM_CENTER" prefHeight="34.0" prefWidth="602.0">
          <children>
             <Region prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Button fx:id="btn_back" mnemonicParsing="false" text="Quay lại trang chủ">
+            <Button fx:id="btn_back" mnemonicParsing="false" text="← Quay lại trang chủ">
                <font>
-                  <Font size="14.0" />
+                  <Font size="18.0" />
                </font>
             </Button>
             <Region layoutX="10.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />

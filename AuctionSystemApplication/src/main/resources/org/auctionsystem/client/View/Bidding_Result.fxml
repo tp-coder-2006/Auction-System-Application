@@ -11,64 +11,56 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="600.0" prefWidth="960.0" spacing="14.0"
-      stylesheets="@../../CSS/style.css"
-      xmlns="http://javafx.com/javafx/25"
-      xmlns:fx="http://javafx.com/fxml/1"
-      fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidding_Result">
+<VBox prefHeight="750.0" prefWidth="1000.0" spacing="14.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidding_Result">
     <padding><Insets bottom="20.0" left="30.0" right="30.0" top="24.0" /></padding>
 
     <!-- ── Tiêu đề ──────────────────────────────────────────────────────── -->
-    <Label text="KẾT QUẢ ĐẤU GIÁ CỦA BẠN" stylesheets="@../../CSS/Label.css" wrapText="true">
-        <font><Font name="Times New Roman Bold" size="28.0" /></font>
+    <Label stylesheets="@../../CSS/Label.css" text="KẾT QUẢ ĐẤU GIÁ CỦA BẠN" wrapText="true">
+        <font><Font name="Times New Roman Bold" size="30.0" /></font>
     </Label>
 
     <!-- ── Stat cards ───────────────────────────────────────────────────── -->
-    <HBox spacing="16.0" alignment="CENTER_LEFT">
+    <HBox alignment="CENTER_LEFT" spacing="16.0">
         <!-- Đang diễn ra -->
-        <VBox styleClass="stat-card" alignment="CENTER" minWidth="140">
-            <Label fx:id="lbl_count_ongoing" text="0" styleClass="stat-number" style="-fx-text-fill:#e67e22;" />
-            <Label text="Đang diễn ra" styleClass="stat-label" />
+        <VBox alignment="CENTER" minWidth="140" styleClass="stat-card">
+            <Label fx:id="lbl_count_ongoing" style="-fx-text-fill:#e67e22;" styleClass="stat-number" text="0" />
+            <Label styleClass="stat-label" text="Đang diễn ra" />
         </VBox>
         <!-- Thắng -->
-        <VBox styleClass="stat-card" alignment="CENTER" minWidth="140">
-            <Label fx:id="lbl_count_won" text="0" styleClass="stat-number" style="-fx-text-fill:#27ae60;" />
-            <Label text="Thắng 🏆" styleClass="stat-label" />
+        <VBox alignment="CENTER" minWidth="140" styleClass="stat-card">
+            <Label fx:id="lbl_count_won" style="-fx-text-fill:#27ae60;" styleClass="stat-number" text="0" />
+            <Label styleClass="stat-label" text="Thắng 🏆" />
         </VBox>
         <!-- Thua -->
-        <VBox styleClass="stat-card" alignment="CENTER" minWidth="140">
-            <Label fx:id="lbl_count_lost" text="0" styleClass="stat-number" style="-fx-text-fill:#95a5a6;" />
-            <Label text="Thua" styleClass="stat-label" />
+        <VBox alignment="CENTER" minWidth="140" styleClass="stat-card">
+            <Label fx:id="lbl_count_lost" style="-fx-text-fill:#95a5a6;" styleClass="stat-number" text="0" />
+            <Label styleClass="stat-label" text="Thua" />
         </VBox>
         <!-- Bị hủy -->
-        <VBox styleClass="stat-card" alignment="CENTER" minWidth="140">
-            <Label fx:id="lbl_count_cancelled" text="0" styleClass="stat-number" style="-fx-text-fill:#7f8c8d;" />
-            <Label text="Bị hủy 🚫" styleClass="stat-label" />
+        <VBox alignment="CENTER" minWidth="140" styleClass="stat-card">
+            <Label fx:id="lbl_count_cancelled" style="-fx-text-fill:#7f8c8d;" styleClass="stat-number" text="0" />
+            <Label styleClass="stat-label" text="Bị hủy 🚫" />
         </VBox>
         <Region HBox.hgrow="ALWAYS" />
-        <Label fx:id="lbl_summary" text="Đang tải..." style="-fx-text-fill:#8d6e63; -fx-font-size:12px;" />
+        <Label fx:id="lbl_summary" style="-fx-text-fill:#8d6e63; -fx-font-size:12px;" text="Đang tải..." />
     </HBox>
 
     <!-- ── Bộ lọc ────────────────────────────────────────────────────────── -->
-    <HBox spacing="8.0" alignment="CENTER_LEFT">
-        <ToggleButton fx:id="btn_filter_all"       text="Tất cả"        styleClass="filter-btn" selected="true" onAction="#onFilterAll" />
-        <ToggleButton fx:id="btn_filter_ongoing"   text="Đang diễn ra"  styleClass="filter-btn" onAction="#onFilterOngoing" />
-        <ToggleButton fx:id="btn_filter_won"       text="Thắng 🏆"      styleClass="filter-btn" onAction="#onFilterWon" />
-        <ToggleButton fx:id="btn_filter_lost"      text="Thua"          styleClass="filter-btn" onAction="#onFilterLost" />
-        <ToggleButton fx:id="btn_filter_cancelled" text="Bị hủy"        styleClass="filter-btn" onAction="#onFilterCancelled" />
+    <HBox alignment="CENTER_LEFT" spacing="8.0" stylesheets="@../../CSS/Button.css">
+        <ToggleButton fx:id="btn_filter_all" onAction="#onFilterAll" selected="true" styleClass="filter-btn" text="Tất cả" />
+        <ToggleButton fx:id="btn_filter_ongoing" onAction="#onFilterOngoing" styleClass="filter-btn" text="Đang diễn ra" />
+        <ToggleButton fx:id="btn_filter_won" onAction="#onFilterWon" styleClass="filter-btn" text="Thắng 🏆" />
+        <ToggleButton fx:id="btn_filter_lost" onAction="#onFilterLost" styleClass="filter-btn" text="Thua" />
+        <ToggleButton fx:id="btn_filter_cancelled" onAction="#onFilterCancelled" styleClass="filter-btn" text="Bị hủy" />
     </HBox>
 
     <!-- ── Bảng kết quả ─────────────────────────────────────────────────── -->
-    <TableView fx:id="tableResult"
-               maxHeight="1.7976931348623157E308"
-               prefHeight="380.0"
-               stylesheets="@../../CSS/TableView.css"
-               VBox.vgrow="ALWAYS">
+    <TableView fx:id="tableResult" maxHeight="1.7976931348623157E308" prefHeight="380.0" stylesheets="@../../CSS/TableView.css" VBox.vgrow="ALWAYS">
         <columns>
-            <TableColumn fx:id="col_item_name" text="Tên sản phẩm"    prefWidth="280.0" />
-            <TableColumn fx:id="col_bid_price" text="Giá cao nhất đặt" prefWidth="170.0" />
-            <TableColumn fx:id="col_bid_time"  text="Thời gian đặt"   prefWidth="190.0" />
-            <TableColumn fx:id="col_status"    text="Kết quả"         prefWidth="210.0" />
+            <TableColumn fx:id="col_item_name" prefWidth="280.0" text="Tên sản phẩm" />
+            <TableColumn fx:id="col_bid_price" prefWidth="170.0" text="Giá cao nhất đặt" />
+            <TableColumn fx:id="col_bid_time" prefWidth="190.0" text="Thời gian đặt" />
+            <TableColumn fx:id="col_status" prefWidth="210.0" text="Kết quả" />
         </columns>
         <columnResizePolicy>
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -78,8 +70,8 @@
     <!-- ── Footer ────────────────────────────────────────────────────────── -->
     <HBox alignment="BOTTOM_CENTER" prefHeight="44.0">
         <Region HBox.hgrow="ALWAYS" />
-        <Button text="Quay lại trang chủ" onAction="#back_to_dashboard">
-            <font><Font size="14.0" /></font>
+        <Button onAction="#back_to_dashboard" text="← Quay lại trang chủ">
+            <font><Font size="18.0" /></font>
         </Button>
         <Region HBox.hgrow="ALWAYS" />
     </HBox>

@@ -26,6 +26,9 @@ import java.util.Locale;
  * FXML: Seller_Wallet.fxml
  */
 public class Controller_Seller_Wallet {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ── FXML bindings ─────────────────────────────────────────────────────────
     @FXML private Label     lbl_balance;
@@ -56,7 +59,7 @@ public class Controller_Seller_Wallet {
     public void initialize() {
         refreshBalanceLabel();
         // Lắng nghe balance updates qua BalanceWatcher (global singleton)
-        BalanceWatcher.registerListener("SellerWallet", balance ->
+        BalanceWatcher.registerListener(handlerKey, balance ->
                 Platform.runLater(this::refreshBalanceLabel));
     }
 
@@ -117,10 +120,10 @@ public class Controller_Seller_Wallet {
     }
 
     // ── Nút nhanh ─────────────────────────────────────────────────────────────
-    @FXML private void onWithdrawQuick100(ActionEvent e) { field_withdraw_amount.setText("100000"); }
-    @FXML private void onWithdrawQuick500(ActionEvent e) { field_withdraw_amount.setText("500000"); }
-    @FXML private void onWithdrawQuick1M(ActionEvent e)  { field_withdraw_amount.setText("1000000"); }
-    @FXML private void onWithdrawQuick5M(ActionEvent e)  { field_withdraw_amount.setText("5000000"); }
+    @FXML private void onWithdrawQuick100(ActionEvent e) { addToAmountField(field_withdraw_amount, 100_000); }
+    @FXML private void onWithdrawQuick500(ActionEvent e) { addToAmountField(field_withdraw_amount, 500_000); }
+    @FXML private void onWithdrawQuick1M(ActionEvent e)  { addToAmountField(field_withdraw_amount, 1_000_000); }
+    @FXML private void onWithdrawQuick5M(ActionEvent e)  { addToAmountField(field_withdraw_amount, 5_000_000); }
 
     @FXML
     private void onWithdrawAll(ActionEvent event) {
@@ -139,7 +142,7 @@ public class Controller_Seller_Wallet {
         // Truyền đường dẫn màn hình hiện tại để nút "Quay lại" trong History hoạt động đúng
         Controller_Seller_Transaction_History.setPreviousView(SELLER_WALLET_VIEW);
         try {
-            BalanceWatcher.unregisterListener("SellerWallet");
+            BalanceWatcher.unregisterListener(handlerKey);
             Scene_Utils.Change_Scene(event, SELLER_HISTORY_VIEW);
         } catch (IOException e) {
             e.printStackTrace();
@@ -150,7 +153,7 @@ public class Controller_Seller_Wallet {
     @FXML
     private void onBack(ActionEvent event) {
         try {
-            BalanceWatcher.unregisterListener("SellerWallet");
+            BalanceWatcher.unregisterListener(handlerKey);
             Scene_Utils.Change_Scene(event, SELLER_DASHBOARD_VIEW);
         } catch (IOException e) {
             e.printStackTrace();
@@ -162,6 +165,14 @@ public class Controller_Seller_Wallet {
         btn_withdraw.setDisable(!enabled);
         field_withdraw_amount.setDisable(!enabled);
         field_withdraw_note.setDisable(!enabled);
+    }
+
+    private void addToAmountField(TextField field, long delta) {
+        if (field == null) return;
+        String cur = field.getText().trim().replace(",", "").replace(".", "");
+        long base = 0;
+        try { base = Long.parseLong(cur); } catch (NumberFormatException ignored) {}
+        field.setText(String.valueOf(base + delta));
     }
 
     private double parseAmount(TextField field) {

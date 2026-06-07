@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 
+<?import java.net.URL?>
 <?import javafx.geometry.Insets?>
 <?import javafx.scene.control.Button?>
 <?import javafx.scene.control.Label?>
@@ -11,55 +12,67 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Item_Management">
+<BorderPane prefHeight="750.0" prefWidth="1000.0" styleClass="stat-card" stylesheets="@../../CSS/AdminMenu.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_Item_Management">
 
    <top>
-      <HBox alignment="CENTER_LEFT" spacing="12.0" prefHeight="50.0">
-         <padding><Insets left="15.0" top="8.0" bottom="8.0"/></padding>
-         <Button mnemonicParsing="false" onAction="#back_to_admin_dashboard" text="← Quay lại">
-            <font><Font size="13.0"/></font>
-         </Button>
+      <HBox alignment="CENTER_LEFT" prefHeight="50.0" prefWidth="1000.0" spacing="12.0" styleClass="stat-card">
+         <padding><Insets bottom="8.0" left="15.0" top="8.0" /></padding>
          <Label text="QUẢN LÝ SẢN PHẨM">
-            <font><Font name="Times New Roman Bold" size="20.0"/></font>
+            <font><Font name="Times New Roman Bold" size="30.0" /></font>
          </Label>
       </HBox>
    </top>
 
    <center>
       <VBox spacing="12.0" styleClass="stat-card">
-         <padding><Insets top="16.0" bottom="16.0" left="20.0" right="20.0"/></padding>
+         <padding><Insets bottom="16.0" left="20.0" right="20.0" top="16.0" /></padding>
 
          <!-- Search + refresh bar -->
-         <HBox spacing="10.0" alignment="CENTER_LEFT">
-            <TextField fx:id="fieldSearch" promptText="Tìm theo tên hoặc trạng thái..." prefWidth="320.0">
-               <font><Font size="13.0"/></font>
+         <HBox alignment="CENTER_LEFT" spacing="10.0">
+            <TextField fx:id="fieldSearch" prefWidth="320.0" promptText="Tìm theo tên hoặc trạng thái...">
+               <font><Font size="14.0" /></font>
             </TextField>
-            <Button mnemonicParsing="false" onAction="#refreshItems" text="🔄  Làm mới">
-               <font><Font size="13.0"/></font>
+            <Button mnemonicParsing="false" onAction="#refreshItems" styleClass="button-admin" stylesheets="@../../CSS/Button.css" text="🔄  Làm mới">
+               <font><Font size="14.0" /></font>
             </Button>
             <Label fx:id="labelResult" text="">
-               <font><Font size="13.0"/></font>
+               <font><Font size="13.0" /></font>
             </Label>
          </HBox>
 
          <!-- Table -->
          <TableView fx:id="tableItems" VBox.vgrow="ALWAYS">
             <columns>
-               <TableColumn fx:id="colName"      prefWidth="190.0" text="Tên sản phẩm"/>
-               <TableColumn fx:id="colStatus"    prefWidth="100.0" text="Trạng thái"/>
-               <TableColumn fx:id="colSeller"    prefWidth="130.0" text="Seller"/>
-               <TableColumn fx:id="colStartTime" prefWidth="130.0" text="Bắt đầu"/>
-               <TableColumn fx:id="colEndTime"   prefWidth="130.0" text="Kết thúc"/>
-               <TableColumn fx:id="colPrice"     prefWidth="110.0" text="Giá hiện tại"/>
-               <TableColumn fx:id="colVisible"   prefWidth="90.0"  text="Hiển thị"/>
-               <TableColumn fx:id="colActions"   prefWidth="160.0" text="Hành động"/>
+               <TableColumn fx:id="colName" prefWidth="190.0" text="Tên sản phẩm" />
+               <TableColumn fx:id="colStatus" prefWidth="100.0" text="Trạng thái" />
+               <TableColumn fx:id="colSeller" prefWidth="130.0" text="Seller" />
+               <TableColumn fx:id="colStartTime" prefWidth="130.0" text="Bắt đầu" />
+               <TableColumn fx:id="colEndTime" prefWidth="130.0" text="Kết thúc" />
+               <TableColumn fx:id="colPrice" prefWidth="110.0" text="Giá hiện tại" />
+               <TableColumn fx:id="colVisible" prefWidth="90.0" text="Hiển thị" />
+               <TableColumn fx:id="colActions" prefWidth="160.0" text="Hành động" />
             </columns>
             <placeholder>
-               <Label text="Chưa có dữ liệu"/>
+               <Label text="Chưa có dữ liệu" />
             </placeholder>
+            <columnResizePolicy>
+               <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
+            </columnResizePolicy>
+            <stylesheets>
+               <URL value="@../../CSS/TableView.css" />
+               <URL value="@../../CSS/style.css" />
+            </stylesheets>
          </TableView>
       </VBox>
    </center>
+   <bottom>
+      <Button mnemonicParsing="false" onAction="#back_to_admin_dashboard" stylesheets="@../../CSS/style.css" text="← Quay lại trang chủ" BorderPane.alignment="CENTER">
+         <font>
+            <Font size="18.0" />
+         </font>
+         <BorderPane.margin>
+            <Insets bottom="10.0" />
+         </BorderPane.margin>
+      </Button>
+   </bottom>
 </BorderPane>

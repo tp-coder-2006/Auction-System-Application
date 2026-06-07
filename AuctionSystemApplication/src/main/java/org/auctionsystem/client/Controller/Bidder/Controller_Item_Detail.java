@@ -8,16 +8,19 @@ import javafx.collections.FXCollections;
 import javafx.collections.ObservableList;
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
+import javafx.scene.chart.LineChart;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.TableColumn;
 import javafx.scene.control.TableView;
 import javafx.scene.image.Image;
 import javafx.scene.image.ImageView;
+import javafx.scene.layout.HBox;
 import javafx.scene.layout.VBox;
 import javafx.stage.FileChooser;
 import org.auctionsystem.client.Connectivity.ImageClient;
 import org.auctionsystem.client.Connectivity.ServerConnection;
+import org.auctionsystem.client.Controller.BidPriceChartBuilder;
 import org.auctionsystem.client.Controller.Scene_Utils;
 import org.auctionsystem.client.event.EventDispatcher;
 import org.auctionsystem.client.event.EventType;
@@ -48,6 +51,9 @@ import java.util.concurrent.TimeUnit;
  *   - Hiện lịch sử bid (readonly, nếu có)
  */
 public class Controller_Item_Detail {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ── FXML bindings ────────────────────────────────────────────────────────
 
@@ -63,7 +69,7 @@ public class Controller_Item_Detail {
     @FXML private Label     lbl_status_message;
     @FXML private VBox      enter_room_panel;   // panel chứa nút + countdown, chỉ hiện khi ACTIVE
     @FXML private Button    btn_enter_room;
-    @FXML private VBox      bid_history_panel;
+    @FXML private HBox      bid_history_panel;
     @FXML private ImageView productImageView;
     @FXML private Button    btn_change_item_image;
 
@@ -76,6 +82,8 @@ public class Controller_Item_Detail {
     @FXML private TableColumn<JsonObject, String> col_all_bidder;
     @FXML private TableColumn<JsonObject, String> col_all_amount;
     @FXML private TableColumn<JsonObject, String> col_all_time;
+
+    @FXML private LineChart<String, Number> bidPriceChart;
 
     // ── State ─────────────────────────────────────────────────────────────────
 
@@ -121,18 +129,21 @@ public class Controller_Item_Detail {
         loadProductImage();
         setupItemImageClickHandler();
 
-        // BID_PLACED real-time đã được xóa khỏi màn hình này.
-        // Bảng lịch sử bid chỉ load 1 lần; real-time bid chỉ có trong Bidding_room.
-        EventDispatcher.register(EventType.ITEM_STARTED, payload -> {
+        EventDispatcher.registerGlobal(EventType.BID_PLACED, handlerKey, this::onBidPlaced);
+        EventDispatcher.registerGlobal(EventType.ITEM_UPDATED, handlerKey, payload -> {
+            if (!isSameItem(payload)) return;
+            Platform.runLater(() -> onItemUpdated(payload));
+        });
+        EventDispatcher.registerGlobal(EventType.ITEM_STARTED, handlerKey, payload -> {
             if (!isSameItem(payload)) return;
             Platform.runLater(() -> onSessionStarted(payload));
         });
-        EventDispatcher.register(EventType.END_TIME_EXTENDED, this::onEndTimeExtended);
-        EventDispatcher.register(EventType.AUCTION_SETTLED, payload -> {
+        EventDispatcher.registerGlobal(EventType.END_TIME_EXTENDED, handlerKey, this::onEndTimeExtended);
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED, handlerKey, payload -> {
             if (!isSameItem(payload)) return;
             Platform.runLater(this::onSessionEnded);
         });
-        EventDispatcher.register(EventType.ITEM_CANCELLED, payload -> {
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED, handlerKey, payload -> {
             if (!isSameItem(payload)) return;
             Platform.runLater(this::onSessionCancelled);
         });
@@ -274,13 +285,22 @@ public class Controller_Item_Detail {
         }, "ItemDetail-LoadBidHistory").start();
     }
 
+    private static final java.util.Comparator<JsonObject> BY_TIME_PRICE_DESC = (a, b) -> {
+        String ta = a.has("bidTime") ? a.get("bidTime").getAsString() : "";
+        String tb = b.has("bidTime") ? b.get("bidTime").getAsString() : "";
+        int cmp = tb.compareTo(ta);
+        if (cmp != 0) return cmp;
+        double pa = a.has("bidAmount") ? a.get("bidAmount").getAsDouble() : 0;
+        double pb = b.has("bidAmount") ? b.get("bidAmount").getAsDouble() : 0;
+        return Double.compare(pb, pa);
+    };
+
     private void populateBidHistory(JsonObject response) {
         bidHistoryList.clear();
         if (response != null && "success".equals(response.get("status").getAsString())) {
             JsonArray arr = response.get("message").getAsJsonArray();
-            for (int i = arr.size() - 1; i >= 0; i--) {
-                bidHistoryList.add(arr.get(i).getAsJsonObject());
-            }
+            arr.forEach(el -> bidHistoryList.add(el.getAsJsonObject()));
+            bidHistoryList.sort(BY_TIME_PRICE_DESC);
         }
         if (!bidHistoryList.isEmpty() || !allBidHistoryList.isEmpty()) {
             show(bid_history_panel);
@@ -298,10 +318,13 @@ public class Controller_Item_Detail {
                 if (res != null && "success".equals(res.get("status").getAsString())) {
                     res.get("message").getAsJsonArray()
                             .forEach(el -> allBidHistoryList.add(el.getAsJsonObject()));
+                    allBidHistoryList.sort(BY_TIME_PRICE_DESC);
                 }
                 if (!allBidHistoryList.isEmpty() || !bidHistoryList.isEmpty()) {
                     show(bid_history_panel);
                 }
+                BidPriceChartBuilder.refresh(bidPriceChart, allBidHistoryList,
+                        getDouble(currentItem, "startingPrice"));
             });
         }, "ItemDetail-LoadAllBidHistory").start();
     }
@@ -513,7 +536,15 @@ public class Controller_Item_Detail {
         Platform.runLater(() -> {
             updateCurrentPriceLabel();
             bidHistoryList.add(0, entry);
+            allBidHistoryList.add(0, entry);
+
+            // Sort lại theo bidTime giảm dần — đảm bảo thứ tự đúng khi nhiều event đến gần nhau
+            bidHistoryList.sort(BY_TIME_PRICE_DESC);
+            allBidHistoryList.sort(BY_TIME_PRICE_DESC);
+
             show(bid_history_panel);
+            BidPriceChartBuilder.refresh(bidPriceChart, allBidHistoryList,
+                    getDouble(currentItem, "startingPrice"));
         });
     }
 
@@ -566,18 +597,41 @@ public class Controller_Item_Detail {
 
     private void updateCurrentPriceLabel() {
         if (lbl_current_price == null || currentItem == null) return;
-        double price = currentItem.has("currentHighestPrice")
-                && !currentItem.get("currentHighestPrice").isJsonNull()
-                ? currentItem.get("currentHighestPrice").getAsDouble()
-                : getDouble(currentItem, "startingPrice");
-        setText(lbl_current_price, String.format("%,.0f ₫", price));
+        if (currentItem.has("currentHighestPrice") && !currentItem.get("currentHighestPrice").isJsonNull()) {
+            double price = currentItem.get("currentHighestPrice").getAsDouble();
+            setText(lbl_current_price, String.format("%,.0f ₫", price));
+        } else {
+            setText(lbl_current_price, "_");
+        }
+    }
+
+    private void onItemUpdated(JsonObject payload) {
+        if (currentItem == null) return;
+        // Cập nhật currentItem
+        if (payload.has("name"))          currentItem.addProperty("name",         payload.get("name").getAsString());
+        if (payload.has("starting_price")) currentItem.addProperty("startingPrice", payload.get("starting_price").getAsDouble());
+        if (payload.has("start_time"))    currentItem.addProperty("startTime",     payload.get("start_time").getAsString());
+        if (payload.has("end_time"))      currentItem.addProperty("endTime",       payload.get("end_time").getAsString());
+        if (payload.has("image_url") && !payload.get("image_url").isJsonNull())
+            currentItem.addProperty("imageUrl", payload.get("image_url").getAsString());
+        currentItem.add("currentHighestPrice", com.google.gson.JsonNull.INSTANCE);
+
+        // Cập nhật UI
+        setText(lbl_product_name,   getString(currentItem, "name"));
+        setText(lbl_starting_price, String.format("%,.0f ₫", getDouble(currentItem, "startingPrice")));
+        setText(lbl_start_time,     formatDatetime(getString(currentItem, "startTime")));
+        setText(lbl_end_time,       formatDatetime(getString(currentItem, "endTime")));
+        updateCurrentPriceLabel();
+        loadProductImage();
     }
 
     private void unregisterEvents() {
-        EventDispatcher.unregister(EventType.ITEM_STARTED);
-        EventDispatcher.unregister(EventType.END_TIME_EXTENDED);
-        EventDispatcher.unregister(EventType.AUCTION_SETTLED);
-        EventDispatcher.unregister(EventType.ITEM_CANCELLED);
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_UPDATED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_STARTED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.END_TIME_EXTENDED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED, handlerKey);
     }
 
     private static void setText(Label lbl, String text) {

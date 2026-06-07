@@ -1,4 +1,4 @@
-package org.auctionsystem.client.Controller;
+package org.auctionsystem.client.Controller.Bidder;
 
 import com.google.gson.JsonArray;
 import com.google.gson.JsonElement;
@@ -22,6 +22,9 @@ import java.text.NumberFormat;
 import java.util.Locale;
 
 public class Controller_Transaction_History {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // ── FXML ─────────────────────────────────────────────────────────────────
     @FXML private ComboBox<String>         combo_filter;
@@ -77,12 +80,12 @@ public class Controller_Transaction_History {
         loadTransactions(null);
 
         // Đăng ký BalanceWatcher để cập nhật label số dư realtime
-        BalanceWatcher.registerListener("TransactionHistory", balance ->
+        BalanceWatcher.registerListener(handlerKey, balance ->
                 lbl_balance.setText("Số dư: " + formatMoney(balance) + " ₫"));
 
         // Đăng ký real-time events để thêm row mới vào bảng
-        EventDispatcher.register(EventType.BID_DEDUCT, this::onTransactionEvent);
-        EventDispatcher.register(EventType.BID_CREDIT, this::onTransactionEvent);
+        EventDispatcher.registerGlobal(EventType.BID_DEDUCT, handlerKey, this::onTransactionEvent);
+        EventDispatcher.registerGlobal(EventType.BID_CREDIT, handlerKey, this::onTransactionEvent);
     }
 
     // ── Xử lý filter ─────────────────────────────────────────────────────────
@@ -209,9 +212,9 @@ public class Controller_Transaction_History {
     // ── Quay lại ─────────────────────────────────────────────────────────────
     @FXML
     public void on_back(ActionEvent event) {
-        BalanceWatcher.unregisterListener("TransactionHistory");
-        EventDispatcher.unregister(EventType.BID_DEDUCT);
-        EventDispatcher.unregister(EventType.BID_CREDIT);
+        BalanceWatcher.unregisterListener(handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BID_DEDUCT, handlerKey);
+        EventDispatcher.unregisterGlobal(EventType.BID_CREDIT, handlerKey);
         if (previousView == null) {
             String role = UserSession.getInstance().getRole();
             previousView = "seller".equalsIgnoreCase(role)

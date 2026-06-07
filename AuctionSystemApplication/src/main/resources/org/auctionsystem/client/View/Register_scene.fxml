@@ -21,7 +21,7 @@
     để khớp với Controller_Register yêu cầu 4 tham số khi gọi UserRepository.registerUser()
 -->
 
-<BorderPane prefHeight="534.0" prefWidth="576.0" styleClass="login-pane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
+<BorderPane prefHeight="750.0" prefWidth="1000.0" styleClass="login-pane" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Controller_Register">
    <center>
       <StackPane maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="500.0" prefWidth="600.0" stylesheets="@../../CSS/style.css">
          <children>
@@ -42,7 +42,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="register_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                  <TextField fx:id="register_name" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -54,7 +54,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="register_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="37.0" prefWidth="200.0">
+                  <TextField fx:id="register_username" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -66,7 +66,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <TextField fx:id="register_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                  <TextField fx:id="register_email" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0">
                      <font>
                         <Font size="16.0" />
                      </font>
@@ -78,7 +78,7 @@
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <PasswordField fx:id="register_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="30.0" prefWidth="200.0">
+                  <PasswordField fx:id="register_password" maxHeight="-Infinity" maxWidth="-Infinity" prefHeight="25.0" prefWidth="200.0">
                      <font>
                         <Font size="16.0" />
                      </font>

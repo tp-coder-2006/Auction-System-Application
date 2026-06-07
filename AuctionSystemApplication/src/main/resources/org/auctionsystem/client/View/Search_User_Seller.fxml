@@ -9,65 +9,52 @@
 <?import javafx.scene.control.TextField?>
 <?import javafx.scene.layout.BorderPane?>
 <?import javafx.scene.layout.HBox?>
-<?import javafx.scene.layout.Region?>
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="580.0" prefWidth="720.0"
-            stylesheets="@../../CSS/style.css"
-            xmlns="http://javafx.com/javafx/25"
-            xmlns:fx="http://javafx.com/fxml/1"
-            fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Search_User_Seller">
+<BorderPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Seller.Controller_Search_User_Seller">
 
    <!-- ── Trên: tiêu đề + thanh tìm kiếm ─────────────────────────────── -->
    <top>
       <VBox spacing="10.0" BorderPane.alignment="CENTER">
-         <padding><Insets top="20.0" left="24.0" right="24.0" bottom="10.0" /></padding>
+         <padding><Insets bottom="10.0" left="24.0" right="24.0" top="20.0" /></padding>
 
-         <Label text="TÌM KIẾM NGƯỜI DÙNG" stylesheets="@../../CSS/Label.css" wrapText="true">
-            <font><Font name="Times New Roman Bold" size="26.0" /></font>
+         <Label stylesheets="@../../CSS/Label.css" text="TÌM KIẾM NGƯỜI DÙNG" wrapText="true">
+            <font><Font name="Times New Roman Bold" size="30.0" /></font>
          </Label>
 
          <!-- Thanh tìm kiếm với listener realtime -->
-         <HBox spacing="8.0" alignment="CENTER_LEFT">
-            <TextField fx:id="field_username"
-                       prefHeight="36.0" HBox.hgrow="ALWAYS"
-                       promptText="🔍  Nhập username, họ tên hoặc email...">
-               <font><Font size="14.0" /></font>
+         <HBox alignment="CENTER_LEFT" spacing="8.0">
+            <TextField fx:id="field_username" maxWidth="-Infinity" prefHeight="36.0" prefWidth="500.0" promptText="🔍  Nhập username, họ tên hoặc email..." HBox.hgrow="ALWAYS">
+               <font><Font size="16.0" /></font>
             </TextField>
          </HBox>
 
          <!-- Trạng thái / lỗi -->
-         <Label fx:id="lbl_search_status"
-                stylesheets="@../../CSS/Label.css"
-                wrapText="true" managed="false" visible="false">
+         <Label fx:id="lbl_search_status" managed="false" stylesheets="@../../CSS/Label.css" visible="false" wrapText="true">
             <font><Font size="12.0" /></font>
          </Label>
 
          <!-- Gợi ý -->
-         <Label fx:id="lbl_hint"
-                style="-fx-text-fill: #888; -fx-font-style: italic;"
-                wrapText="true">
+         <Label fx:id="lbl_hint" style="-fx-text-fill: #888; -fx-font-style: italic;" wrapText="true">
             <font><Font size="11.0" /></font>
          </Label>
 
-         <Separator />
+         <Separator styleClass="custom-separator" stylesheets="@../../CSS/BiddingBackground.css" />
       </VBox>
    </top>
 
    <!-- ── Giữa: bảng kết quả ──────────────────────────────────────────── -->
    <center>
       <VBox BorderPane.alignment="CENTER">
-         <padding><Insets left="24.0" right="24.0" top="6.0" bottom="6.0" /></padding>
+         <padding><Insets bottom="6.0" left="24.0" right="24.0" top="6.0" /></padding>
 
-         <TableView fx:id="table_users" VBox.vgrow="ALWAYS"
-                    style="-fx-cursor: hand;"
-                    prefHeight="400.0">
+         <TableView fx:id="table_users" prefHeight="400.0" stylesheets="@../../CSS/TableView.css" VBox.vgrow="ALWAYS">
             <columns>
-               <TableColumn fx:id="col_username" text="Username"  prefWidth="160.0" />
-               <TableColumn fx:id="col_name"     text="Họ tên"    prefWidth="180.0" />
-               <TableColumn fx:id="col_role"     text="Vai trò"   prefWidth="130.0" />
-               <TableColumn fx:id="col_rating"   text="Đánh giá"  prefWidth="180.0" />
+               <TableColumn fx:id="col_username" prefWidth="160.0" text="Username" />
+               <TableColumn fx:id="col_name" prefWidth="180.0" text="Họ tên" />
+               <TableColumn fx:id="col_role" prefWidth="130.0" text="Vai trò" />
+               <TableColumn fx:id="col_rating" prefWidth="180.0" text="Đánh giá" />
             </columns>
             <columnResizePolicy>
                <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
@@ -78,13 +65,11 @@
 
    <!-- ── Dưới: nút quay lại ──────────────────────────────────────────── -->
    <bottom>
-      <HBox alignment="CENTER_LEFT" BorderPane.alignment="CENTER">
-         <padding><Insets top="14.0" bottom="16.0" left="24.0" right="24.0" /></padding>
-         <Button text="← Quay lại trang chủ"
-                 onAction="#back_to_dashboard">
-            <font><Font size="13.0" /></font>
+      <HBox alignment="CENTER" prefWidth="720.0" BorderPane.alignment="CENTER">
+         <padding><Insets bottom="16.0" left="24.0" right="24.0" top="14.0" /></padding>
+         <Button onAction="#back_to_dashboard" text="← Quay lại trang chủ">
+            <font><Font size="18.0" /></font>
          </Button>
-         <Region HBox.hgrow="ALWAYS" />
       </HBox>
    </bottom>
 

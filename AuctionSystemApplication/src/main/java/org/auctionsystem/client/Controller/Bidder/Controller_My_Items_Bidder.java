@@ -20,6 +20,9 @@ import org.auctionsystem.client.session.UserSession;
 import java.io.IOException;
 
 public class Controller_My_Items_Bidder {
+    // UUID duy nhất cho mỗi instance — tránh ghi đè handler của cửa sổ khác
+    private final String handlerKey = java.util.UUID.randomUUID().toString();
+
 
     // fx:id khớp với My_Items_Bidder.fxml
     @FXML private TableView<JsonObject>           tableMyItems;
@@ -41,7 +44,7 @@ public class Controller_My_Items_Bidder {
         loadData();
 
         // Xóa item khỏi bảng ngay lập tức khi admin hard delete
-        EventDispatcher.register(EventType.ITEM_DELETED, payload -> {
+        EventDispatcher.registerGlobal(EventType.ITEM_DELETED, handlerKey, payload -> {
             String itemId = payload.has("item_id") ? payload.get("item_id").getAsString() : "";
             if (!itemId.isEmpty()) {
                 Platform.runLater(() -> masterList.removeIf(item ->

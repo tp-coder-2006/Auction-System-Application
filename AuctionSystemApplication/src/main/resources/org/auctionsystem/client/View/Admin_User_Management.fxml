@@ -12,7 +12,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<BorderPane prefHeight="580.0" prefWidth="905.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_User_Management">
+<BorderPane prefHeight="750.0" prefWidth="1000.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Admin.Controller_Admin_User_Management">
    <top>
       <VBox BorderPane.alignment="TOP_LEFT">
          <children>
@@ -21,10 +21,19 @@
                   <Font name="Times New Roman Bold" size="30.0" />
                </font>
             </Label>
-            <HBox alignment="CENTER" prefHeight="68.0" prefWidth="600.0">
+            <HBox alignment="CENTER" prefHeight="68.0" prefWidth="600.0" spacing="1.0">
                <children>
-                  <TextField fx:id="field_search_user" prefHeight="26.0" prefWidth="282.0" promptText="Tìm tên người dùng" />
-                  <Button fx:id="btn_search" mnemonicParsing="false" text="🔍" />
+                  <TextField fx:id="field_search_user" prefHeight="26.0" prefWidth="282.0" promptText="Tìm tên người dùng">
+                     <font>
+                        <Font size="14.0" />
+                     </font></TextField>
+                  <Button fx:id="btn_search" mnemonicParsing="false" text="🔍">
+                     <font>
+                        <Font size="14.0" />
+                     </font>
+                     <HBox.margin>
+                        <Insets />
+                     </HBox.margin></Button>
                </children>
             </HBox>
          </children>
@@ -55,9 +64,9 @@
          </BorderPane.margin>
          <children>
             <Region prefHeight="39.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />
-            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#back_to_admin_dashboard" prefHeight="25.0" prefWidth="135.0" text="Quay lại trang chủ" wrapText="true">
+            <Button maxWidth="1.7976931348623157E308" mnemonicParsing="false" onAction="#back_to_admin_dashboard" prefHeight="42.0" prefWidth="243.0" text="← Quay lại trang chủ" wrapText="true">
                <font>
-                  <Font size="14.0" />
+                  <Font size="18.0" />
                </font>
             </Button>
             <Region layoutX="296.0" layoutY="10.0" prefHeight="200.0" prefWidth="200.0" HBox.hgrow="ALWAYS" />

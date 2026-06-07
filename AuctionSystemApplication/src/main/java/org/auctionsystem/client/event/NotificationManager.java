@@ -34,6 +34,7 @@ public final class NotificationManager {
 
     private NotificationManager() {}
 
+    private static final String HANDLER_KEY = java.util.UUID.randomUUID().toString();
     private static volatile boolean active = false;
 
     // Hàng chờ toast (tránh overlap khi nhiều thông báo đến cùng lúc)
@@ -53,11 +54,11 @@ public final class NotificationManager {
         if (active) return;
         active = true;
 
-        EventDispatcher.registerGlobal(EventType.BID_PLACED,       "NotificationManager",
+        EventDispatcher.registerGlobal(EventType.BID_PLACED,       HANDLER_KEY,
                 NotificationManager::onBidPlaced);
-        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED,  "NotificationManager",
+        EventDispatcher.registerGlobal(EventType.AUCTION_SETTLED,  HANDLER_KEY,
                 NotificationManager::onAuctionSettled);
-        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED,  "NotificationManager",
+        EventDispatcher.registerGlobal(EventType.ITEM_CANCELLED,  HANDLER_KEY,
                 NotificationManager::onItemCancelled);
 
         System.out.println("[NotificationManager] Đã kích hoạt.");
@@ -67,9 +68,9 @@ public final class NotificationManager {
         if (!active) return;
         active = false;
 
-        EventDispatcher.unregisterGlobal(EventType.BID_PLACED,      "NotificationManager");
-        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED,  "NotificationManager");
-        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED,   "NotificationManager");
+        EventDispatcher.unregisterGlobal(EventType.BID_PLACED,      HANDLER_KEY);
+        EventDispatcher.unregisterGlobal(EventType.AUCTION_SETTLED,  HANDLER_KEY);
+        EventDispatcher.unregisterGlobal(EventType.ITEM_CANCELLED,   HANDLER_KEY);
 
         queue.clear();
         showing.set(false);

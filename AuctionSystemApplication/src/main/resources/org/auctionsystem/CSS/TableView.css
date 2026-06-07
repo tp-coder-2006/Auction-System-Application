@@ -7,7 +7,6 @@
 .table-view .column-header-background {
     -fx-background-color: #4d3902;
     -fx-background-radius: 5px 5px 0px 0px;
-
 }
 
 .table-view .column-header {

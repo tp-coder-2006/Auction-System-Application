@@ -10,7 +10,7 @@
 <?import javafx.scene.layout.VBox?>
 <?import javafx.scene.text.Font?>
 
-<VBox prefHeight="580.0" prefWidth="905.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidding_History">
+<VBox prefHeight="750.0" prefWidth="1000.0" spacing="20.0" stylesheets="@../../CSS/style.css" xmlns="http://javafx.com/javafx/25" xmlns:fx="http://javafx.com/fxml/1" fx:controller="org.auctionsystem.client.Controller.Bidder.Controller_Bidding_History">
    <children>
       <Label prefHeight="34.0" prefWidth="848.0" stylesheets="@../../CSS/Label.css" text="LỊCH SỬ ĐẤU GIÁ" wrapText="true" VBox.vgrow="ALWAYS">
          <font>
@@ -28,12 +28,12 @@
             <TableView fx:constant="CONSTRAINED_RESIZE_POLICY" />
          </columnResizePolicy>
       </TableView>
-      <HBox alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="67.0" prefWidth="602.0" VBox.vgrow="NEVER">
+      <HBox alignment="BOTTOM_CENTER" maxHeight="-Infinity" maxWidth="1.7976931348623157E308" prefHeight="31.0" prefWidth="939.0" VBox.vgrow="NEVER">
          <children>
             <Region layoutX="62.0" layoutY="10.0" prefHeight="0.0" prefWidth="242.0" HBox.hgrow="ALWAYS" />
-            <Button mnemonicParsing="false" onAction="#back_to_bidding_dashboard" text="Quay lại trang chủ">
+            <Button mnemonicParsing="false" onAction="#back_to_bidding_dashboard" text="← Quay lại trang chủ">
                <font>
-                  <Font size="14.0" />
+                  <Font size="18.0" />
                </font>
             </Button>
             <Region prefHeight="0.0" prefWidth="222.0" HBox.hgrow="ALWAYS" />

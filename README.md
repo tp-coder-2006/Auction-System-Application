@@ -26,6 +26,8 @@
 - [Chạy ứng dụng](#chạy-ứng-dụng)
 - [Kiểm thử](#kiểm-thử)
 - [CI/CD](#cicd)
+- [Video demo](#video-demo)
+- [Báo cáo PDF](#báo-cáo-pdf)
 - [Lưu ý kỹ thuật](#lưu-ý-kỹ-thuật)
 - [Đóng góp](#đóng-góp)
 
@@ -538,6 +540,22 @@ mvn test -Dgroups="integration"
 ```
 
 Báo cáo test được upload thành artifact sau mỗi lần chạy.
+
+---
+
+## Video demo
+
+> 🎬 Xem bản trình bày và demo giao diện ứng dụng tại Canva:
+
+[**👉 Xem Video Demo**](https://www.canva.com/design/DAHL3DHYBuM/n_nX3f0LhZ3ILfqRGvIR_g/edit)
+
+---
+
+## Báo cáo PDF
+
+> 📄 Tài liệu báo cáo chi tiết của dự án:
+
+[**👉 Xem Báo cáo PDF**](https://drive.google.com/file/d/1Wt-1mg-f1aPPw-R2QI6yMic5fKsK_UFV/view)
 
 ---
 
